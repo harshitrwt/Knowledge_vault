@@ -27,7 +27,7 @@ export default function Home() {
               href="/dashboard"
               className="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
             >
-              Go to Dashboard
+              Dashboard
             </Link>
             <Link
               href="/docs"
