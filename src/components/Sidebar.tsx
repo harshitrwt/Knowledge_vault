@@ -2,31 +2,54 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Upload, User, Menu } from "lucide-react";
+import { useState } from "react";
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Uploads", href: "/uploads" },
-  { name: "Profile", href: "/profile" },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Uploads", href: "/uploads", icon: Upload },
+  { name: "Home", href: "/", icon: User },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className="w-64 h-screen bg-black text-white p-4">
-      <h2 className="text-xl font-bold mb-6">Vault</h2>
-      <nav className="flex flex-col space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`p-2 rounded ${
-              pathname === item.href ? "bg-gray-800" : "hover:bg-gray-900"
-            }`}
-          >
-            {item.name}
-          </Link>
-        ))}
+    <aside
+      className={`h-screen bg-black text-white flex flex-col transition-all duration-300 border-r border-gray-800
+        ${collapsed ? "w-20" : "w-64"}
+      `}
+    >
+     
+      <div className="flex items-center justify-between p-4">
+        {!collapsed && <h2 className="text-2xl font-bold">Vault</h2>}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="p-2 rounded hover:bg-gray-800"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex flex-col space-y-1 mt-4 mx-5">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 p-3 rounded-lg transition-colors
+                ${active ? "bg-gray-800" : "hover:bg-gray-900"}
+              `}
+            >
+              <Icon className="w-5 h-5" />
+              {!collapsed && <span>{item.name}</span>}
+            </Link>
+          );
+        })}
       </nav>
     </aside>
   );
