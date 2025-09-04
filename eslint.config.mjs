@@ -9,7 +9,7 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-export default [
+const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     ignores: [
@@ -18,7 +18,10 @@ export default [
       "out/**",
       "build/**",
       "next-env.d.ts",
-      "src/generated/**",
+      "src/generated/**",         // your generated code
+      "prisma/**",                // prisma schema/migrations
+      "**/migrations/**",         // prisma migrations folder
+      "node_modules/@prisma/**",  // prisma client package
     ],
     rules: {
       "@typescript-eslint/no-this-alias": "off",
@@ -30,3 +33,5 @@ export default [
     },
   },
 ];
+
+export default eslintConfig;
