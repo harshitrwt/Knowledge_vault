@@ -1,7 +1,32 @@
+"use client";
+
 import Sidebar from "@/components/Sidebar";
-import { Shield, Upload, User } from "lucide-react";
+import { Shield, Upload, User, Folder } from "lucide-react";
+import { useEffect, useState } from "react";
+
+type StoredFile = {
+  id: string;
+  name: string;
+  size: number;
+};
 
 export default function DashboardPage() {
+  const [files, setFiles] = useState<StoredFile[]>([]);
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const res = await fetch("/api/files");
+        if (res.ok) {
+          setFiles(await res.json());
+        }
+      } catch (err) {
+        console.error("Failed to fetch files:", err);
+      }
+    };
+    fetchFiles();
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-black text-white">
       <Sidebar />
@@ -9,7 +34,6 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold">Your Dashboard</h1>
         <p className="mt-2 text-gray-400">Welcome to your personal Vault 🚀</p>
 
-        {/* Stats Section */}
         <div className="grid gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3">
           <div className="p-6 bg-gray-900 rounded-2xl shadow">
             <Shield className="w-8 h-8 mb-2 text-purple-400" />
@@ -23,7 +47,7 @@ export default function DashboardPage() {
             <Upload className="w-8 h-8 mb-2 text-green-400" />
             <h2 className="text-xl font-semibold">Quick Uploads</h2>
             <p className="text-gray-400 text-sm">
-              Upload and manage important files anytime, anywhere.
+              {files.length} file(s) uploaded
             </p>
           </div>
 
@@ -35,6 +59,26 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
+
+        {files.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-xl font-semibold mb-4">Recent Files</h2>
+            <ul className="space-y-2">
+              {files.slice(0, 5).map((f) => (
+                <li
+                  key={f.id}
+                  className="flex items-center space-x-3 bg-gray-800 rounded-lg p-3"
+                >
+                  <Folder className="text-blue-300" size={20} />
+                  <span>{f.name}</span>
+                  <span className="ml-auto text-sm text-gray-400">
+                    {(f.size / 1024).toFixed(1)} KB
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </main>
     </div>
   );

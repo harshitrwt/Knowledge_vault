@@ -11,7 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-// Convert File to base64 string
+
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -22,10 +22,10 @@ const fileToBase64 = (file: File): Promise<string> => {
 };
 
 type StoredFile = {
+  id: string;
   name: string;
   size: number;
-  type: string;
-  base64: string;
+  url: string; 
 };
 
 export default function UploadsPage() {
@@ -33,36 +33,28 @@ export default function UploadsPage() {
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load files from localStorage when page loads
+  
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("uploaded_files");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setFiles(parsed);
+    const fetchFiles = async () => {
+      try {
+        const res = await fetch("/api/files");
+        if (res.ok) {
+          const data = await res.json();
+          setFiles(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch files:", error);
       }
-    } catch (error) {
-      console.error("Failed to parse localStorage data:", error);
-    }
+    };
+    fetchFiles();
   }, []);
 
-  // Save files to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem("uploaded_files", JSON.stringify(files));
-    } catch (error) {
-      console.error("Failed to save to localStorage:", error);
-    }
-  }, [files]);
-
-  // Handle file selection
+ 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const selected = event.target.files;
     if (!selected) return;
-
-    const newFiles: StoredFile[] = [];
 
     for (const file of Array.from(selected)) {
       if (file.size > 1024 * 1024 * 1.5) {
@@ -71,18 +63,31 @@ export default function UploadsPage() {
       }
 
       const base64 = await fileToBase64(file);
-      newFiles.push({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        base64,
-      });
-    }
 
-    setFiles((prev) => [...prev, ...newFiles]);
+      try {
+        const res = await fetch("/api/files", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: file.name,
+            size: file.size,
+            url: base64,
+          }),
+        });
+
+        if (res.ok) {
+          const newFile = await res.json();
+          setFiles((prev) => [...prev, newFile]);
+        } else {
+          console.error("Failed to upload file:", await res.text());
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
   };
 
-  // Convert base64 string to Blob
+  
   const base64ToBlob = (base64: string, type: string) => {
     const byteString = atob(base64.split(",")[1]);
     const ab = new ArrayBuffer(byteString.length);
@@ -93,16 +98,16 @@ export default function UploadsPage() {
     return new Blob([ab], { type });
   };
 
-  // Open file in new tab
+  
   const handleOpen = (file: StoredFile) => {
-    const blob = base64ToBlob(file.base64, file.type);
+    const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
   };
 
-  // Download file
+  
   const handleDownload = (file: StoredFile) => {
-    const blob = base64ToBlob(file.base64, file.type);
+    const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -110,9 +115,9 @@ export default function UploadsPage() {
     a.click();
   };
 
-  // Copy blob URL to clipboard
+  
   const handleShare = async (file: StoredFile) => {
-    const blob = base64ToBlob(file.base64, file.type);
+    const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
 
     try {
@@ -124,16 +129,26 @@ export default function UploadsPage() {
     }
   };
 
-  // Delete a file (with confirmation)
-  const handleDelete = (index: number) => {
+  
+  const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this file?");
     if (!confirmed) return;
 
-    setFiles((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
+    try {
+      const res = await fetch("/api/files", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (res.ok) {
+        setFiles((prev) => prev.filter((f) => f.id !== id));
+      } else {
+        console.error("Failed to delete file:", await res.text());
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
     setMenuIndex(null);
   };
 
@@ -148,7 +163,7 @@ export default function UploadsPage() {
       <main className="flex-1 relative p-6">
         <h1 className="text-2xl font-bold mb-6">Your Uploads</h1>
 
-        {/* Empty state */}
+       
         {files.length === 0 ? (
           <div className="flex items-center justify-center h-[70vh]">
             <span className="text-7xl font-bold text-gray-700 opacity-20">
@@ -159,7 +174,7 @@ export default function UploadsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {files.map((file, index) => (
               <div
-                key={index}
+                key={file.id}
                 className="bg-blue-800 rounded-lg p-4 relative cursor-pointer hover:bg-blue-700 transition"
                 onClick={() => handleOpen(file)}
               >
@@ -169,7 +184,7 @@ export default function UploadsPage() {
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
 
-                {/* 3-dot menu toggle */}
+                
                 <div
                   className="absolute bottom-2 right-2"
                   onClick={(e) => {
@@ -180,7 +195,6 @@ export default function UploadsPage() {
                   <MoreVertical className="text-white cursor-pointer" />
                 </div>
 
-                {/* 3-dot dropdown */}
                 {menuIndex === index && (
                   <div className="absolute bottom-10 right-2 bg-gray-900 border border-gray-700 rounded shadow-md z-50">
                     <button
@@ -210,7 +224,7 @@ export default function UploadsPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDelete(index);
+                        handleDelete(file.id);
                       }}
                       className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400"
                     >
@@ -224,7 +238,7 @@ export default function UploadsPage() {
           </div>
         )}
 
-        {/* Hidden file input */}
+        
         <input
           type="file"
           ref={fileInputRef}
@@ -233,9 +247,9 @@ export default function UploadsPage() {
           onChange={handleFileChange}
         />
 
-        {/* Upload button (bottom right) */}
+        
         <button
-          className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
+          className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
           onClick={handleUploadClick}
         >
           <Plus size={28} className="text-white" />
