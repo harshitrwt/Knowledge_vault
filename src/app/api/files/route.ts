@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const newFile = await prisma.file.create({
       data: {
         name,
-        size,
+        size: Number(size),
         url,
         userId: "test-user",
       },
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   }
 }
 
-// DELETE: remove file
+
 export async function DELETE(req: Request) {
   try {
     const body = await req.json();
