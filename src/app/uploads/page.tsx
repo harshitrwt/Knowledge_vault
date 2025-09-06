@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/Sidebar";
+import Loader from "@/components/Loader"; 
 import {
   Plus,
   Folder,
@@ -10,7 +11,6 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
-
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -31,24 +31,27 @@ type StoredFile = {
 export default function UploadsPage() {
   const [files, setFiles] = useState<StoredFile[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 🔹 Refresh files helper
+  const refreshFiles = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/files", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setFiles(data);
+      }
+    } catch (error) {
+      console.error("Failed to refresh files:", error);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const res = await fetch("/api/files");
-        if (res.ok) {
-          const data = await res.json();
-          setFiles(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch files:", error);
-      }
-    };
-    fetchFiles();
+    refreshFiles();
   }, []);
-
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -67,6 +70,7 @@ export default function UploadsPage() {
       try {
         const res = await fetch("/api/files", {
           method: "POST",
+          cache: "no-store",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: file.name,
@@ -76,8 +80,7 @@ export default function UploadsPage() {
         });
 
         if (res.ok) {
-          const newFile = await res.json();
-          setFiles((prev) => [...prev, newFile]);
+          await refreshFiles(); 
         } else {
           console.error("Failed to upload file:", await res.text());
         }
@@ -86,7 +89,6 @@ export default function UploadsPage() {
       }
     }
   };
-
 
   const base64ToBlob = (base64: string, type: string) => {
     const byteString = atob(base64.split(",")[1]);
@@ -98,13 +100,11 @@ export default function UploadsPage() {
     return new Blob([ab], { type });
   };
 
-
   const handleOpen = (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
   };
-
 
   const handleDownload = (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
@@ -114,7 +114,6 @@ export default function UploadsPage() {
     a.download = file.name;
     a.click();
   };
-
 
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
@@ -129,7 +128,6 @@ export default function UploadsPage() {
     }
   };
 
-
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this file?");
     if (!confirmed) return;
@@ -137,12 +135,13 @@ export default function UploadsPage() {
     try {
       const res = await fetch("/api/files", {
         method: "DELETE",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
 
       if (res.ok) {
-        setFiles((prev) => prev.filter((f) => f.id !== id));
+        await refreshFiles(); 
       } else {
         console.error("Failed to delete file:", await res.text());
       }
@@ -163,8 +162,9 @@ export default function UploadsPage() {
       <main className="flex-1 relative p-6">
         <h1 className="text-2xl font-bold mb-6">Your Uploads</h1>
 
-
-        {files.length === 0 ? (
+        {loading ? (
+          <Loader /> 
+        ) : files.length === 0 ? (
           <div className="flex items-center justify-center h-[70vh]">
             <span className="text-7xl font-bold text-gray-700 opacity-20">
               Empty
@@ -176,7 +176,6 @@ export default function UploadsPage() {
               <div
                 key={file.id}
                 className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 relative cursor-pointer hover:bg-blue-500/20 transition"
-                onClick={() => handleOpen(file)}
               >
                 <Folder size={48} className="text-blue-500 mb-2 mx-auto" />
                 <p className="text-sm font-semibold text-center break-words text-blue-100">
@@ -235,11 +234,9 @@ export default function UploadsPage() {
                   </div>
                 )}
               </div>
-
             ))}
           </div>
         )}
-
 
         <input
           type="file"
@@ -248,7 +245,6 @@ export default function UploadsPage() {
           className="hidden"
           onChange={handleFileChange}
         />
-
 
         <button
           className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"

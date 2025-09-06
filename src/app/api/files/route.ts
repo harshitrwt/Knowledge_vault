@@ -58,3 +58,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { id } = body;
+
+    await prisma.file.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
+  }
+}
+
