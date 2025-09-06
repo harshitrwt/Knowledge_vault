@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -25,7 +24,7 @@ model User {
 model File {
   id        String   @id @default(cuid())
   name      String
-  size      String
+  size      Int
   url       String
   user      User     @relation(fields: [userId], references: [id])
   userId    String
