@@ -25,7 +25,7 @@ type StoredFile = {
   id: string;
   name: string;
   size: number;
-  url: string; 
+  url: string;
 };
 
 export default function UploadsPage() {
@@ -33,7 +33,7 @@ export default function UploadsPage() {
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  
+
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -49,7 +49,7 @@ export default function UploadsPage() {
     fetchFiles();
   }, []);
 
- 
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -87,7 +87,7 @@ export default function UploadsPage() {
     }
   };
 
-  
+
   const base64ToBlob = (base64: string, type: string) => {
     const byteString = atob(base64.split(",")[1]);
     const ab = new ArrayBuffer(byteString.length);
@@ -98,14 +98,14 @@ export default function UploadsPage() {
     return new Blob([ab], { type });
   };
 
-  
+
   const handleOpen = (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
   };
 
-  
+
   const handleDownload = (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
@@ -115,7 +115,7 @@ export default function UploadsPage() {
     a.click();
   };
 
-  
+
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
@@ -129,7 +129,7 @@ export default function UploadsPage() {
     }
   };
 
-  
+
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this file?");
     if (!confirmed) return;
@@ -163,7 +163,7 @@ export default function UploadsPage() {
       <main className="flex-1 relative p-6">
         <h1 className="text-2xl font-bold mb-6">Your Uploads</h1>
 
-       
+
         {files.length === 0 ? (
           <div className="flex items-center justify-center h-[70vh]">
             <span className="text-7xl font-bold text-gray-700 opacity-20">
@@ -175,16 +175,17 @@ export default function UploadsPage() {
             {files.map((file, index) => (
               <div
                 key={file.id}
-                className="bg-blue-800 rounded-lg p-4 relative cursor-pointer hover:bg-blue-700 transition"
+                className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 relative cursor-pointer hover:bg-blue-500/20 transition"
                 onClick={() => handleOpen(file)}
               >
-                <Folder size={48} className="text-blue-300 mb-2 mx-auto" />
-                <p className="text-sm font-medium text-center break-words">{file.name}</p>
-                <p className="text-xs text-center text-gray-300 mt-1">
+                <Folder size={48} className="text-blue-500 mb-2 mx-auto" />
+                <p className="text-sm font-semibold text-center break-words text-blue-100">
+                  {file.name}
+                </p>
+                <p className="text-xs text-center text-blue-300 mt-1">
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
 
-                
                 <div
                   className="absolute bottom-2 right-2"
                   onClick={(e) => {
@@ -192,18 +193,18 @@ export default function UploadsPage() {
                     setMenuIndex(index === menuIndex ? null : index);
                   }}
                 >
-                  <MoreVertical className="text-white cursor-pointer" />
+                  <MoreVertical className="text-blue-200 cursor-pointer" />
                 </div>
 
                 {menuIndex === index && (
-                  <div className="absolute bottom-10 right-2 bg-gray-900 border border-gray-700 rounded shadow-md z-50">
+                  <div className="absolute bottom-10 right-2 bg-blue-950 border border-blue-800 rounded shadow-md z-50">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDownload(file);
                         setMenuIndex(null);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-gray-800 w-full"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200"
                     >
                       <Download size={16} className="mr-2" />
                       Download
@@ -215,7 +216,7 @@ export default function UploadsPage() {
                         handleShare(file);
                         setMenuIndex(null);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-gray-800 w-full"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200"
                     >
                       <Share2 size={16} className="mr-2" />
                       Share
@@ -226,7 +227,7 @@ export default function UploadsPage() {
                         e.stopPropagation();
                         handleDelete(file.id);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-red-900 w-full text-red-400"
                     >
                       <Trash2 size={16} className="mr-2" />
                       Delete
@@ -234,11 +235,12 @@ export default function UploadsPage() {
                   </div>
                 )}
               </div>
+
             ))}
           </div>
         )}
 
-        
+
         <input
           type="file"
           ref={fileInputRef}
@@ -247,7 +249,7 @@ export default function UploadsPage() {
           onChange={handleFileChange}
         />
 
-        
+
         <button
           className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
           onClick={handleUploadClick}
