@@ -5,29 +5,37 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@cl
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 backdrop-blur-md border border-gray-800 text-2xl rounded-full shadow-lg px-8 sm:px-20 py-3 flex items-center bg-blue-600 gap-8 z-50 min-w-[370px] h-[70px]">
-      <Link href="/" className="text-white hover:text-black">
-        Home
-      </Link>
-      <Link href="/dashboard" className="text-white hover:text-black">
-        Dashboard
-      </Link>
-      <div className="flex items-center gap-2">
-        <Link href="/profile" className="text-white hover:text-black">
-          You
+    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 backdrop-blur-md border-b border-gray-800 text-white rounded-full shadow-lg px-8 sm:px-20 py-3 flex items-center justify-between w-full max-w-screen-lg z-50">
+      <div className="flex items-center gap-6">
+        <Link href="/" className="text-2xl font-semibold hover:text-blue-500">
+          Home
         </Link>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
+        <Link href="/dashboard" className="text-2xl font-semibold hover:text-blue-500">
+          Dashboard
+        </Link>
       </div>
-      <SignedOut>
-        <SignInButton />
-        <SignUpButton>
-          <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-            Sign Up
-          </button>
-        </SignUpButton>
-      </SignedOut>
+
+      <div className="flex items-center gap-6">
+        <SignedIn>
+          <div className="flex items-center gap-3">
+            <UserButton afterSignOutUrl="/" />
+            <Link href="/profile" className="text-xl hover:text-blue-500">
+              Profile
+            </Link>
+          </div>
+        </SignedIn>
+
+        <SignedOut>
+          <div className="flex items-center gap-4">
+            <SignInButton />
+            <SignUpButton>
+              <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-2 text-sm sm:text-base hover:bg-blue-700 transition">
+                Sign Up
+              </button>
+            </SignUpButton>
+          </div>
+        </SignedOut>
+      </div>
     </nav>
   );
 }
