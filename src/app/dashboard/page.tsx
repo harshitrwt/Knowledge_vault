@@ -3,6 +3,7 @@
 import Sidebar from "@/components/Sidebar";
 import { Shield, Upload, User, Folder } from "lucide-react";
 import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
 
 type StoredFile = {
   id: string;
@@ -12,9 +13,10 @@ type StoredFile = {
 
 export default function DashboardPage() {
   const [files, setFiles] = useState<StoredFile[]>([]);
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const fetchFiles = async () => {
+      setLoading(true);
       try {
         const res = await fetch("/api/files");
         if (res.ok) {
@@ -23,6 +25,7 @@ export default function DashboardPage() {
       } catch (err) {
         console.error("Failed to fetch files:", err);
       }
+      setLoading(false);
     };
     fetchFiles();
   }, []);
@@ -60,24 +63,31 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {files.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-xl font-semibold mb-4">Recent Files</h2>
-            <ul className="space-y-2">
-              {files.slice(0, 5).map((f) => (
-                <li
-                  key={f.id}
-                  className="flex items-center space-x-3 bg-gray-800 rounded-lg p-3"
-                >
-                  <Folder className="text-blue-300" size={20} />
-                  <span>{f.name}</span>
-                  <span className="ml-auto text-sm text-gray-400">
-                    {(f.size / 1024).toFixed(1)} KB
-                  </span>
-                </li>
-              ))}
-            </ul>
+        {loading ? (
+          <div className="mt-10 flex justify-center">
+            <Loader />
           </div>
+        ) : (
+          // Once files are loaded, show the files
+          files.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-xl font-semibold mb-4">Recent Files</h2>
+              <ul className="space-y-2">
+                {files.slice(0, 5).map((f) => (
+                  <li
+                    key={f.id}
+                    className="flex items-center space-x-3 bg-gray-800 rounded-lg p-3"
+                  >
+                    <Folder className="text-blue-300" size={20} />
+                    <span>{f.name}</span>
+                    <span className="ml-auto text-sm text-gray-400">
+                      {(f.size / 1024).toFixed(1)} KB
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
         )}
       </main>
     </div>

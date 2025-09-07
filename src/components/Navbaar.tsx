@@ -5,7 +5,7 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@cl
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 backdrop-blur-md border-b border-gray-800 text-white rounded-full shadow-lg px-8 sm:px-20 py-3 flex items-center justify-between w-full max-w-screen-lg z-50">
+    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 backdrop-blur-md  mt-6 border-b border-gray-800 text-white rounded-full shadow-lg px-8 sm:px-20 py-3 flex items-center justify-between w-full max-w-screen-lg z-50">
       <div className="flex items-center gap-6">
         <Link href="/" className="text-2xl font-semibold hover:text-blue-500">
           Home
