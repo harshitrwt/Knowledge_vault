@@ -1,6 +1,5 @@
 import React from "react";
 
-// Custom styles using Tailwind and @keyframes directly in the component
 const Loader: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -31,7 +30,7 @@ const Loader: React.FC = () => {
         </div>
       </div>
 
-      {/* Adding keyframes directly inside the component */}
+      
       <style jsx>{`
         @keyframes box1 {
           0%, 50% {
