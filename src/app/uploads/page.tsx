@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Loader from "@/components/Loader"; 
 import {
@@ -10,6 +11,7 @@ import {
   Download,
   Share2,
   Trash2,
+  Bot,
 } from "lucide-react";
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -27,6 +29,8 @@ type StoredFile = {
   size: number;
   url: string;
 };
+
+
 
 export default function UploadsPage() {
   const [files, setFiles] = useState<StoredFile[]>([]);
@@ -53,6 +57,8 @@ export default function UploadsPage() {
     refreshFiles();
   }, []);
 
+
+  const [isHovered, setIsHovered] = useState(false);
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -238,6 +244,26 @@ export default function UploadsPage() {
           </div>
         )}
 
+        <div
+      className="absolute bottom-32 right-8 flex flex-col items-center"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered && (
+        <div className="mb-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md transition-opacity duration-200">
+          Ask AI
+        </div>
+      )}
+
+      <a href="/askai">
+        <button
+          className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
+        >
+          <Bot size={28} className="text-white" />
+        </button>
+      </a>
+    </div>
+
         <input
           type="file"
           ref={fileInputRef}
@@ -245,6 +271,10 @@ export default function UploadsPage() {
           className="hidden"
           onChange={handleFileChange}
         />
+
+        
+
+        
 
         <button
           className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
