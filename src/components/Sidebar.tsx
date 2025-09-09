@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Upload, User, Menu } from "lucide-react";
+import { LayoutDashboard, Upload, User, Menu, Bot } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Uploads", href: "/uploads", icon: Upload },
+  { name: "Ask AI", href: "/askai", icon: Bot },
   { name: "Home", href: "/", icon: User },
 ];
 
@@ -32,7 +33,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Navigation */}
+      
       <nav className="flex flex-col space-y-1 mt-4 mx-5">
         {navItems.map((item) => {
           const Icon = item.icon;
