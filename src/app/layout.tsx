@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Nunito } from 'next/font/google';
+import { DashedScrollAnimation } from '@/components/DashedScrollAnimation';
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={nunito.variable}>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <DashedScrollAnimation />
           {children}
         </body>
       </html>

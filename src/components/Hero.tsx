@@ -15,7 +15,7 @@ const HeroSection = () => {
   xmlns="http://www.w3.org/2000/svg"
 >
   <path
-    fill="black"
+    fill="#0A0A0A"
     d="M0,256C80,224,160,192,240,213.3C320,235,400,309,480,309.3C560,309,640,235,720,192C800,149,880,139,960,165.3C1040,192,1120,256,1200,266.7C1280,277,1360,235,1440,213.3V320H0Z"
   />
 </svg>
@@ -51,7 +51,7 @@ const HeroSection = () => {
       
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://i.pinimg.com/736x/e4/56/54/e456540b53dfe63390c5613e8f265520.jpg"
+          src="https://static.vecteezy.com/system/resources/thumbnails/041/416/545/small_2x/hand-drawn-doodles-seamless-pattern-illustration-vector.jpg"
           alt="Hero Image"
           layout="fill"
           objectFit="cover"
