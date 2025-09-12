@@ -1,9 +1,11 @@
 'use client'
+
 import { ClerkProvider } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Nunito } from 'next/font/google';
 import { DashedScrollAnimation } from '@/components/DashedScrollAnimation';
+import { usePathname } from 'next/navigation'
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -20,17 +22,18 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname();
+
   return (
     <ClerkProvider>
       <html lang="en" className={nunito.variable}>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <DashedScrollAnimation />
+          {pathname === '/' && <DashedScrollAnimation />}
           {children}
         </body>
       </html>

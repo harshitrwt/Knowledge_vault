@@ -32,7 +32,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-[-12px] transform bg-black mt-6 border-b border-gray-800 text-white rounded-2xl shadow-lg px-5 py-5 flex items-center justify-between w-full max-w-screen-lg z-50 transition-transform duration-400 ${
+      className={`fixed top-0 left-[-12px] transform bg-black mt-6 ml-5 border-b border-gray-800 text-white rounded-md shadow-lg px-5 py-5 flex items-center justify-between w-full max-w-screen-lg z-50 transition-transform duration-400 ${
         showNav ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-3'
       }`}
       style={{ height: '4.5rem' }}

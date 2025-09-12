@@ -68,7 +68,7 @@ export default function DashboardPage() {
             <Loader />
           </div>
         ) : (
-          // Once files are loaded, show the files
+          
           files.length > 0 && (
             <div className="mt-10">
               <h2 className="text-xl font-semibold mb-4">Recent Files</h2>
