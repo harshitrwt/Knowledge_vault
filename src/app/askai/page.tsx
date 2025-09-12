@@ -48,14 +48,14 @@ export default function AskAi() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
       <Sidebar />
 
       <main className="flex-1 flex flex-col p-6 space-y-8">
-        {/* Title */}
+        
         <div className="text-center md:text-left">
           <h1 className="text-4xl font-extrabold text-blue-500 tracking-wide">
-            ⚡ Ask AI
+            Ask AI
           </h1>
           <p className="mt-2 text-lg text-gray-400">
             Drag & drop your files or select one to get AI-powered insights.

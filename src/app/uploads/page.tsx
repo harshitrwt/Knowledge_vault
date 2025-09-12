@@ -162,11 +162,11 @@ export default function UploadsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
       <Sidebar />
 
       <main className="flex-1 relative p-6">
-        <h1 className="text-2xl font-bold mb-6">Your Uploads</h1>
+        <h1 className="text-3xl font-bold m-5">Your Uploads</h1>
 
         {loading ? (
           <Loader /> 
@@ -177,7 +177,7 @@ export default function UploadsPage() {
             </span>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:mt-20">
             {files.map((file, index) => (
               <div
                 key={file.id}
