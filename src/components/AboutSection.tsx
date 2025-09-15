@@ -18,8 +18,8 @@ export default function AboutSection() {
 
         
         <div className="text-center md:text-left">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-500 mb-6">
-            About Smart Contract Vault
+          <h2 className="md:text-4xl text-3xl font-extrabold text-blue-500 mb-6">
+            About Vault
           </h2>
           <p className="text-gray-300 leading-relaxed">
             Smart Contract Vault was built to make storing and discovering
@@ -28,7 +28,7 @@ export default function AboutSection() {
             vault that grows with your team.
           </p>
           <p className="mt-6 text-gray-400">
-            Think of it like a digital library for smart contracts — organized,
+            Think of it like a digital library for smart contracts, organized,
             searchable, and always available.
           </p>
         </div>

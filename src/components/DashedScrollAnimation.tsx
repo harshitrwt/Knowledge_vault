@@ -11,7 +11,6 @@ export function DashedScrollAnimation() {
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-visible z-1">
-      {/* LEFT full circles */}
       <motion.svg
         width="500"
         height="500"

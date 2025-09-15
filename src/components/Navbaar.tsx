@@ -32,18 +32,18 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-[-12px] transform bg-black mt-6 ml-5 border-b border-gray-800 text-white rounded-md shadow-lg px-5 py-5 flex items-center justify-between w-full max-w-screen-lg z-50 transition-transform duration-400 ${
+      className={`fixed top-0 md:left-[-12px]  transform bg-black md:mt-6 mt-10 ml-5 border-b border-gray-800 text-white md:rounded-md rounded-full shadow-lg md:px-5 px-7 py-5 flex items-center justify-between w-full max-w-screen-lg z-50 transition-transform duration-400 ${
         showNav ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-3'
       }`}
       style={{ height: '4.5rem' }}
     >
       <div className="flex items-center gap-8">
-        <Link href="/" className="text-2xl font-semibold hover:text-blue-500">
+        <Link href="/" className="md:text-2xl text-xl font-semibold hover:text-blue-500">
           Home
         </Link>
         <Link
           href="/dashboard"
-          className="text-2xl font-semibold hover:text-blue-500"
+          className="md:text-2xl text-xl font-semibold hover:text-blue-500"
         >
           Dashboard
         </Link>
@@ -53,7 +53,7 @@ export default function Navbar() {
         <SignedIn>
           <div className="flex items-center gap-4">
             <UserButton afterSignOutUrl="/" />
-            <Link href="/profile" className="text-xl hover:text-blue-500">
+            <Link href="/profile" className="text-xl hover:text-blue-500 md:inline hidden ">
               Profile
             </Link>
           </div>

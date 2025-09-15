@@ -49,7 +49,7 @@ const HeroSection = () => {
       </div>
 
       
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 md:h-full h-[90%]">
         <Image
           src="https://media.istockphoto.com/id/1007122208/vector/grey-and-white-geometric-triangles-backgorund.jpg?s=612x612&w=0&k=20&c=Qk4uuwQUj4ElhWZ-E1qfnHIezG2ljxc2uAjtgEZxYWs="
           alt="Hero Image"
