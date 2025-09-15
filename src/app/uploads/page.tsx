@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
-import Loader from "@/components/Loader"; 
+import Loader from "@/components/Loader";
 import {
   Plus,
   Folder,
@@ -30,12 +29,11 @@ type StoredFile = {
   url: string;
 };
 
-
-
 export default function UploadsPage() {
   const [files, setFiles] = useState<StoredFile[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [toast, setToast] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 🔹 Refresh files helper
@@ -57,8 +55,8 @@ export default function UploadsPage() {
     refreshFiles();
   }, []);
 
-
   const [isHovered, setIsHovered] = useState(false);
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -86,7 +84,7 @@ export default function UploadsPage() {
         });
 
         if (res.ok) {
-          await refreshFiles(); 
+          await refreshFiles();
         } else {
           console.error("Failed to upload file:", await res.text());
         }
@@ -106,36 +104,46 @@ export default function UploadsPage() {
     return new Blob([ab], { type });
   };
 
+  
   const handleOpen = (file: StoredFile) => {
-    const blob = base64ToBlob(file.url, "application/octet-stream");
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
-  };
+  if (file.url.startsWith("data:")) {
+    window.open(file.url, "_blank");
+  } else {
+    window.location.href = `/preview/${file.id}`;
+  }
+};
 
+
+ 
   const handleDownload = (file: StoredFile) => {
-    const blob = base64ToBlob(file.url, "application/octet-stream");
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.name;
-    a.click();
-  };
+  const blob = base64ToBlob(file.url, "application/octet-stream");
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  a.click();
+};
 
+
+  
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
 
     try {
       await navigator.clipboard.writeText(url);
-      alert("Sharable link copied to clipboard!");
+      setToast("📋 Link copied to clipboard!");
+      setTimeout(() => setToast(null), 2500);
     } catch {
-      alert("Unable to copy. You can copy it manually:");
       window.prompt("Copy this link:", url);
     }
   };
 
+  // 🔹 Delete file
   const handleDelete = async (id: string) => {
-    const confirmed = window.confirm("Are you sure you want to delete this file?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this file?"
+    );
     if (!confirmed) return;
 
     try {
@@ -147,7 +155,7 @@ export default function UploadsPage() {
       });
 
       if (res.ok) {
-        await refreshFiles(); 
+        await refreshFiles();
       } else {
         console.error("Failed to delete file:", await res.text());
       }
@@ -169,7 +177,7 @@ export default function UploadsPage() {
         <h1 className="text-3xl font-bold m-5">Your Uploads</h1>
 
         {loading ? (
-          <Loader /> 
+          <Loader />
         ) : files.length === 0 ? (
           <div className="flex items-center justify-center h-[70vh]">
             <span className="text-7xl font-bold text-gray-700 opacity-20">
@@ -181,6 +189,7 @@ export default function UploadsPage() {
             {files.map((file, index) => (
               <div
                 key={file.id}
+                onClick={() => handleOpen(file)}
                 className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 relative cursor-pointer hover:bg-blue-500/20 transition"
               >
                 <Folder size={48} className="text-blue-500 mb-2 mx-auto" />
@@ -244,26 +253,26 @@ export default function UploadsPage() {
           </div>
         )}
 
+        {/* Ask AI Floating Button */}
         <div
-      className="absolute bottom-32 right-8 flex flex-col items-center"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {isHovered && (
-        <div className="mb-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md transition-opacity duration-200">
-          Ask AI
-        </div>
-      )}
-
-      <a href="/askai">
-        <button
-          className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
+          className="absolute bottom-32 right-8 flex flex-col items-center"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <Bot size={28} className="text-white" />
-        </button>
-      </a>
-    </div>
+          {isHovered && (
+            <div className="mb-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md transition-opacity duration-200">
+              Ask AI
+            </div>
+          )}
 
+          <a href="/askai">
+            <button className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition">
+              <Bot size={28} className="text-white" />
+            </button>
+          </a>
+        </div>
+
+        {/* File Upload Button */}
         <input
           type="file"
           ref={fileInputRef}
@@ -272,16 +281,19 @@ export default function UploadsPage() {
           onChange={handleFileChange}
         />
 
-        
-
-        
-
         <button
           className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
           onClick={handleUploadClick}
         >
           <Plus size={28} className="text-white" />
         </button>
+
+        {/* ✅ Toast Notification */}
+        {toast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg">
+            {toast}
+          </div>
+        )}
       </main>
     </div>
   );
