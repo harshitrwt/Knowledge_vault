@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="relative bg-black py-12 text-center text-sm text-gray-500 border-t border-gray-800 overflow-hidden">
+    <footer className="relative bg-[#0A0A15] py-12 text-center text-sm text-gray-500 border-t border-gray-800 overflow-hidden">
    
       <div className="absolute inset-0 flex items-center justify-center">
         <h1 className="text-[10rem] md:text-[14rem] font-bold text-white opacity-10 select-none tracking-wider">

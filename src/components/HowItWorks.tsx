@@ -20,7 +20,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="relative bg-[#0A0A0A] py-24 text-white font-nunito">
+    <section className="relative bg-[#0A0A15] py-24 text-white font-nunito">
       <div className="max-w-6xl mx-auto px-6 md:px-20 lg:px-28 text-center">
         <h2 className="text-3xl md:text-4xl font-extrabold text-blue-500 mb-16">
           How It Works
