@@ -14,31 +14,9 @@ const NAV_LINKS = [
 export default function HeroSection() {
   return (
     <div className="min-h-screen bg-[#0a0a16] font-sans relative text-white overflow-hidden">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center px-8 py-5 border-b border-[#232334] bg-[#0b0f19]/80 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="bg-white rounded w-8 h-8 flex items-center justify-center text-black font-extrabold text-xl">⦿</div>
-          <span className="text-lg font-bold tracking-wide">PDF ChatAI</span>
-        </div>
-        <div className="hidden md:flex gap-7">
-          {NAV_LINKS.map((link) => (
-            <Link key={link.name} href={link.href} className="text-gray-300 hover:text-white text-sm font-medium transition">{link.name}</Link>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/signin" className="text-gray-400 hover:text-white text-xs px-3">
-            Sign in
-          </Link>
-          <Link
-            href="/start-trial"
-            className="bg-white text-black font-semibold px-4 py-2 rounded hover:bg-gray-200 text-xs transition"
-          >
-            Start free trial
-          </Link>
-        </div>
-      </nav>
+    
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0">
+      <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0 mt-10 md:mt-22">
         {/* Circuit/Blueprint BG */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
           <div

@@ -18,11 +18,11 @@ export default function Navbar() {
     function handleScroll() {
       const currentScrollY = window.scrollY;
       if (currentScrollY < 50) {
-        setShowNav(true); 
+        setShowNav(true);
       } else if (currentScrollY > lastScrollY) {
-        setShowNav(false); 
+        setShowNav(false);
       } else {
-        setShowNav(true); 
+        setShowNav(true);
       }
       setLastScrollY(currentScrollY);
     }
@@ -32,42 +32,52 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 md:left-[-12px]  transform bg-black md:mt-6 mt-10 ml-5 border-b border-gray-800 text-white md:rounded-md rounded-full shadow-lg md:px-5 px-7 py-5 flex items-center justify-between w-full max-w-screen-lg z-50 transition-transform duration-400 ${
-        showNav ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-3'
-      }`}
+      className={`
+        fixed left-1/2 top-8 
+        transform -translate-x-1/2
+        bg-[#101222]/80 
+        backdrop-blur-md
+        border border-[#292946]/80
+        rounded-2xl 
+        shadow-2xl
+        flex items-center justify-between 
+        w-[90vw] max-w-3xl 
+        py-3 px-7 
+        z-50
+        transition-all duration-400
+        ${showNav ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-12 scale-95 pointer-events-none'}
+      `}
       style={{ height: '4.5rem' }}
     >
       <div className="flex items-center gap-8">
-        <Link href="/" className="md:text-2xl text-xl font-semibold hover:text-blue-500">
+        <Link href="/" className="text-lg font-semibold hover:text-blue-400 transition">
           Home
         </Link>
         <Link
           href="/dashboard"
-          className="md:text-2xl text-xl font-semibold hover:text-blue-500"
+          className="text-lg font-semibold hover:text-blue-400 transition"
         >
           Dashboard
         </Link>
       </div>
-
       <div className="flex items-center gap-8">
         <SignedIn>
           <div className="flex items-center gap-4">
             <UserButton afterSignOutUrl="/" />
-            <Link href="/profile" className="text-xl hover:text-blue-500 md:inline hidden ">
+            <Link href="/profile" className="text-lg hover:text-blue-400 md:inline hidden">
               Profile
             </Link>
           </div>
         </SignedIn>
-
         <SignedOut>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4">
             <SignInButton>
-              <button className="bg-blue-600 text-white rounded-full font-medium px-7 py-3 text-base hover:bg-blue-700 transition">
+              <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-2 text-base hover:bg-blue-700 transition">
                 Sign In
               </button>
             </SignInButton>
             <SignUpButton>
-              <button className="bg-blue-600 text-white rounded-full font-medium px-7 py-3 text-base hover:bg-blue-700 transition">
+              <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-2 text-base hover:bg-blue-700 transition">
                 Sign Up
               </button>
             </SignUpButton>
