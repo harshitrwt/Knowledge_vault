@@ -19,7 +19,7 @@ export default function AboutSection() {
       <div className="container mx-auto px-8 md:px-20 text-center relative z-10 max-w-7xl">
         {/* Heading */}
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-8">
-          About Vault
+          Vault
         </h2>
         <p className="text-gray-300 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed mb-20">
           Smart Contract Vault redefines blockchain knowledge discovery through adaptive intelligence, ensuring your documents evolve as your ecosystem grows.
