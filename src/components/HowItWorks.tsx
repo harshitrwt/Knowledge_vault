@@ -4,71 +4,75 @@ export default function HowItWorks() {
   const steps = [
     {
       title: "Upload",
-      desc: "Add your smart contracts, docs, or notes to your vault in seconds.",
+      desc: "Add smart contracts, docs, or notes to your vault in seconds.",
       img: "https://placedog.net/500/300?id=1",
     },
     {
       title: "Organize",
-      desc: "Files are neatly stored and structured for quick access.",
+      desc: "Files are neatly structured and intelligently labeled for instant access.",
       img: "https://placedog.net/500/300?id=2",
     },
     {
       title: "Search & Share",
-      desc: "Find contracts instantly and share them with your team securely.",
+      desc: "Discover and share blockchain knowledge securely across your team.",
       img: "https://placedog.net/500/300?id=3",
     },
   ];
 
   return (
-    <section className="relative bg-[#0A0A15] py-24 text-white font-nunito">
-      <div className="max-w-6xl mx-auto px-6 md:px-20 lg:px-28 text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-blue-500 mb-16">
+    <section className="relative bg-[#0A0A15] py-32 text-white overflow-hidden">
+      {/* Subtle Grid Pattern */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
+        }}
+      />
+      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px]" />
+      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px]" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-16 text-center relative z-10">
+        <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-10 tracking-tight">
           How It Works
         </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 relative">
-          {steps.map((step, idx) => {
-            // On desktop, apply curved offsets; on mobile reset to normal stacking
-            const isCenter = idx === 1;
-            const baseSize = isCenter ? 80 : 60; // % width for desktop cards
+        <p className="text-gray-400 text-lg sm:text-xl mb-20">
+          Experience elegant workflow automation designed for intelligence, privacy, and scalability.
+        </p>
 
-            // Use Tailwind responsive classes for width and transform:
-            // On mobile: full width with no transform.
-            // On desktop: use width and transform for curve effect.
-
-            return (
-              <div
-                key={idx}
-                className={`
-                  flex flex-col items-center
-                  bg-gradient-to-tr from-blue-900/40 to-blue-800/30
-                  border border-blue-600 rounded-2xl shadow-lg
-                  p-5 cursor-pointer
-                  hover:shadow-xl hover:from-blue-800/60 hover:to-blue-700/50
-                  transition
-                  
-                  w-full md:w-[${baseSize}%]
-                  ${idx === 0 ? "md:-translate-x-12 md:translate-y-10" : ""}
-                  ${idx === 1 ? "md:translate-x-0 md:translate-y-0" : ""}
-                  ${idx === 2 ? "md:translate-x-12 md:translate-y-10" : ""}
-                `}
-                style={{
-                  // fallback for exact pixel values on desktop transforms, ignore on mobile
-                  transition: "transform 0.5s ease",
-                }}
-              >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 perspective-[1000px]">
+          {steps.map((step, idx) => (
+            <div
+              key={idx}
+              className="relative group border border-gray-600/70 bg-[#14161e]/60 hover:bg-[#191c24]/70 transition-all duration-700 rounded-3xl p-6 sm:p-8 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.08)] overflow-hidden"
+              style={{
+                transformStyle: "preserve-3d",
+                transform: "rotateY(0deg)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "rotateY(5deg) rotateX(4deg)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "rotateY(0deg) rotateX(0deg)";
+              }}
+            >
+              <div className="overflow-hidden rounded-2xl mb-6 relative">
                 <img
                   src={step.img}
                   alt={step.title}
-                  className="rounded-xl mb-6 object-cover w-full aspect-[4/3] border border-blue-500 shadow-md"
+                  className="rounded-2xl object-cover w-full h-56 opacity-90 hover:opacity-100 transition-opacity duration-300"
                 />
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{step.desc}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A15]/80 via-transparent to-transparent" />
               </div>
-            );
-          })}
+              <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
+            </div>
+          ))}
         </div>
+      </div>
+
+      <div className="absolute bottom-0 w-full flex justify-center mt-20">
+        <div className="w-[85%] h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-20"></div>
       </div>
     </section>
   );

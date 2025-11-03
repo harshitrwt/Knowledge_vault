@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useAnimation } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 
 type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -13,96 +13,96 @@ const CARDS: {
   steps?: string[];
   position: Position;
 }[] = [
-  {
-    label: "ORDER EXAMINE",
-    question: "🤔 What's the summary of section 4?",
-    answer: "AI: Section 4 covers refund policies and dispute resolution steps ...",
-    position: "top-left",
-  },
-  {
-    label: "INSTRUCTIONS",
-    steps: [
-      "🗂️ Upload any PDF or document",
-      "💬 Type or speak your question",
-      "✅ Get step-by-step, exact answers",
-    ],
-    position: "top-right",
-  },
-  {
-    label: "QUICK INSIGHT",
-    question: "🔍 Find total transactions for Q3?",
-    answer: "AI: Q3 had 128,768 transactions, a 12.4% growth over Q2.",
-    position: "bottom-left",
-  },
-  {
-    label: "PDF MISSION",
-    steps: [
-      "📈 Extract analytics instantly",
-      "📑 Summarize contract changes",
-      "☑️ Validate legal compliance",
-    ],
-    position: "bottom-right",
-  },
-];
+    {
+      label: "ORDER EXAMINE",
+      question: "🤔 What's the summary of section 4?",
+      answer: "AI: Section 4 covers refund policies and dispute resolution steps ...",
+      position: "top-left",
+    },
+    {
+      label: "INSTRUCTIONS",
+      steps: [
+        "🗂️ Upload any PDF or document",
+        "💬 Type or speak your question",
+        "✅ Get step-by-step, exact answers",
+      ],
+      position: "top-right",
+    },
+    {
+      label: "QUICK INSIGHT",
+      question: "🔍 Find total transactions for Q3?",
+      answer: "AI: Q3 had 128,768 transactions, a 12.4% growth over Q2.",
+      position: "bottom-left",
+    },
+    {
+      label: "PDF MISSION",
+      steps: [
+        "📈 Extract analytics instantly",
+        "📑 Summarize contract changes",
+        "☑️ Validate legal compliance",
+      ],
+      position: "bottom-right",
+    },
+  ];
 
-const positionClass: Record<Position, string> = {
-  "top-left": "top-1/3 left-1/6",
-  "top-right": "top-1/3 right-1/6",
-  "bottom-left": "bottom-1/3 left-1/6",
-  "bottom-right": "bottom-1/3 right-1/6",
+const scatterPositions: Record<Position, { x: number; y: number }> = {
+  "top-left": { x: -550, y: -230 },
+  "top-right": { x: 300, y: -160 },
+  "bottom-left": { x: -650, y: 130 },
+  "bottom-right": { x: 300, y: 150 },
 };
 
 export default function HeroSection() {
-  const controls = useAnimation();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Track if cards expanded from dots (for conditional rendering of dots vs card content)
-  const [expanded, setExpanded] = useState(false);
+// Main content fade-in variants
+const contentVariants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8 }
+  }
+}
 
-  useEffect(() => {
-    async function sequence() {
-      // Place 4 dots centered and small
-      await controls.start({
-        x: 0,
-        y: 0,
-        scale: 0.15,
-        borderRadius: "50%",
-        opacity: 1,
-        rotate: 0,
-        transition: { duration: 0.2 },
-      });
-      // Scatter dots outward diagonally
-      await controls.start((i: number) => {
-        const scatterPositions: Record<number, { x: number; y: number }> = {
-          0: { x: -160, y: -120 },
-          1: { x: 160, y: -150 },
-          2: { x: -120, y: 120 },
-          3: { x: 120, y: 150 },
-        };
-        return {
-          x: scatterPositions[i].x,
-          y: scatterPositions[i].y,
-          scale: 0.15,
-          borderRadius: "50%",
-          rotate: 0,
-          transition: { type: "spring", stiffness: 300, damping: 30, duration: 0.5 },
-        };
-      });
-      // Expand dots into full cards
-      await controls.start((i: number) => ({
-        scale: 1,
-        borderRadius: "16px",
-        opacity: 1,
-        transition: { duration: 0.5, delay: i * 0.15 },
-      }));
-      setExpanded(true);
+
+  // Card initial/animate variants
+  const cardVariants = (pos: Position) => ({
+    initial: { opacity: 0, scale: 0.8, x: 0, y: 0 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      x: scatterPositions[pos].x,
+      y: scatterPositions[pos].y,
+      borderRadius: "18px",
+      transition: { type: "spring", stiffness: 80, damping: 22, delay: 0.9 }
     }
-    sequence();
-  }, [controls]);
+  });
 
   return (
-    <div className="min-h-screen font-sans relative text-white overflow-hidden bg-[#0a0a16]">
+    <div
+      ref={containerRef}
+      className="min-h-screen font-sans relative text-white overflow-hidden bg-[#0a0a16]"
+    >
+      {/* Luxurious grid background */}
+      <div
+        className="absolute inset-0 pointer-events-none -z-10"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(55,55,75,0.17) 0px, rgba(55,55,75,0.17) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.17) 0px, rgba(55,55,75,0.17) 1px, transparent 1px, transparent 64px)",
+        }}
+      />
+      {/* Subtle dark glows */}
+      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px] pointer-events-none" />
+      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px] pointer-events-none" />
+
       <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0 mt-10 md:mt-22">
-        <div className="relative z-10 max-w-4xl w-full flex flex-col items-center text-center">
+        <motion.div
+          className="relative z-10 max-w-4xl w-full flex flex-col items-center text-center"
+          initial="hidden"
+          animate="visible"
+          variants={contentVariants}
+        >
           <h1 className="text-5xl md:text-6xl font-bold leading-[1.07] mb-4 tracking-tight">
             The <span className="text-[#faffff]/80">#1 AI Agent</span>
             <br />
@@ -111,8 +111,7 @@ export default function HeroSection() {
             <span className="font-bold text-white">all your queries</span>
           </h1>
           <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-            Instantly chat with your PDFs—ask questions, extract insights, and let AI tackle complex file analysis in seconds.
-            No more endless scrolling—just upload and talk.
+            Instantly chat with your PDFs—ask questions, extract insights, and let AI tackle complex file analysis in seconds. No more endless scrolling—just upload and talk.
           </p>
           <div className="flex gap-4 flex-col sm:flex-row justify-center mb-8">
             <Link
@@ -128,46 +127,56 @@ export default function HeroSection() {
               View demo
             </Link>
           </div>
+        </motion.div>
+        {/* Cards animate outward from center, draggable, hidden on mobile */}
+        <div className="hidden md:block absolute inset-0 w-full h-full pointer-events-none">
+          {CARDS.map((card, i) => (
+            <motion.div
+              key={i}
+              drag
+              dragConstraints={containerRef}
+              dragMomentum={false}
+              className="absolute z-20 w-[300px] bg-[#15192b]/90 border border-gray-700 rounded-2xl shadow-2xl px-6 py-5 opacity-95 select-none cursor-grab"
+              initial="initial"
+              animate="animate"
+              variants={{
+                initial: { opacity: 0, scale: 0.8, x: 0, y: 0 },
+                animate: {
+                  opacity: 1,
+                  scale: 1,
+                  x: scatterPositions[card.position].x,
+                  y: scatterPositions[card.position].y,
+                  borderRadius: "18px",
+                  transition: { type: "spring", stiffness: 80, damping: 22, delay: 0.9 }
+                }
+              }}
+              style={{
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                originX: 0.5,
+                originY: 0.5,
+                pointerEvents: "auto",
+              }}
+              whileHover={{ scale: 1.06, boxShadow: "0 0 48px 0 rgba(100,100,145,0.17)" }}
+            >
+              <p className="text-xs text-gray-400 uppercase mb-2">{card.label}</p>
+              {card.question && (
+                <>
+                  <div className="text-white font-semibold text-lg mb-1">{card.question}</div>
+                  <div className="text-gray-300 text-sm">{card.answer}</div>
+                </>
+              )}
+              {card.steps && (
+                <ul className="list-disc list-inside text-gray-200 text-sm space-y-1 mb-1">
+                  {card.steps.map((step, idx) => (
+                    <li key={idx}>{step}</li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+          ))}
         </div>
-
-        {CARDS.map((card, i) => (
-          <motion.div
-            key={i}
-            custom={i}
-            animate={controls}
-            initial={{
-              scale: 0.15,
-              borderRadius: "50%",
-              opacity: 0,
-              x: 0,
-              y: 0,
-              rotate: 0,
-            }}
-            className={`absolute z-20 w-[320px] bg-[#15192b] border-[0.5px] border-gray-700 shadow-xl px-6 py-5 opacity-95 ${positionClass[card.position]} hidden md:block`}
-            style={{ originX: 0.5, originY: 0.5 }}
-          >
-            {!expanded ? (
-              <div className="w-6 h-6 bg-blue-600 rounded-full mx-auto mt-3" />
-            ) : (
-              <>
-                <p className="text-xs text-gray-400 uppercase mb-2">{card.label}</p>
-                {card.question && (
-                  <>
-                    <div className="text-white font-semibold text-lg mb-1">{card.question}</div>
-                    <div className="text-gray-300 text-sm">{card.answer}</div>
-                  </>
-                )}
-                {card.steps && (
-                  <ul className="list-disc list-inside text-gray-200 text-sm space-y-1 mb-1">
-                    {card.steps.map((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-          </motion.div>
-        ))}
       </section>
       {/* Bottom separator */}
       <div className="absolute bottom-0 left-0 w-full flex justify-center z-20">

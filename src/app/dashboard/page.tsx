@@ -50,7 +50,7 @@ export default function DashboardPage() {
             Your Dashboard
           </h1>
           <p className="mt-2 text-base sm:text-lg text-gray-400">
-            Welcome to your personal Vault 🚀
+            Welcome to your personal Vault 
           </p>
         </div>
 

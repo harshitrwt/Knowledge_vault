@@ -1,80 +1,43 @@
-'use client'
-import { motion, useScroll, useTransform } from 'framer-motion';
+"use client";
 
-export function DashedScrollAnimation() {
-  const { scrollYProgress } = useScroll();
-  const draw = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
-  const rotateLeft = useTransform(scrollYProgress, [0, 1], [-5, 5]);
-  const rotateRight = useTransform(scrollYProgress, [0, 1], [5, -5]);
-  const scaleLeft = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
-  const scaleRight = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
-
+export default function Footer() {
   return (
-    <div className="pointer-events-none fixed inset-0 overflow-visible z-1">
-      <motion.svg
-        width="500"
-        height="500"
-        className="absolute left-2 top-20 sm:top-24 md:top-28 ml-[-40vh]"
-        style={{ rotate: rotateLeft, scale: scaleLeft }}
-      >
-        <motion.circle
-          cx="250" cy="250" r="220"
-          stroke="#3b82f6" strokeWidth="8"
-          strokeDasharray="40 25" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="250" cy="250" r="180"
-          stroke="#3b82f6" strokeWidth="6"
-          strokeDasharray="30 20" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="250" cy="250" r="150"
-          stroke="#3b82f6" strokeWidth="5"
-          strokeDasharray="20 20" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="250" cy="250" r="120"
-          stroke="#3b82f6" strokeWidth="3"
-          strokeDasharray="12 15" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-      </motion.svg>
+    <footer className="relative bg-[#0A0A15] text-gray-300 py-24 overflow-hidden">
+      {/* Grid and Glow Layers */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, rgba(55,55,75,0.15) 0px, rgba(55,55,75,0.15) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.15) 0px, rgba(55,55,75,0.15) 1px, transparent 1px, transparent 64px)",
+        }}
+      />
+      <div className="absolute w-[700px] h-[700px] bg-[#1a1a25] rounded-full blur-[300px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40" />
 
-      {/* RIGHT full circles */}
-      <motion.svg
-        width="450"
-        height="450"
-        className="absolute right-2 top-60 sm:top-64 md:top-72 mr-[-30vh]"
-        style={{ rotate: rotateRight, scale: scaleRight }}
-      >
-        <motion.circle
-          cx="225" cy="225" r="200"
-          stroke="#2563eb" strokeWidth="7"
-          strokeDasharray="36 24" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="225" cy="225" r="170"
-          stroke="#2563eb" strokeWidth="6"
-          strokeDasharray="28 20" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="225" cy="225" r="140"
-          stroke="#2563eb" strokeWidth="4"
-          strokeDasharray="16 16" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-        <motion.circle
-          cx="225" cy="225" r="110"
-          stroke="#2563eb" strokeWidth="3"
-          strokeDasharray="10 12" strokeLinecap="round" fill="none"
-          style={{ pathLength: draw, opacity: draw }}
-        />
-      </motion.svg>
-    </div>
+      {/* Center Branding */}
+      <div className="relative text-center z-10">
+        <h1 className="text-[8rem] md:text-[12rem] lg:text-[15rem] font-extrabold text-white/5 tracking-widest select-none leading-none mb-10">
+          VAULT
+        </h1>
+
+        {/* Call to Action Buttons */}
+        <div className="flex flex-wrap justify-center gap-6 mb-12">
+          <button className="px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-300 text-black font-semibold rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
+            Get Started
+          </button>
+          <button className="px-8 py-3 border border-gray-500 text-gray-300 rounded-full hover:text-white hover:border-gray-300 hover:scale-105 transition-transform duration-300">
+            Learn More
+          </button>
+        </div>
+
+        <div className="text-gray-500 text-sm">
+          © 2025 Smart Vault. All rights reserved.
+        </div>
+      </div>
+
+      {/* Subtle Reflection Line */}
+      <div className="absolute bottom-0 w-full flex justify-center mt-10">
+        <div className="w-[90%] h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-25"></div>
+      </div>
+    </footer>
   );
 }
