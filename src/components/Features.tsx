@@ -28,7 +28,7 @@ const Features = () => {
           backgroundImage:
             "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
         }}
-      ></div>
+      />
 
       {/* Accent Glows */}
       <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px]" />
@@ -40,17 +40,27 @@ const Features = () => {
           Intelligent Features
         </h2>
         <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          Unlock the next era of intelligent document processing with precise reasoning,
-          contextual awareness, and seamless collaboration built for scale.
+          Unlock the next era of intelligent document processing with precise
+          reasoning, contextual awareness, and seamless collaboration built for scale.
         </p>
       </div>
 
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-7xl w-full relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-7xl w-full relative z-10 perspective-[1000px]">
         {features.map((feature, index) => (
           <div
             key={index}
-            className="border border-gray-700/50 bg-[#10121a]/70 hover:bg-[#151827]/80 transition-all duration-300 rounded-2xl p-10 flex flex-col items-center text-center shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.25)]"
+            className="group border-3  shadow-gray-600/70 border-gray-600/70 bg-[#14161e]/60 hover:bg-[#191c24]/70 transition-all duration-500 rounded-2xl p-10 flex flex-col items-center text-center shadow-[0_0_30px_rgba(0,0,0,0.25)] hover:shadow-[0_0_50px_rgba(255,255,255,0.08)]"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: "rotateY(0deg)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "rotateY(5deg) rotateX(3deg)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "rotateY(0deg) rotateX(0deg)";
+            }}
           >
             <div className="text-5xl mb-6">{feature.icon}</div>
             <h3 className="text-2xl font-semibold mb-3 text-white">
