@@ -2,7 +2,7 @@
 
 export default function AboutSection() {
   return (
-    <section className="relative bg-[#0A0A15] text-white py-32 overflow-hidden">
+    <section className="relative bg-[#0A0A15] text-white py-32 overflow-hidden md:h-full h-[110vh]">
       {/* Grid Background */}
       <div
         className="absolute inset-0 -z-10"

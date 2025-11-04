@@ -15,7 +15,7 @@ export default function Footer() {
 
       {/* Center Branding */}
       <div className="relative text-center z-10">
-        <h1 className="text-[8rem] md:text-[12rem] lg:text-[15rem] font-extrabold text-white/5 tracking-widest select-none leading-none mb-10">
+        <h1 className="text-[7rem] md:text-[12rem] lg:text-[15rem] font-extrabold text-white/5 tracking-widest select-none leading-none mb-10">
           VAULT
         </h1>
 

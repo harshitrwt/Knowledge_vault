@@ -82,7 +82,7 @@ const contentVariants = {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen font-sans relative text-white overflow-hidden bg-[#0a0a16]"
+      className="md:h-full h-[70vh] font-sans relative text-white overflow-hidden bg-[#0a0a16] "
     >
       {/* Luxurious grid background */}
       <div
@@ -98,7 +98,7 @@ const contentVariants = {
 
       <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0 mt-10 md:mt-22">
         <motion.div
-          className="relative z-10 max-w-4xl w-full flex flex-col items-center text-center"
+          className="relative z-10 max-w-4xl w-full flex flex-col items-center text-center md:mt-0 mt-14"
           initial="hidden"
           animate="visible"
           variants={contentVariants}
