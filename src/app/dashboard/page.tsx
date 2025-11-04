@@ -32,19 +32,12 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
-      {/* Sidebar always visible on large screens */}
-      <div className="hidden md:block w-64 border-r border-gray-800">
-        <Sidebar />
-      </div>
+    <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Sidebar in mobile (full width on top) */}
-      <div className="w-full md:hidden border-b border-gray-800">
-        <Sidebar />
-      </div>
-
-      {/* Dashboard content */}
-      <main className="flex-1 p-6 sm:p-10 lg:p-12 overflow-y-auto">
+      {/* Main content area — dynamically fills available space */}
+      <main className="flex-grow p-6 sm:p-10 lg:p-12 transition-all duration-300 ease-in-out">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-500">
             Your Dashboard
