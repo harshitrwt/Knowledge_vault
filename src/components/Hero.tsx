@@ -48,7 +48,7 @@ const CARDS: {
 const scatterPositions: Record<Position, { x: number; y: number }> = {
   "top-left": { x: -550, y: -230 },
   "top-right": { x: 300, y: -160 },
-  "bottom-left": { x: -650, y: 130 },
+  "bottom-left": { x: -600, y: 100 },
   "bottom-right": { x: 300, y: 150 },
 };
 
