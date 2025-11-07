@@ -237,7 +237,7 @@ const handleSaveConversation = () => {
             {savedChats.length > 0 && (
               <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800 mt-4">
                 <h2 className="text-lg font-semibold mb-3">Saved Conversations</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-6">
                   {savedChats.map((chat) => (
                     <div
                       key={chat.id}
