@@ -69,12 +69,12 @@ export default function Navbar() {
         <SignedOut>
           <div className="flex items-center gap-4">
             <SignInButton>
-              <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-2 text-base hover:bg-blue-700 transition">
+              <button className="bg-[#121224] text-white rounded-full font-medium px-6 py-2 text-base hover:bg-[#070715] transition duration-300 cursor-pointer ">
                 Sign In
               </button>
             </SignInButton>
             <SignUpButton>
-              <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-2 text-base hover:bg-blue-700 transition">
+              <button className="bg-[#121224] text-white rounded-full font-medium px-6 py-2 text-base hover:bg-[#070715] transition  duration-300 cursor-pointer ">
                 Sign Up
               </button>
             </SignUpButton>
