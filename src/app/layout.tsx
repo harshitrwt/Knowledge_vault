@@ -31,7 +31,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={nunito.variable}>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased hydrated`}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased hydrated`}
+          style={{ backgroundColor: "#0a0a16" }}
+        >
           {children}
         </body>
       </html>
