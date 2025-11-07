@@ -2,7 +2,7 @@
 
 export default function AboutSection() {
   return (
-    <section className="relative bg-[#0A0A15] text-white py-32 overflow-hidden md:h-full h-[110vh]">
+    <section className="relative bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 text-white py-32 overflow-hidden md:h-full h-[110vh]">
       {/* Grid Background */}
       <div
         className="absolute inset-0 -z-10"
@@ -13,9 +13,8 @@ export default function AboutSection() {
       />
 
       {/* Accent Glows */}
-      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px]" />
-      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px]" />
-
+      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[200px] top-[-100px] left-[-160px]" />
+      <div className="absolute w-[400px] h-[300px] bg-blue-300 rounded-full blur-[180px] top-[120px] right-[-120px]" />
       <div className="container mx-auto px-8 md:px-20 text-center relative z-10 max-w-7xl">
         {/* Heading */}
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-8">

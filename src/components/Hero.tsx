@@ -82,19 +82,19 @@ const contentVariants = {
   return (
     <div
       ref={containerRef}
-      className="md:h-full h-[70vh] font-sans relative text-white overflow-hidden bg-[#0a0a16] "
+      className="md:h-full h-[70vh] mb-13 font-sans relative text-white overflow-hidden bg-black "
     >
       {/* Luxurious grid background */}
       <div
         className="absolute inset-0 pointer-events-none -z-10"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(55,55,75,0.17) 0px, rgba(55,55,75,0.17) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.17) 0px, rgba(55,55,75,0.17) 1px, transparent 1px, transparent 64px)",
+            "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
         }}
       />
       {/* Subtle dark glows */}
-      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px] pointer-events-none" />
-      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px] pointer-events-none" />
+      <div className="absolute w-[300px] h-[300px] bg-blue-300 rounded-full blur-[200px] top-[-100px] left-[-160px] pointer-events-none" />
+      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[180px] top-[100px] right-[0px] pointer-events-none" />
 
       <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0 mt-10 md:mt-22">
         <motion.div
@@ -178,10 +178,7 @@ const contentVariants = {
           ))}
         </div>
       </section>
-      {/* Bottom separator */}
-      <div className="absolute bottom-0 left-0 w-full flex justify-center z-20">
-        <div className="w-[90%] h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-25"></div>
-      </div>
+      
     </div>
   );
 }

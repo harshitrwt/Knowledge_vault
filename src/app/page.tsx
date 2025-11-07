@@ -17,7 +17,7 @@ import HowItWorks from "../components/HowItWorks";
 
 export default function Home() {
   return (
-    <div className="font-sans min-h-screen flex flex-col bg-[#171818] text-gray-100">
+    <div className="font-sans min-h-screen flex flex-col bg-black text-gray-100">
       <Navbar />
       <HeroSection />
       <Features />

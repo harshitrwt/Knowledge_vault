@@ -60,7 +60,7 @@ const cardVariants: Variants = {
 
 export default function Features() {
   return (
-    <section className="relative py-32 px-6 md:px-12 text-white bg-[#0A0A15] flex flex-col justify-center items-center overflow-hidden">
+    <section className="relative mt-5 py-32 px-6 md:px-12 text-white bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300  flex flex-col justify-center items-center overflow-hidden">
       {/* Grid Background */}
       <div
         className="absolute inset-0 -z-10"
@@ -71,8 +71,8 @@ export default function Features() {
       />
 
       {/* Accent Glows */}
-      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px]" />
-      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px]" />
+      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[200px] top-[-100px] left-[-160px]" />
+      <div className="absolute w-[400px] h-[300px] bg-blue-300 rounded-full blur-[180px] top-[120px] right-[-120px]" />
 
       {/* Header Text */}
       <motion.div

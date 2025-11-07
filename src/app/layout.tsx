@@ -33,7 +33,7 @@ export default function RootLayout({
       <html lang="en" className={nunito.variable}>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased hydrated`}
-          style={{ backgroundColor: "#0a0a16" }}
+          style={{ backgroundColor: "#0A0A15" }}
         >
           {children}
         </body>

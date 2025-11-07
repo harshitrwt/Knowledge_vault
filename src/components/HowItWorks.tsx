@@ -20,7 +20,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="relative bg-[#0A0A15] py-32 text-white overflow-hidden">
+    <section className="relative rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 bg-black py-32 text-white overflow-hidden">
       {/* Subtle Grid Pattern */}
       <div
         className="absolute inset-0 -z-10"
@@ -29,9 +29,8 @@ export default function HowItWorks() {
             "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
         }}
       />
-      <div className="absolute w-[600px] h-[600px] bg-black rounded-full blur-[200px] top-[-100px] left-[-160px]" />
-      <div className="absolute w-[500px] h-[500px] bg-black rounded-full blur-[180px] bottom-[-120px] right-[-120px]" />
-
+      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[200px] top-[-100px] left-[-160px]" />
+      <div className="absolute w-[400px] h-[300px] bg-blue-300 rounded-full blur-[180px] top-[120px] right-[-120px]" />
       <div className="max-w-7xl mx-auto px-6 md:px-16 text-center relative z-10">
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-10 tracking-tight">
           How It Works

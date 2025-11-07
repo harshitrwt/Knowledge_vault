@@ -2,7 +2,7 @@
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#0A0A15] text-gray-300 py-24 overflow-hidden">
+    <footer className="relative rounded-tl-[20vh] rounded-tr-[20vh] border-t bg-[#0A0A15] border-blue-400 text-gray-300 py-24 overflow-hidden">
       {/* Grid and Glow Layers */}
       <div
         className="absolute inset-0 -z-10"
