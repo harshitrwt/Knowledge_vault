@@ -1,4 +1,3 @@
-// src/app/api/analyze/route.ts
 import { NextResponse } from "next/server";
 import PDFParser from "pdf2json";
 

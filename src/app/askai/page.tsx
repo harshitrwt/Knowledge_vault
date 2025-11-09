@@ -133,8 +133,7 @@ export default function AskAi() {
     }
   };
 
-  // Save chat
-  // Save chat
+  
 const handleSaveConversation = () => {
   if (!messages.length || !selectedFile) {
     pushToast("info", "Nothing to save.");
@@ -233,7 +232,7 @@ const handleSaveConversation = () => {
               )}
             </section>
 
-            {/* Saved Chats */}
+            
             {savedChats.length > 0 && (
               <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800 mt-4">
                 <h2 className="text-lg font-semibold mb-3">Saved Conversations</h2>

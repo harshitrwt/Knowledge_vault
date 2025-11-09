@@ -1,9 +1,10 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import { Shield, Upload, User, FileText } from "lucide-react";
+import { Shield, Upload, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
+import { useUser } from "@clerk/nextjs";
 
 type StoredFile = {
   id: string;
@@ -12,6 +13,7 @@ type StoredFile = {
 };
 
 export default function DashboardPage() {
+  const { user } = useUser();
   const [files, setFiles] = useState<StoredFile[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,65 +34,77 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white overflow-hidden">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-950 to-gray-900 text-white overflow-hidden">
       <Sidebar />
 
-      {/* Main content area — dynamically fills available space */}
       <main className="flex-grow p-6 sm:p-10 lg:p-12 transition-all duration-300 ease-in-out">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-500">
-            Your Dashboard
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-blue-500">
+            Hi, {user?.firstName || "User"}
           </h1>
-          <p className="mt-2 text-base sm:text-lg text-gray-400">
-            Welcome to your personal Vault
+          <p className="mt-2 text-gray-400 text-lg">
+            Welcome back to your secure vault.
           </p>
         </div>
 
-        {/* Features Section */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-8">
-          <div className="p-5 sm:p-6 bg-gray-900 rounded-2xl shadow border border-gray-800">
-            <Shield className="w-8 h-8 mb-3 text-purple-400" />
-            <h2 className="text-lg sm:text-xl font-semibold">Secure Storage</h2>
-            <p className="text-gray-400 text-sm sm:text-base">
-              All your files are encrypted and safe in the vault.
+        {/* Feature Cards */}
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="p-6 bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800 shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(59,130,246,0.4)] transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-blue-400">
+                Secure Storage
+              </h2>
+              <Shield className="w-6 h-6 text-blue-500" />
+            </div>
+            <p className="text-gray-400 text-sm">
+              Your documents are protected with industry-grade encryption and privacy.
             </p>
           </div>
 
-          <div className="p-5 sm:p-6 bg-gray-900 rounded-2xl shadow border border-gray-800">
-            <Upload className="w-8 h-8 mb-3 text-green-400" />
-            <h2 className="text-lg sm:text-xl font-semibold">Quick Uploads</h2>
-            <p className="text-gray-400 text-sm sm:text-base">
-              {files.length} file{files.length !== 1 && "s"} uploaded
+          <div className="p-6 bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800 shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(34,197,94,0.4)] transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-green-400">
+                Quick Uploads
+              </h2>
+              <Upload className="w-6 h-6 text-green-400" />
+            </div>
+            <p className="text-gray-400 text-sm">
+              You’ve uploaded <span className="text-green-300 font-medium">{files.length}</span> file
+              {files.length !== 1 && "s"} so far.
             </p>
           </div>
 
-          <div className="p-5 sm:p-6 bg-gray-900 rounded-2xl shadow border border-gray-800">
-            <User className="w-8 h-8 mb-3 text-blue-400" />
-            <h2 className="text-lg sm:text-xl font-semibold">Your Profile</h2>
-            <p className="text-gray-400 text-sm sm:text-base">
-              Manage account details and personalize your vault.
+          <div className="p-6 bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800 shadow-[0_0_15px_rgba(0,0,0,0.6)] hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition-all duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-purple-400">
+                File Insights
+              </h2>
+              <FileText className="w-6 h-6 text-purple-400" />
+            </div>
+            <p className="text-gray-400 text-sm">
+              Analyze your uploaded PDFs for assignments, summaries, and insights instantly.
             </p>
           </div>
         </div>
 
-        {/* Files Section */}
+        {/* Recent Files */}
         {loading ? (
-          <div className="flex justify-center mt-10">
+          <div className="flex justify-center mt-12">
             <Loader />
           </div>
         ) : files.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="text-xl font-semibold mb-4 text-white">
+          <section className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6 text-gray-200">
               Recent Files
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {files.slice(0, 6).map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-center gap-3 p-4 bg-gray-900 border border-gray-800 rounded-xl shadow hover:bg-gray-800 transition"
+                  className="flex items-center gap-4 p-5 bg-gradient-to-br from-gray-900/80 to-gray-800/60 border border-gray-800 rounded-xl shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all duration-300"
                 >
-                  <div className="p-2 rounded-lg bg-blue-600/20">
+                  <div className="p-3 rounded-lg bg-blue-600/20">
                     <FileText className="text-blue-300 w-6 h-6" />
                   </div>
                   <div className="flex-1 overflow-hidden">
@@ -106,7 +120,9 @@ export default function DashboardPage() {
             </div>
           </section>
         ) : (
-          <div className="mt-10 text-gray-500">No recent files found.</div>
+          <div className="mt-12 text-gray-500 text-center">
+            No files found in your vault yet.
+          </div>
         )}
       </main>
     </div>
