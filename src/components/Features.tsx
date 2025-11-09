@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, Variants, Transition } from "framer-motion";
+import { useRef } from "react";
+import { motion, Variants, Transition, useInView } from "framer-motion";
 
 const features = [
   {
@@ -20,33 +21,19 @@ const features = [
   },
 ];
 
-// Use exact Variants type for variants object
 const headerVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: "easeOut", // Allowed easings: "linear", "easeIn", "easeOut", "easeInOut"
-    },
-  },
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
 };
 
 const cardsContainerVariants: Variants = {
   hidden: {},
   visible: {
-    transition: {
-      staggerChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.2 },
   },
 };
 
-// Separate transition object to reuse type-safe easing
-const cardTransition: Transition = {
-  duration: 0.6,
-  ease: "easeOut",
-};
+const cardTransition: Transition = { duration: 0.6, ease: "easeOut" };
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.9, y: 30 },
@@ -59,8 +46,24 @@ const cardVariants: Variants = {
 };
 
 export default function Features() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" }); // triggers when near view
+
   return (
-    <section className="relative mt-5 py-32 px-6 md:px-12 text-white bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300  flex flex-col justify-center items-center overflow-hidden">
+    <motion.section
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={{
+        hidden: { opacity: 0, y: 80 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.9, ease: "easeOut" },
+        },
+      }}
+      className="relative mt-5 py-32 px-6 md:px-12 text-white bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 flex flex-col justify-center items-center overflow-hidden"
+    >
       {/* Grid Background */}
       <div
         className="absolute inset-0 -z-10"
@@ -78,8 +81,6 @@ export default function Features() {
       <motion.div
         className="relative z-10 text-center max-w-3xl mb-20"
         variants={headerVariants}
-        initial="hidden"
-        animate="visible"
       >
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-8 tracking-tight">
           Intelligent Features
@@ -94,8 +95,6 @@ export default function Features() {
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-7xl w-full relative z-10 perspective-[1000px]"
         variants={cardsContainerVariants}
-        initial="hidden"
-        animate="visible"
       >
         {features.map((feature, index) => (
           <motion.div
@@ -120,6 +119,6 @@ export default function Features() {
       <div className="absolute bottom-0 w-full flex justify-center mt-20">
         <div className="w-[85%] h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-20"></div>
       </div>
-    </section>
+    </motion.section>
   );
 }
