@@ -53,7 +53,7 @@ export default function AboutSection() {
 
       {/* Main Content */}
       <motion.div
-        className="container mx-auto px-8 md:px-20 text-center relative z-10 max-w-7xl"
+        className="container mx-auto px-8 md:px-20 text-center relative z-10 max-w-6xl"
         variants={contentVariants}
       >
         {/* Heading */}
@@ -63,51 +63,40 @@ export default function AboutSection() {
         >
           Vault
         </motion.h2>
+
+        {/* Shorter Use Case Paragraph */}
         <motion.p
           variants={childVariants}
-          className="text-gray-300 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed mb-20"
+          className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-20"
         >
-          Smart Contract Vault redefines blockchain knowledge discovery through adaptive intelligence, ensuring your documents evolve as your ecosystem grows.
+          Vault lets you chat with your documents, simply <span className="text-blue-500">upload a PDF and ask questions</span> to extract precise answers instantly.
         </motion.p>
 
-        {/* Floating Card with Image and Text */}
+        {/* Image + Description Section */}
         <motion.div
           variants={childVariants}
-          className="relative grid md:grid-cols-2 gap-12 items-center "
+          className="grid md:grid-cols-2 gap-10 items-center justify-center text-center md:text-left"
         >
-          {/* Left - Floating Image */}
-          <div
-            className="relative rounded-3xl transform transition-transform duration-700 hover:rotateY-6 hover:-rotateX-3"
-            style={{ transformStyle: "preserve-3d", transform: "rotateY(0deg)" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "rotateY(6deg) rotateX(3deg)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "rotateY(0deg) rotateX(0deg)";
-            }}
-          >
+          {/* Image */}
+          <div className="flex justify-center">
             <img
               src="https://img.freepik.com/premium-vector/bank-vault-door-clipart-vector-art-illustration_761413-24107.jpg?w=360"
               alt="About Smart Contract Vault"
-              className="rounded-3xl md:w-[40vh] md:h-[40vh] opacity-90 hover:opacity-100 transition-opacity duration-300"
+              className="rounded-3xl w-[80vw] max-w-[420px] md:w-[38vh] opacity-90 hover:opacity-100 transition-opacity duration-300 object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A15]/80 via-transparent to-transparent" />
           </div>
 
-          {/* Right - Description */}
+          {/* Right - Short Description */}
           <motion.div
             variants={childVariants}
-            className="flex flex-col justify-center text-left md:pl-10 space-y-6"
+            className="flex flex-col justify-center md:pl-6 lg:pl-10 mx-auto max-w-md space-y-4"
           >
             <h3 className="text-3xl font-semibold text-gray-100">
-              Not Just Storage — Evolution
+              Ask Extract <span className="text-blue-500">Understand</span>
             </h3>
             <p className="text-gray-400 leading-relaxed">
-              The Vault learns as your organization grows. It connects context, builds associations, and transforms raw blockchain data into living, intelligent archives.
-            </p>
-            <p className="text-gray-500 leading-relaxed">
-              Designed around privacy, precision, and progress, it brings the future of decentralized knowledge into your hands — effortlessly and beautifully.
+              Upload your papers, audits, or whitepapers and get instant, contextual answers from them. Vault transforms static documents into dynamic knowledge you can converse with.
             </p>
           </motion.div>
         </motion.div>
