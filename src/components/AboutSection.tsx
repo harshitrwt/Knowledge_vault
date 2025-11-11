@@ -73,11 +73,11 @@ export default function AboutSection() {
         {/* Floating Card with Image and Text */}
         <motion.div
           variants={childVariants}
-          className="relative grid md:grid-cols-2 gap-12 items-center perspective-[1000px]"
+          className="relative grid md:grid-cols-2 gap-12 items-center "
         >
           {/* Left - Floating Image */}
           <div
-            className="relative border border-gray-600/70 rounded-3xl bg-[#14161e]/60 shadow-[0_0_40px_rgba(0,0,0,0.4)] overflow-hidden transform transition-transform duration-700 hover:rotateY-6 hover:-rotateX-3"
+            className="relative rounded-3xl transform transition-transform duration-700 hover:rotateY-6 hover:-rotateX-3"
             style={{ transformStyle: "preserve-3d", transform: "rotateY(0deg)" }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "rotateY(6deg) rotateX(3deg)";
@@ -87,9 +87,9 @@ export default function AboutSection() {
             }}
           >
             <img
-              src="https://placedog.net/600/400"
+              src="https://img.freepik.com/premium-vector/bank-vault-door-clipart-vector-art-illustration_761413-24107.jpg?w=360"
               alt="About Smart Contract Vault"
-              className="rounded-3xl object-cover w-full h-full opacity-90 hover:opacity-100 transition-opacity duration-300"
+              className="rounded-3xl md:w-[40vh] md:h-[40vh] opacity-90 hover:opacity-100 transition-opacity duration-300"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A15]/80 via-transparent to-transparent" />

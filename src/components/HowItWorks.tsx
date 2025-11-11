@@ -21,17 +21,17 @@ export default function HowItWorks() {
     {
       title: "Upload",
       desc: "Add smart contracts, docs, or notes to your vault in seconds.",
-      img: "https://placedog.net/500/300?id=1",
+      img: "https://static.vecteezy.com/system/resources/thumbnails/041/310/775/small/cloud-computing-concept-with-people-scene-in-flat-web-design-man-uploading-data-and-files-at-cloud-storage-and-using-secure-access-illustration-for-social-media-banner-marketing-material-vector.jpg",
     },
     {
       title: "Organize",
       desc: "Files are neatly structured and intelligently labeled for instant access.",
-      img: "https://placedog.net/500/300?id=2",
+      img: "https://clipart.com/thumbs.php?f=/014/batch_01/Closet3_tnb.png",
     },
     {
       title: "Search & Share",
       desc: "Discover and share blockchain knowledge securely across your team.",
-      img: "https://placedog.net/500/300?id=3",
+      img: "https://img.freepik.com/free-vector/hand-drawn-web-design-concept_23-2147839737.jpg?semt=ais_hybrid&w=740&q=80",
     },
   ];
 

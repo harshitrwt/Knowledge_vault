@@ -199,7 +199,7 @@ const handleSaveConversation = () => {
         {!context && (
           <>
             <header>
-              <h1 className="text-4xl font-bold text-blue-500">Ask AI</h1>
+              <h1 className="text-4xl font-bold text-white">Ask Vault</h1>
               <p className="mt-2 text-gray-400 max-w-2xl">
                 Upload a PDF, ask questions, save and resume any chat later.
               </p>
