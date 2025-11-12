@@ -62,7 +62,7 @@ export default function Features() {
           transition: { duration: 0.9, ease: "easeOut" },
         },
       }}
-      className="relative mt-5 py-32 px-6 md:px-12 text-white bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 flex flex-col justify-center items-center overflow-hidden"
+      className="relative mt-[-30px] py-32 px-6 md:px-12 text-white bg-black md:rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 md:mt-0  flex flex-col justify-center items-center overflow-hidden"
     >
       {/* Grid Background */}
       <div

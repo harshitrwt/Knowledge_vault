@@ -36,7 +36,7 @@ export default function AboutSection() {
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={sectionVariants}
-      className="relative bg-black rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 text-white py-32 overflow-hidden md:h-full h-[110vh]"
+      className="relative bg-black rounded-tl-[20vh] md:rounded-tr-[20vh] border-t border-blue-300 text-white py-32 overflow-hidden md:h-full h-[110vh]"
     >
       {/* Grid Background */}
       <div

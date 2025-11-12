@@ -41,7 +41,7 @@ export default function HowItWorks() {
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={sectionVariants}
-      className="relative rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 bg-black py-32 text-white overflow-hidden"
+      className="relative md:rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 bg-black py-32 text-white overflow-hidden"
     >
       {/* Subtle Grid Pattern */}
       <div
