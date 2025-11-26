@@ -80,12 +80,12 @@ export default function DashboardPage() {
         <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <p className="text-sm text-blue-500 font-medium mb-2">{getGreeting()}</p>
+              <p className="text-sm text-gray-500 font-medium mb-2">{getGreeting()}</p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-blue-500 mb-2">
                 {user?.firstName || "User"}
               </h1>
               <p className="text-gray-600 text-base sm:text-lg">
-                Here's what's happening with your vault today
+                 Your vault today
               </p>
             </div>
             <Link
