@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Sidebar from "@/components/Sidebar";
-import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, X } from "lucide-react";
+import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy } from "lucide-react";
 
 type StoredFile = { id: string; name: string; size: number; url?: string };
 type Message = { role: "user" | "assistant"; content: string };
@@ -18,9 +18,17 @@ export default function AskAi() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [aiTyping, setAiTyping] = useState(false);
   const nextToastId = useRef(1);
+
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto scroll on new message
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, aiTyping]);
 
   // Toast
   function pushToast(type: Toast["type"], text: string) {
@@ -35,7 +43,7 @@ export default function AskAi() {
     if (saved) setSavedChats(JSON.parse(saved));
   }, []);
 
-  // Save chats to localStorage
+  // Save chats in localStorage
   useEffect(() => {
     localStorage.setItem("savedChats", JSON.stringify(savedChats));
   }, [savedChats]);
@@ -48,7 +56,7 @@ export default function AskAi() {
         const res = await fetch("/api/files");
         if (res.ok) setFiles(await res.json());
       } catch (e) {
-        console.error("Error fetching files", e);
+        console.error(e);
       } finally {
         setLoadingFiles(false);
       }
@@ -76,7 +84,6 @@ export default function AskAi() {
     }
   }
 
-  // Handle new file upload
   const handleFileSelect = async (file: File) => {
     setSelectedFile({ id: file.name, name: file.name, size: file.size });
     const formData = new FormData();
@@ -88,7 +95,6 @@ export default function AskAi() {
     }
   };
 
-  // Handle existing file analyze
   const handleAnalyzeExisting = async (meta: StoredFile) => {
     setSelectedFile(meta);
     try {
@@ -102,13 +108,11 @@ export default function AskAi() {
         setContext(data.text);
         setMessages([{ role: "assistant", content: `Analyzed "${meta.name}". Ask your question.` }]);
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
       pushToast("error", "Failed to analyze existing file.");
     }
   };
 
-  // Ask AI
   const handleAsk = async () => {
     if (!input.trim() || !context) return;
     const newMessages: Message[] = [...messages, { role: "user", content: input }];
@@ -122,10 +126,10 @@ export default function AskAi() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: input, context }),
       });
+
       if (!res.ok) throw new Error("Chat failed");
       const data = await res.json();
-      const fullChat: Message[] = [...newMessages, { role: "assistant", content: data.answer }];
-      setMessages(fullChat);
+      setMessages([...newMessages, { role: "assistant", content: data.answer }]);
     } catch {
       pushToast("error", "Chat request failed.");
     } finally {
@@ -133,53 +137,32 @@ export default function AskAi() {
     }
   };
 
-  
-const handleSaveConversation = () => {
-  if (!messages.length || !selectedFile) {
-    pushToast("info", "Nothing to save.");
-    return;
-  }
-
-  setSavedChats((prev) => {
-    const existing = prev.find((c) => c.fileName === selectedFile.name);
-    if (existing) {
-      // Update messages for existing file
-      return prev.map((c) =>
-        c.fileName === selectedFile.name ? { ...c, messages } : c
-      );
-    } else {
-      // Add new chat if not found
-      const newChat: SavedChat = {
-        id: Date.now().toString(),
-        fileName: selectedFile.name,
-        messages,
-      };
-      return [...prev, newChat];
+  const handleSaveConversation = () => {
+    if (!messages.length || !selectedFile) {
+      pushToast("info", "Nothing to save.");
+      return;
     }
-  });
 
-  pushToast("success", `Conversation for ${selectedFile.name} saved.`);
-  setContext("");
-  setSelectedFile(null);
-  setMessages([]);
-};
+    setSavedChats((prev) => {
+      const existing = prev.find((c) => c.fileName === selectedFile.name);
+      if (existing) {
+        return prev.map((c) =>
+          c.fileName === selectedFile.name ? { ...c, messages } : c
+        );
+      }
 
+      return [
+        ...prev,
+        { id: Date.now().toString(), fileName: selectedFile.name, messages },
+      ];
+    });
 
-  // Load saved chat
-  const handleLoadChat = (chat: SavedChat) => {
-    setMessages(chat.messages);
-    setContext(`Loaded conversation for ${chat.fileName}`);
+    pushToast("success", `Conversation saved.`);
+    setContext("");
+    setSelectedFile(null);
+    setMessages([]);
   };
 
-  // Delete saved chat
-  const handleDeleteChat = (id: string) => {
-    if (confirm("Delete this saved chat?")) {
-      setSavedChats((prev) => prev.filter((c) => c.id !== id));
-      pushToast("info", "Chat deleted.");
-    }
-  };
-
-  // Clear active chat
   const handleClearConversation = () => {
     if (confirm("Clear current conversation?")) setMessages([]);
   };
@@ -195,19 +178,19 @@ const handleSaveConversation = () => {
       <Sidebar />
 
       <main className="flex-1 flex flex-col p-6 space-y-6">
-        {/* Main view */}
+
+        {/* MAIN SCREEN (NO CHAT LOADED) */}
         {!context && (
           <>
             <header>
               <h1 className="text-4xl font-bold text-white">Ask Vault</h1>
-              <p className="mt-2 text-gray-400 max-w-2xl">
-                Upload a PDF, ask questions, save and resume any chat later.
-              </p>
+              <p className="mt-2 text-gray-400">Upload a PDF and ask anything.</p>
             </header>
 
-            {/* Files */}
+            {/* FILES */}
             <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800">
               <h2 className="text-lg font-semibold mb-3">Your Files</h2>
+
               {loadingFiles ? (
                 <div className="py-6 flex justify-center">
                   <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
@@ -223,54 +206,17 @@ const handleSaveConversation = () => {
                       className="flex flex-col items-center p-3 rounded-lg bg-blue-600/10 border border-blue-600 hover:bg-blue-600/20 transition"
                     >
                       <FileText className="w-7 h-7 text-blue-300 mb-2" />
-                      <span className="text-xs text-blue-200 truncate w-full text-center">
-                        {f.name}
-                      </span>
+                      <span className="text-xs truncate text-blue-200 text-center">{f.name}</span>
                     </button>
                   ))}
                 </div>
               )}
             </section>
 
-            
-            {savedChats.length > 0 && (
-              <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800 mt-4">
-                <h2 className="text-lg font-semibold mb-3">Saved Conversations</h2>
-                <div className="grid grid-cols-6">
-                  {savedChats.map((chat) => (
-                    <div
-                      key={chat.id}
-                      className="relative w-36 p-3 rounded-lg bg-blue-800 border border-blue-600 hover:bg-blue-600/20 transition"
-                    >
-                      <FileText className="w-6 h-6 text-green-300 mb-1" />
-                      <span className="text-xs text-green-200 truncate w-full text-center">
-                        {chat.fileName}
-                      </span>
-                      <div className="mt-2 flex gap-2">
-                        <button
-                          onClick={() => handleLoadChat(chat)}
-                          className="text-xs bg-blue-600 px-2 py-1 rounded hover:bg-blue-700 cursor-pointer"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => handleDeleteChat(chat.id)}
-                          className="text-xs bg-red-600 px-2 py-1 rounded hover:bg-red-900 cursor-pointer"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Upload */}
+            {/* UPLOAD */}
             <div
-              className={`relative rounded-2xl p-6 border-2 border-dashed transition-all ${
-                analyzing ? "border-blue-300 bg-blue-900/20" : "border-blue-500 hover:border-blue-400"
-              }`}
+              className={`rounded-2xl p-6 border-2 border-dashed ${analyzing ? "border-blue-300 bg-blue-900/20" : "border-blue-500 hover:border-blue-400"
+                }`}
               onClick={() => document.getElementById("fileInput")?.click()}
             >
               <input
@@ -280,7 +226,8 @@ const handleSaveConversation = () => {
                 className="hidden"
                 onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
               />
-              <div className="flex flex-col items-center justify-center py-8">
+
+              <div className="flex flex-col items-center py-8">
                 {analyzing ? (
                   <>
                     <Loader2 className="animate-spin w-12 h-12 text-blue-400 mb-4" />
@@ -289,7 +236,7 @@ const handleSaveConversation = () => {
                 ) : (
                   <>
                     <UploadCloud className="w-12 h-12 text-blue-400 mb-3" />
-                    <p className="text-gray-300">Click to upload and analyze a PDF</p>
+                    <p className="text-gray-300">Click to upload & analyze PDF</p>
                   </>
                 )}
               </div>
@@ -297,66 +244,115 @@ const handleSaveConversation = () => {
           </>
         )}
 
-        {/* Chat Section */}
+        {/* CHAT SCREEN */}
         {context && (
           <div className="flex flex-col gap-4">
+
+            {/* Top Row */}
             <div className="flex items-center gap-4">
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg"
               >
-                <ArrowLeft className="w-4 h-4 cursor-pointer" /> Back
+                <ArrowLeft className="w-4 h-4" /> Back
               </button>
               <div className="text-blue-400 font-semibold">{selectedFile?.name}</div>
             </div>
 
+            {/* MESSAGES CONTAINER */}
             <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800 h-[70vh] overflow-y-auto space-y-3">
+
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`p-3 rounded-lg max-w-[85%] ${
-                    m.role === "user" ? "ml-auto bg-blue-600/30" : "bg-gray-800/70"
-                  }`}
+                  className={`relative p-3 rounded-lg max-w-[85%] ${m.role === "user" ? "ml-auto bg-blue-600/30" : "bg-gray-800/70"
+                    }`}
                 >
                   {m.content}
+
+                  {/* Copy Icon / Check Icon */}
+                  {m.role === "assistant" && (
+                    <div
+                      className="absolute bottom-2 right-2 cursor-pointer"
+                      onClick={() => {
+                        navigator.clipboard.writeText(m.content);
+                        setCopiedIndex(i);
+
+                        // revert icon back after 1.2 seconds
+                        setTimeout(() => setCopiedIndex(null), 1200);
+                      }}
+                    >
+                      {copiedIndex === i ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 text-green-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414L7.5 12.086l7.543-7.543a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      ) : (
+                        <Copy
+                          size={16}
+                          className="text-gray-300 hover:text-white"
+                        />
+                      )}
+                    </div>
+                  )}
+
                 </div>
               ))}
+
               {aiTyping && (
                 <div className="bg-gray-800/70 p-3 rounded-lg w-20 flex justify-between">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full"></span>
+                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full [animation-delay:0.2s]"></span>
+                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full [animation-delay:0.4s]"></span>
                 </div>
               )}
+
+              <div ref={chatEndRef} />
             </div>
 
+            {/* INPUT */}
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex flex-1 gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAsk();
+                    }
+                  }}
                   placeholder="Ask something..."
-                  className="flex-1 px-4 py-3 rounded-lg border border-gray-700 bg-gray-900 text-white"
+                  className="flex-1 px-4 py-3 rounded-lg border border-gray-700 bg-gray-900"
                 />
+
                 <button
                   onClick={handleAsk}
-                  className="px-4 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg"
                 >
                   <Send className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="flex gap-2">
-                
                 <button
                   onClick={handleClearConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-red-600/80 rounded-lg hover:bg-red-900 transition cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-3 bg-red-600/80 hover:bg-red-900 rounded-lg"
                 >
                   <Trash size={16} /> Clear
                 </button>
+
                 <button
                   onClick={handleSaveConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-green-600/80 rounded-lg hover:bg-green-900 transition cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-3 bg-green-600/80 hover:bg-green-900 rounded-lg"
                 >
                   <Save size={16} /> Save
                 </button>
@@ -371,15 +367,14 @@ const handleSaveConversation = () => {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`px-4 py-2 rounded-lg shadow-lg max-w-sm ${
-              t.type === "success"
+            className={`px-4 py-2 rounded-lg shadow-lg ${t.type === "success"
                 ? "bg-green-600"
                 : t.type === "error"
-                ? "bg-red-600"
-                : "bg-gray-700"
-            }`}
+                  ? "bg-red-600"
+                  : "bg-gray-700"
+              }`}
           >
-            <div className="text-sm text-white">{t.text}</div>
+            {t.text}
           </div>
         ))}
       </div>
