@@ -285,7 +285,7 @@ export default function AskAi() {
                       {copiedIndex === i ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 text-green-400"
+                          className="h-4 w-4 text-gray-500"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
