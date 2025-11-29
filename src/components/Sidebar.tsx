@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Upload, User, Menu, Bot } from "lucide-react";
+import { LayoutDashboard, Upload, User, Menu, Bot, Map} from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Uploads", href: "/uploads", icon: Upload },
   { name: "Ask AI", href: "/askai", icon: Bot },
+  { name: "MindMap", href: "/mindmap", icon: Map },
   { name: "Home", href: "/", icon: User },
 ];
 
