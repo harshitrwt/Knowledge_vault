@@ -27,32 +27,27 @@ export async function POST(req: Request) {
 
   // Load chat memory
   const history = getChatHistory(pdfId);
-  const systemPrompt = `
-You are an advanced AI research assistant embedded within a document analysis system.
-Your primary role is to extract insights, summarize details, and answer questions strictly based on the supplied PDF context.
-You must treat the PDF content as the only source of truth and never fabricate information.
 
---- RULES ---
-1. Only use information from the provided context.
-2. If the answer cannot be found, respond exactly with:
-   "I could not find relevant information in the provided document."
-3. Be concise, precise, and factual.
-4. If the question has multiple subparts, respond using bullet points or numbers.
-5. If the context includes structured or numerical data, summarize it clearly.
-6. Never speculate or reference anything outside the provided context.
+  const systemPrompt = `
+You are an AI research assistant. 
+Answer ONLY using information found inside the provided PDF context.
+If the context does not include the answer, say:
+"I could not find relevant information in the provided document."
+Be factual and avoid speculation.
 `;
 
   const userPrompt = `
---- CONTEXT (Extracted PDF Text) ---
+--- PDF CONTEXT ---
 ${context}
+
+--- CHAT HISTORY ---
+${history.join("\n")}
 
 --- USER QUESTION ---
 ${question}
 
-Provide your final answer below:
+Provide your answer:
 `;
-
-  
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
