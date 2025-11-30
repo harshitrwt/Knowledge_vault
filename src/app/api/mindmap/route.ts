@@ -1,68 +1,84 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import PDFParser from "pdf2json";
 
-import { 
-  getPdfContext, 
-  getChatHistory, 
-  addToChatHistory 
-} from "@/lib/context";
+import { savePdfContext } from "@/lib/context";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export async function POST(req: Request) {
-  const { pdfId, question } = await req.json();
+// Convert PDF → text using pdf2json
+function extractTextFromPDF(buffer: Buffer): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
 
-  if (!pdfId || !question) {
-    return NextResponse.json({ error: "Missing pdfId or question" }, { status: 400 });
-  }
-
-  // Load stored PDF text (memory)
-  const context = getPdfContext(pdfId);
-
-  if (!context) {
-    return NextResponse.json({
-      answer: "This PDF has not been processed yet.",
+    pdfParser.on("pdfParser_dataError", (err) => {
+      reject((err && "parserError" in err) ? (err as any).parserError : err);
     });
-  }
 
-  // Load chat memory
-  const history = getChatHistory(pdfId);
+    pdfParser.on("pdfParser_dataReady", () => {
+      try {
+        const text = pdfParser.getRawTextContent();
+        resolve(text);
+      } catch (err) {
+        reject(err);
+      }
+    });
 
-  const systemPrompt = `
-You are an AI research assistant. 
-Answer ONLY using information found inside the provided PDF context.
-If the context does not include the answer, say:
-"I could not find relevant information in the provided document."
-Be factual and avoid speculation.
-`;
-
-  const userPrompt = `
---- PDF CONTEXT ---
-${context}
-
---- CHAT HISTORY ---
-${history.join("\n")}
-
---- USER QUESTION ---
-${question}
-
-Provide your answer:
-`;
-
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    temperature: 0,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
+    pdfParser.parseBuffer(buffer);
   });
+}
 
-  const answer = completion.choices[0]?.message?.content?.trim() || "";
+export async function POST(req: Request) {
+  try {
+    const formData = await req.formData();
+    const file = formData.get("pdf") as File;
 
-  // Save chat memory
-  addToChatHistory(pdfId, `User: ${question}`);
-  addToChatHistory(pdfId, `AI: ${answer}`);
+    if (!file) {
+      return NextResponse.json(
+        { error: "No PDF uploaded" },
+        { status: 400 }
+      );
+    }
 
-  return NextResponse.json({ answer });
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Extract text from PDF
+    const text = await extractTextFromPDF(buffer);
+
+    // Use file name as PDF identifier
+    const pdfId = file.name;
+
+    // Save extracted text for chatbot
+    savePdfContext(pdfId, text);
+
+    // Mindmap prompt
+    const prompt = `
+Convert the following PDF content into a structured mind-map.
+
+Format strictly as:
+• Main Topic
+  ◦ Sub Topic
+    ▪ Detail
+
+CONTENT:
+${text}
+`;
+
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+    });
+
+    const mindmap = completion.choices[0].message.content;
+
+    return NextResponse.json({
+      mindmap,
+      pdfId, // returned so chatbot can use same context
+    });
+  } catch (err: any) {
+    console.error("MINDMAP ERROR:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
