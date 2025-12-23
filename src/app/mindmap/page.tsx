@@ -2,11 +2,12 @@
 
 import Sidebar from "@/components/Sidebar";
 import {
-  BrainCircuit,
   Sparkles,
   TreePine,
   Upload,
   ArrowRight,
+  BrainCog,
+  Bolt
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
@@ -76,11 +77,11 @@ export default function MindmapPage() {
         </div>
 
         {/* Upload + Generate */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 items-start">
           <div className="lg:col-span-1 p-6 rounded-2xl border border-gray-800/50 bg-gradient-to-br from-gray-900/90 via-gray-800/60 to-gray-900/90 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <BrainCircuit className="w-7 h-7 text-blue-500" />
+                <Bolt className="w-7 h-7 text-blue-500" />
               </div>
               <h2 className="text-xl font-bold">Generate Mind-Map</h2>
             </div>
@@ -106,7 +107,7 @@ export default function MindmapPage() {
           <div className="lg:col-span-2 p-6 rounded-2xl border border-gray-800/50 bg-gradient-to-br from-gray-900/90 via-gray-800/60 to-gray-900/90 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <TreePine className="w-7 h-7 text-blue-500" />
+                <BrainCog className="w-7 h-7 text-blue-500" />
               </div>
               <h2 className="text-xl font-bold">Mind-Map Output</h2>
             </div>
