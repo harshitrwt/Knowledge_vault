@@ -33,80 +33,53 @@ function extractTextFromPDF(buffer: Buffer): Promise<string> {
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("pdf") as File | null;
 
-    if (!file) {
+    const uploadedFile = formData.get("pdf") as File | null;
+    const fileId = formData.get("fileId") as string | null;
+
+    let buffer: Buffer;
+    let pdfId: string;
+
+    if (uploadedFile) {
+      // ✅ Case 1: New upload
+      buffer = Buffer.from(await uploadedFile.arrayBuffer());
+      pdfId = uploadedFile.name;
+    // } else if (fileId) {
+    //   // ✅ Case 2: Existing stored file
+    //   // YOU MUST IMPLEMENT THIS BASED ON YOUR STORAGE
+    //   const storedPdfBuffer = await getPdfBufferById(fileId); // 👈 required
+    //   buffer = storedPdfBuffer;
+    //   pdfId = fileId;
+    // } 
+    }else {
       return NextResponse.json(
-        { error: "No PDF provided" },
+        { error: "No PDF or fileId provided" },
         { status: 400 }
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const text = await extractTextFromPDF(buffer);
 
-    // 1️⃣ Extract text
-    let text = await extractTextFromPDF(buffer);
-
-    // 2️⃣ Trim & clean text (VERY IMPORTANT)
-    text = text
-      .replace(/\s+/g, " ")
-      .replace(/Page \d+/gi, "")
-      .slice(0, 12000); // token safety
-
-    const pdfId = file.name;
-
-    // Save for chatbot context
     savePdfContext(pdfId, text);
 
-    // 3️⃣ PERFECT MINDMAP PROMPT
     const prompt = `
-You are an expert at understanding documents quickly.
-
-Your task:
-Create a HIGH-LEVEL MIND MAP that explains the BASIC IDEA of the document.
-
-Rules:
-- Focus on OVERVIEW, not details
-- Do NOT quote text
-- Do NOT include examples
-- Maximum depth: 2 levels
-- Each description must be short (1 line)
-- Group similar ideas together
-- Ignore references, footnotes, indexes
-
-FORMAT STRICTLY AS A TABLE:
-
-| MAIN TOPIC | SUB TOPIC | CORE IDEA |
-|------------|-----------|-----------|
-|            |           |           |
+Create a HIGH-LEVEL mind map of this document.
+Focus on core ideas only.
+Return output in a TABLE format.
 
 CONTENT:
-${text}
+${text.slice(0, 12000)}
 `;
 
-    // 4️⃣ Call Groq
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You generate structured, clean, academic-quality summaries.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
       max_tokens: 1200,
     });
 
-    const mindmap =
-      completion.choices[0]?.message?.content || "No output generated.";
-
     return NextResponse.json({
-      mindmap,
+      mindmap: completion.choices[0].message.content,
       pdfId,
     });
   } catch (err: any) {
@@ -117,3 +90,4 @@ ${text}
     );
   }
 }
+
