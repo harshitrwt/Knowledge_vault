@@ -1,4 +1,4 @@
-// lib/ocr.ts
+
 import Tesseract from "tesseract.js";
 
 export async function extractTextWithOCR(buffer: Buffer): Promise<string> {

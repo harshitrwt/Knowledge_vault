@@ -43,7 +43,7 @@ export default function HowItWorks() {
       variants={sectionVariants}
       className="relative md:rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 bg-black py-32 text-white overflow-hidden"
     >
-      {/* Subtle Grid Pattern */}
+      
       <div
         className="absolute inset-0 -z-10"
         style={{

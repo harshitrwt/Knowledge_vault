@@ -55,7 +55,7 @@ const scatterPositions: Record<Position, { x: number; y: number }> = {
 export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-// Main content fade-in variants
+
 const contentVariants = {
   hidden: { opacity: 0, y: 32 },
   visible: {
@@ -66,7 +66,7 @@ const contentVariants = {
 }
 
 
-  // Card initial/animate variants
+
   const cardVariants = (pos: Position) => ({
     initial: { opacity: 0, scale: 0.8, x: 0, y: 0 },
     animate: {

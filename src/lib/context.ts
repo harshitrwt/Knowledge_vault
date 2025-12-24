@@ -4,12 +4,11 @@ import path from "path";
 const contextPath = path.join(process.cwd(), "data");
 const contextFile = path.join(contextPath, "context.json");
 
-// Ensure folder exists
+
 if (!fs.existsSync(contextPath)) {
   fs.mkdirSync(contextPath, { recursive: true });
 }
 
-// Create initial data if missing
 if (!fs.existsSync(contextFile)) {
   fs.writeFileSync(
     contextFile,
@@ -22,7 +21,6 @@ function loadAll() {
     const raw = fs.readFileSync(contextFile, "utf8");
     const data = JSON.parse(raw);
 
-    // AUTO-REPAIR missing keys
     if (typeof data !== "object" || data === null) {
       throw new Error("Invalid JSON");
     }
@@ -32,7 +30,6 @@ function loadAll() {
 
     return data;
   } catch (err) {
-    // File corrupted → reset clean
     const initial = { pdfs: {}, chats: {} };
     fs.writeFileSync(contextFile, JSON.stringify(initial, null, 2));
     return initial;
@@ -43,7 +40,7 @@ function saveAll(data: any) {
   fs.writeFileSync(contextFile, JSON.stringify(data, null, 2));
 }
 
-/* ---------------- PDF CONTEXT ---------------- */
+
 
 export function getPdfContext(pdfId: string): string | null {
   const data = loadAll();
@@ -53,18 +50,18 @@ export function getPdfContext(pdfId: string): string | null {
 export function savePdfContext(pdfId: string, text: string) {
   const data = loadAll();
 
-  if (!data.pdfs) data.pdfs = {}; // extra safety
+  if (!data.pdfs) data.pdfs = {}; 
   data.pdfs[pdfId] = text;
 
   saveAll(data);
 }
 
-/* ---------------- CHAT CONTEXT ---------------- */
+
 
 export function getChatHistory(pdfId: string): string[] {
   const data = loadAll();
 
-  if (!data.chats) data.chats = {}; // safety
+  if (!data.chats) data.chats = {}; 
   return data.chats[pdfId] || [];
 }
 
