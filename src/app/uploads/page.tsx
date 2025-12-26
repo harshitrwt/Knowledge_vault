@@ -36,7 +36,6 @@ export default function UploadsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 🔹 Refresh files helper
   const refreshFiles = async () => {
     setLoading(true);
     try {
@@ -104,28 +103,23 @@ export default function UploadsPage() {
     return new Blob([ab], { type });
   };
 
-  
   const handleOpen = (file: StoredFile) => {
-  if (file.url.startsWith("data:")) {
-    window.open(file.url, "_blank");
-  } else {
-    window.location.href = `/preview/${file.id}`;
-  }
-};
+    if (file.url.startsWith("data:")) {
+      window.open(file.url, "_blank");
+    } else {
+      window.location.href = `/preview/${file.id}`;
+    }
+  };
 
-
- 
   const handleDownload = (file: StoredFile) => {
-  const blob = base64ToBlob(file.url, "application/octet-stream");
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = file.name;
-  a.click();
-};
+    const blob = base64ToBlob(file.url, "application/octet-stream");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    a.click();
+  };
 
-
-  
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
@@ -139,7 +133,6 @@ export default function UploadsPage() {
     }
   };
 
-  // 🔹 Delete file
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this file?"
@@ -173,52 +166,54 @@ export default function UploadsPage() {
     <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
       <Sidebar />
 
-      <main className="flex-1 relative p-6">
-        <h1 className="text-3xl font-bold m-5">Your Uploads</h1>
+      <main className="flex-1 relative p-8 md:p-12">
+        <h1 className="text-4xl font-bold mb-5 text-gradient">
+          Your Files
+        </h1>
 
         {loading ? (
           <Loader />
         ) : files.length === 0 ? (
           <div className="flex items-center justify-center h-[70vh]">
-            <span className="text-7xl font-bold text-gray-700 opacity-20">
+            <span className="text-6xl font-bold text-gray-600 opacity-40">
               Empty
             </span>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:mt-20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:mt-10">
             {files.map((file, index) => (
               <div
                 key={file.id}
                 onClick={() => handleOpen(file)}
-                className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 relative cursor-pointer hover:bg-blue-500/20 transition"
+                className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-6 hover:bg-blue-500/30 transition-all ease-in-out transform hover:scale-105 cursor-pointer relative shadow-lg"
               >
-                <Folder size={48} className="text-blue-500 mb-2 mx-auto" />
-                <p className="text-sm font-semibold text-center break-words text-blue-100">
+                <Folder size={50} className="text-blue-500 mb-4 mx-auto" />
+                <p className="text-lg font-semibold text-center text-blue-100 truncate">
                   {file.name}
                 </p>
-                <p className="text-xs text-center text-blue-300 mt-1">
+                <p className="text-xs text-center text-blue-300 mt-2">
                   {(file.size / 1024).toFixed(2)} KB
                 </p>
 
                 <div
-                  className="absolute bottom-2 right-2"
+                  className="absolute top-2 right-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     setMenuIndex(index === menuIndex ? null : index);
                   }}
                 >
-                  <MoreVertical className="text-blue-200 cursor-pointer" />
+                  <MoreVertical className="text-blue-200 cursor-pointer hover:text-blue-400 transition duration-200" />
                 </div>
 
                 {menuIndex === index && (
-                  <div className="absolute bottom-10 right-2 bg-blue-950 border border-blue-800 rounded shadow-md z-50">
+                  <div className="absolute top-10 right-2 bg-blue-950 border border-blue-800 rounded-md shadow-lg z-50">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDownload(file);
                         setMenuIndex(null);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
                     >
                       <Download size={16} className="mr-2" />
                       Download
@@ -230,7 +225,7 @@ export default function UploadsPage() {
                         handleShare(file);
                         setMenuIndex(null);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
                     >
                       <Share2 size={16} className="mr-2" />
                       Share
@@ -241,7 +236,7 @@ export default function UploadsPage() {
                         e.stopPropagation();
                         handleDelete(file.id);
                       }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-red-900 w-full text-red-400"
+                      className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
                     >
                       <Trash2 size={16} className="mr-2" />
                       Delete
@@ -253,7 +248,6 @@ export default function UploadsPage() {
           </div>
         )}
 
-        {/* Ask AI Floating Button */}
         <div
           className="absolute bottom-32 right-8 flex flex-col items-center"
           onMouseEnter={() => setIsHovered(true)}
@@ -266,13 +260,12 @@ export default function UploadsPage() {
           )}
 
           <a href="/askai">
-            <button className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition">
+            <button className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition transform hover:scale-110">
               <Bot size={28} className="text-white" />
             </button>
           </a>
         </div>
 
-        {/* File Upload Button */}
         <input
           type="file"
           ref={fileInputRef}
@@ -282,15 +275,14 @@ export default function UploadsPage() {
         />
 
         <button
-          className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition"
+          className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 hover:bg-gradient-to-br hover:from-blue-700 hover:to-indigo-700 shadow-lg transition transform hover:scale-110"
           onClick={handleUploadClick}
         >
           <Plus size={28} className="text-white" />
         </button>
 
-        {/* ✅ Toast Notification */}
         {toast && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg">
             {toast}
           </div>
         )}
