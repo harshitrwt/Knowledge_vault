@@ -57,12 +57,7 @@ export default function Navbar() {
         <SignedIn>
           <div className="flex items-center gap-4">
             <UserButton afterSignOutUrl="/" />
-            <Link
-              href="/profile"
-              className="text-lg hover:text-blue-400 md:inline hidden"
-            >
-              Profile
-            </Link>
+            
           </div>
         </SignedIn>
 
