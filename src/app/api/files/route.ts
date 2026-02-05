@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     const newFile = await prisma.file.create({
       data: {
         name,
-        size: Number(size),
+        size: String(size),
         url,
         userId: user.id,
       },

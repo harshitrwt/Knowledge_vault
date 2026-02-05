@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 import Sidebar from "@/components/Sidebar";
-import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy } from "lucide-react";
+import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy, MessageSquare } from "lucide-react";
 
 type StoredFile = { id: string; name: string; size: number; url?: string };
 type Message = { role: "user" | "assistant"; content: string };
 type Toast = { id: number; type: "success" | "error" | "info"; text: string };
-type SavedChat = { id: string; fileName: string; messages: Message[] };
+type SavedChatMeta = { id: string; fileName: string; createdAt: string };
 
 export default function AskAi() {
   const [files, setFiles] = useState<StoredFile[]>([]);
@@ -17,13 +19,15 @@ export default function AskAi() {
   const [context, setContext] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const [savedChatsMeta, setSavedChatsMeta] = useState<SavedChatMeta[]>([]);
+  const [loadingChats, setLoadingChats] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [aiTyping, setAiTyping] = useState(false);
   const nextToastId = useRef(1);
 
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const searchParams = useSearchParams();
 
   // Auto scroll on new message
   useEffect(() => {
@@ -37,16 +41,24 @@ export default function AskAi() {
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 5000);
   }
 
-  // Load saved chats
+  // Fetch saved chats from API
   useEffect(() => {
-    const saved = localStorage.getItem("savedChats");
-    if (saved) setSavedChats(JSON.parse(saved));
+    async function fetchChats() {
+      setLoadingChats(true);
+      try {
+        const res = await fetch("/api/chats");
+        if (res.ok) {
+          const data = await res.json();
+          setSavedChatsMeta(data);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingChats(false);
+      }
+    }
+    fetchChats();
   }, []);
-
-  // Save chats in localStorage
-  useEffect(() => {
-    localStorage.setItem("savedChats", JSON.stringify(savedChats));
-  }, [savedChats]);
 
   // Fetch files
   useEffect(() => {
@@ -69,15 +81,19 @@ export default function AskAi() {
     setAnalyzing(true);
     try {
       const res = await fetch("/api/analyze", { method: "POST", body: formData });
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        pushToast("error", "Analysis failed.");
+        const msg = data?.error ?? "Analysis failed";
+        const details = data?.details ? ` (${data.details})` : "";
+        const hint = data?.hint ? ` ${data.hint}` : "";
+        pushToast("error", `${msg}${details}${hint}`);
         return null;
       }
-      const data = await res.json();
       pushToast("success", "File analyzed successfully.");
       return data;
-    } catch {
-      pushToast("error", "Error during analysis.");
+    } catch (e) {
+      pushToast("error", `Error during analysis: ${e instanceof Error ? e.message : "Network error"}`);
       return null;
     } finally {
       setAnalyzing(false);
@@ -124,44 +140,100 @@ export default function AskAi() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input, context }),
+        body: JSON.stringify({
+          question: input,
+          context,
+          messages,
+        }),
       });
 
-      if (!res.ok) throw new Error("Chat failed");
-      const data = await res.json();
-      setMessages([...newMessages, { role: "assistant", content: data.answer }]);
-    } catch {
-      pushToast("error", "Chat request failed.");
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const errMsg = data?.error ?? "Chat request failed";
+        const isApiKey = /api[_-]?key|GROQ|unauthorized|invalid/i.test(errMsg);
+        pushToast(
+          "error",
+          isApiKey
+            ? `${errMsg} Check GROQ_API_KEY in .env and restart the server.`
+            : errMsg
+        );
+        return;
+      }
+
+      if (data?.answer) {
+        setMessages([...newMessages, { role: "assistant", content: data.answer }]);
+      } else {
+        pushToast("error", "No response from AI.");
+      }
+    } catch (e) {
+      pushToast(
+        "error",
+        `Chat failed: ${e instanceof Error ? e.message : "Network error"}`
+      );
     } finally {
       setAiTyping(false);
     }
   };
 
-  const handleSaveConversation = () => {
-    if (!messages.length || !selectedFile) {
+  const handleSaveConversation = async () => {
+    if (!messages.length || !selectedFile || !context) {
       pushToast("info", "Nothing to save.");
       return;
     }
 
-    setSavedChats((prev) => {
-      const existing = prev.find((c) => c.fileName === selectedFile.name);
-      if (existing) {
-        return prev.map((c) =>
-          c.fileName === selectedFile.name ? { ...c, messages } : c
-        );
+    try {
+      const res = await fetch("/api/chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: selectedFile.name,
+          messages,
+          context,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        pushToast("error", data?.error ?? "Failed to save.");
+        return;
       }
 
-      return [
-        ...prev,
-        { id: Date.now().toString(), fileName: selectedFile.name, messages },
-      ];
-    });
-
-    pushToast("success", `Conversation saved.`);
-    setContext("");
-    setSelectedFile(null);
-    setMessages([]);
+      pushToast("success", "Conversation saved to Saved Chats.");
+      const listRes = await fetch("/api/chats");
+      if (listRes.ok) setSavedChatsMeta(await listRes.json());
+      setContext("");
+      setSelectedFile(null);
+      setMessages([]);
+    } catch (e) {
+      pushToast("error", `Save failed: ${e instanceof Error ? e.message : "Network error"}`);
+    }
   };
+
+  const handleLoadSavedChat = useCallback(async (chatId: string) => {
+    try {
+      const res = await fetch(`/api/chats/${chatId}`);
+      if (!res.ok) {
+        pushToast("error", "Failed to load chat.");
+        return;
+      }
+      const data = await res.json();
+      setContext(data.context);
+      setMessages(data.messages);
+      setSelectedFile({ id: chatId, name: data.fileName, size: 0 });
+    } catch {
+      pushToast("error", "Failed to load chat.");
+    }
+  }, []);
+
+  // Load chat from URL ?chat=id (e.g. from Uploads page)
+  useEffect(() => {
+    const chatId = searchParams.get("chat");
+    if (chatId) {
+      handleLoadSavedChat(chatId);
+      window.history.replaceState({}, "", "/askai");
+    }
+  }, [searchParams, handleLoadSavedChat]);
 
   const handleClearConversation = () => {
     if (confirm("Clear current conversation?")) setMessages([]);
@@ -186,6 +258,34 @@ export default function AskAi() {
               <h1 className="text-4xl font-bold text-white">Ask Vault</h1>
               <p className="mt-2 text-gray-400">Upload a PDF and ask anything.</p>
             </header>
+
+            {/* SAVED CHATS */}
+            <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800">
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-blue-400" />
+                Saved Chats
+              </h2>
+              {loadingChats ? (
+                <div className="py-4 flex justify-center">
+                  <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
+                </div>
+              ) : savedChatsMeta.length === 0 ? (
+                <p className="text-gray-500 text-sm">No saved conversations yet.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {savedChatsMeta.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => handleLoadSavedChat(c.id)}
+                      className="flex flex-col items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition"
+                    >
+                      <MessageSquare className="w-7 h-7 text-green-400 mb-2" />
+                      <span className="text-xs truncate text-green-200 text-center w-full">{c.fileName}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
 
             {/* FILES */}
             <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800">
@@ -265,10 +365,30 @@ export default function AskAi() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`relative p-3 rounded-lg max-w-[85%] ${m.role === "user" ? "ml-auto bg-blue-600/30" : "bg-gray-800/70"
+                  className={`relative p-4 rounded-lg max-w-[85%] ${m.role === "user" ? "ml-auto bg-blue-600/30" : "bg-gray-800/70"
                     }`}
                 >
-                  {m.content}
+                  {m.role === "user" ? (
+                    <span className="whitespace-pre-wrap">{m.content}</span>
+                  ) : (
+                    <div className="prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                      <ReactMarkdown
+                        components={{
+                          h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-4 mb-2 first:mt-0">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-lg font-semibold text-blue-200 mt-4 mb-2 first:mt-0">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-base font-semibold text-gray-200 mt-3 mb-1.5">{children}</h3>,
+                          p: ({ children }) => <p className="mb-3 leading-relaxed last:mb-0">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1.5 pl-1">{children}</ol>,
+                          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                          code: ({ children }) => <code className="bg-gray-700/80 px-1.5 py-0.5 rounded text-sm">{children}</code>,
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
 
                   {/* Copy Icon / Check Icon */}
                   {m.role === "assistant" && (

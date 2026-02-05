@@ -60,15 +60,16 @@ export default function DashboardPage() {
     return "Good Evening";
   };
 
-  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  const totalSize = files.reduce((acc, file) => acc + Number(file.size || 0), 0);
   const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
   const storagePercentage = Math.min((totalSize / (100 * 1024 * 1024)) * 100, 100); // Assuming 100MB limit
 
   const recentFiles = files.slice(0, 6);
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  const formatFileSize = (bytes: number | string) => {
+    const n = Number(bytes);
+    if (n < 1024) return n + " B";
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+    return (n / (1024 * 1024)).toFixed(2) + " MB";
   };
 
   return (

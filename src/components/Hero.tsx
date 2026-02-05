@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
@@ -57,15 +56,6 @@ const scatterPositions: Record<Position, { x: number; y: number }> = {
 export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { isSignedIn } = useAuth();
-
-  const handleProtectedNav = (path: string) => {
-    if (!isSignedIn) {
-      router.push(`/sign-in?redirect_url=${encodeURIComponent(path)}`);
-    } else {
-      router.push(path);
-    }
-  };
 
   const contentVariants = {
     hidden: { opacity: 0, y: 32 },
@@ -115,19 +105,39 @@ export default function HeroSection() {
           </p>
 
           <div className="flex gap-4 flex-col sm:flex-row justify-center mb-8">
-            <button
-              onClick={() => handleProtectedNav("/start-trial")}
-              className="px-7 py-3 bg-white text-black cursor-pointerrounded font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition"
-            >
-              Start free trial
-            </button>
+            <SignedOut>
+              <SignInButton fallbackRedirectUrl="/dashboard">
+                <button
+                  className="px-7 py-3 bg-white text-black cursor-pointer rounded font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition"
+                >
+                  Start free trial
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="px-7 py-3 bg-white text-black cursor-pointer rounded font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition"
+              >
+                Start free trial
+              </button>
+            </SignedIn>
 
-            <button
-              onClick={() => handleProtectedNav("/demo")}
-              className="px-7 py-3 border border-gray-400 cursor-pointer text-gray-200 rounded font-semibold backdrop-blur-sm hover:bg-white/10 hover:text-white hover:scale-105 transition"
-            >
-              View demo
-            </button>
+            <SignedOut>
+              <SignInButton fallbackRedirectUrl="/askai">
+                <button className="px-7 py-3 border border-gray-400 cursor-pointer text-gray-200 rounded font-semibold backdrop-blur-sm hover:bg-white/10 hover:text-white hover:scale-105 transition">
+                  View demo
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <button
+                onClick={() => router.push("/askai")}
+                className="px-7 py-3 border border-gray-400 cursor-pointer text-gray-200 rounded font-semibold backdrop-blur-sm hover:bg-white/10 hover:text-white hover:scale-105 transition"
+              >
+                View demo
+              </button>
+            </SignedIn>
           </div>
         </motion.div>
 

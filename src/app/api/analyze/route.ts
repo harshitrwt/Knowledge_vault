@@ -3,6 +3,31 @@ import PDFParser from "pdf2json";
 
 export const runtime = "nodejs";
 
+function extractTextFromPdfData(pdfData: { Pages?: Array<{ Texts?: Array<{ R?: Array<{ T?: string }> }> }> }): string {
+  const pages = pdfData?.Pages;
+  if (!pages || !Array.isArray(pages)) return "";
+
+  const pageTexts = pages.map((page) => {
+    const texts = page?.Texts;
+    if (!texts || !Array.isArray(texts)) return "";
+
+    return texts
+      .map((t) => {
+        const runs = t?.R;
+        if (!runs || !Array.isArray(runs)) return "";
+        const raw = runs.map((r) => r?.T ?? "").join(" ");
+        try {
+          return decodeURIComponent(raw);
+        } catch {
+          return raw;
+        }
+      })
+      .join(" ");
+  });
+
+  return pageTexts.join("\n");
+}
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -16,36 +41,41 @@ export async function POST(req: Request) {
 
     const text = await new Promise<string>((resolve, reject) => {
       const pdfParser = new PDFParser();
-      pdfParser.on("pdfParser_dataError", (err: any) => reject(err?.parserError ?? err));
-      pdfParser.on("pdfParser_dataReady", (pdfData) => {
-        const pages = pdfData.Pages.map((page: any) =>
-          page.Texts.map((t: any) => {
-            const raw = t.R.map((r: any) => r.T).join(" ");
-            try {
-              return decodeURIComponent(raw);
-            } catch {
-              return raw; // skip broken encodings
-            }
-          }).join(" ")
-        );
 
-        resolve(pages.join("\n"));
+      pdfParser.on("pdfParser_dataError", (err: { parserError?: string }) => {
+        reject(new Error(err?.parserError ?? "PDF parsing error"));
       });
+
+      pdfParser.on("pdfParser_dataReady", (pdfData: unknown) => {
+        try {
+          const extracted = extractTextFromPdfData(pdfData as Parameters<typeof extractTextFromPdfData>[0]);
+          resolve(extracted || "");
+        } catch (e) {
+          reject(e instanceof Error ? e : new Error("Failed to extract text"));
+        }
+      });
+
       pdfParser.parseBuffer(buffer);
     });
 
     if (!text.trim()) {
-      return NextResponse.json({ error: "No extractable text found" }, { status: 422 });
+      return NextResponse.json(
+        { error: "No extractable text found in this PDF. It may be scanned/image-based." },
+        { status: 422 }
+      );
     }
 
-    // Optional: limit large files
     const limitedText = text.slice(0, 20000);
-
     return NextResponse.json({ text: limitedText });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     console.error("PDF analysis failed:", err);
     return NextResponse.json(
-      { error: "Analysis failed", details: err.message || String(err) },
+      {
+        error: "Analysis failed",
+        details: message,
+        hint: "Try a different PDF or ensure the file is not corrupted.",
+      },
       { status: 500 }
     );
   }

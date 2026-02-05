@@ -14,17 +14,28 @@ datasource db {
 }
 
 model User {
+  id         String      @id @default(cuid())
+  clerkId    String      @unique
+  email      String      @unique
+  files      File[]
+  savedChats SavedChat[]
+  createdAt  DateTime    @default(now())
+}
+
+model SavedChat {
   id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  files     File[]
+  fileName  String
+  messages  Json     // [{ role: "user"|"assistant", content: string }]
+  context   String   @db.Text
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
   createdAt DateTime @default(now())
 }
 
 model File {
   id        String   @id @default(cuid())
   name      String
-  size      Int
+  size      String   // stored as TEXT in DB (from init migration)
   url       String
   user      User     @relation(fields: [userId], references: [id])
   userId    String

@@ -8,24 +8,20 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-// Convert PDF → text
 function extractTextFromPDF(buffer: Buffer): Promise<string> {
   return new Promise((resolve, reject) => {
     const pdfParser = new PDFParser();
-
-    pdfParser.on("pdfParser_dataError", (err) => {
-      reject((err as any)?.parserError || err);
-    });
-
+    pdfParser.on("pdfParser_dataError", (err: { parserError?: string }) =>
+      reject(new Error((err as any)?.parserError ?? "PDF parsing error"))
+    );
     pdfParser.on("pdfParser_dataReady", () => {
       try {
-        const text = pdfParser.getRawTextContent();
-        resolve(text);
-      } catch (err) {
-        reject(err);
+        const text = pdfParser.getRawTextContent?.() ?? "";
+        resolve(text || "");
+      } catch (e) {
+        reject(e instanceof Error ? e : new Error("Failed to extract text"));
       }
     });
-
     pdfParser.parseBuffer(buffer);
   });
 }
@@ -58,7 +54,21 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json(
+        { error: "GROQ_API_KEY is not configured. Add it to your .env file." },
+        { status: 500 }
+      );
+    }
+
     const text = await extractTextFromPDF(buffer);
+
+    if (!text?.trim()) {
+      return NextResponse.json(
+        { error: "No extractable text found in PDF. The file may be scanned or image-based." },
+        { status: 422 }
+      );
+    }
 
     savePdfContext(pdfId, text);
 
@@ -82,10 +92,16 @@ ${text.slice(0, 12000)}
       mindmap: completion.choices[0].message.content,
       pdfId,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     console.error("MINDMAP ERROR:", err);
+    const isApiKey = !process.env.GROQ_API_KEY || /api[_-]?key|unauthorized|401|403|invalid/i.test(message);
     return NextResponse.json(
-      { error: err.message || "Internal error" },
+      {
+        error: isApiKey
+          ? "GROQ_API_KEY is missing or invalid. Add it to .env and restart."
+          : message,
+      },
       { status: 500 }
     );
   }
