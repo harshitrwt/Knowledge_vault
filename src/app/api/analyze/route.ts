@@ -42,8 +42,9 @@ export async function POST(req: Request) {
     const text = await new Promise<string>((resolve, reject) => {
       const pdfParser = new PDFParser();
 
-      pdfParser.on("pdfParser_dataError", (err: { parserError?: string }) => {
-        reject(new Error(err?.parserError ?? "PDF parsing error"));
+      pdfParser.on("pdfParser_dataError", (err: Error | { parserError: Error }) => {
+        const message = err instanceof Error ? err.message : err?.parserError?.message ?? "PDF parsing error";
+        reject(new Error(message));
       });
 
       pdfParser.on("pdfParser_dataReady", (pdfData: unknown) => {
