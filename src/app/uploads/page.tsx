@@ -37,7 +37,7 @@ type SavedChatMeta = { id: string; fileName: string; createdAt: string };
 export default function UploadsPage() {
   const [files, setFiles] = useState<StoredFile[]>([]);
   const [savedChats, setSavedChats] = useState<SavedChatMeta[]>([]);
-  const [menuIndex, setMenuIndex] = useState<number | null>(null);
+  const [menuIndex, setMenuIndex] = useState<string | number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [toast, setToast] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -127,6 +127,36 @@ export default function UploadsPage() {
     a.click();
   };
 
+  const handleDeleteChat = async (id: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this chat?"
+    );
+    if (!confirmed) return;
+
+    // 🔥 OPTIMISTIC UPDATE
+    setSavedChats((prev) => prev.filter((chat) => chat.id !== id));
+    setMenuIndex(null);
+
+    try {
+      const res = await fetch("/api/chats", {
+        method: "DELETE",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to delete chat:", await res.text());
+        refreshFiles(); // rollback safety
+      }
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      refreshFiles(); // rollback safety
+    }
+  };
+
+
+
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
     const url = URL.createObjectURL(blob);
@@ -188,100 +218,139 @@ export default function UploadsPage() {
           </div>
         ) : (
           <>
-          {savedChats.length > 0 && (
-            <section className="mb-20">
-              <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
-                Saved Chats
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                {savedChats.map((chat) => (
-                  <Link key={chat.id} href={`/askai?chat=${chat.id}`}>
-                    <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-6 hover:bg-green-500/30 transition-all cursor-pointer">
-                      <MessageSquare size={50} className="text-green-400 mb-4" />
-                      <p className="text-lg font-semibold text-center text-green-100 truncate">
-                        {chat.fileName}
-                      </p>
-                      <p className="text-xs text-center text-green-300 mt-2">
-                        Continue chat
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-          <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            Uploaded Files
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:mt-10">
-            
-            {files.map((file, index) => (
-              <div
-                key={file.id}
-                onClick={() => handleOpen(file)}
-                className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-6 hover:bg-blue-500/30 transition-all ease-in-out transform hover:scale-105 cursor-pointer relative shadow-lg"
-              >
-                <Folder size={50} className="text-blue-500 mb-4 mx-auto" />
-                <p className="text-lg font-semibold text-center text-blue-100 truncate">
-                  {file.name}
-                </p>
-                <p className="text-xs text-center text-blue-300 mt-2">
-                  {(file.size / 1024).toFixed(2)} KB
-                </p>
+            {savedChats.length > 0 && (
+              <section className="mb-20">
+                <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Saved Chats
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {savedChats.map((chat, index) => {
+                    const menuId = `chat-${index}`;
 
-                <div
-                  className="absolute top-2 right-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuIndex(index === menuIndex ? null : index);
-                  }}
-                >
-                  <MoreVertical className="text-blue-200 cursor-pointer hover:text-blue-400 transition duration-200" />
+                    return (
+                      <Link key={chat.id} href={`/askai?chat=${chat.id}`}>
+                        <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-6 hover:bg-green-500/30 transition-all cursor-pointer relative">
+
+                          {/* Menu dots */}
+                          {/* <div
+                            className="absolute top-2 right-2"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setMenuIndex(menuIndex === menuId ? null : menuId);
+                            }}
+                          >
+                            <MoreVertical className="text-green-200 cursor-pointer hover:text-green-400 transition duration-200" />
+                          </div> */}
+
+                          {/* Dropdown */}
+                          {menuIndex === menuId && (
+                            <div
+                              className="absolute top-10 right-2 bg-green-950 border border-green-800 rounded-md shadow-lg z-50"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleDeleteChat(chat.id);
+                                }}
+                                className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
+                              >
+                                <Trash2 size={16} className="mr-2" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Card content */}
+                          <MessageSquare size={50} className="text-green-400 mb-4" />
+                          <p className="text-lg font-semibold text-center text-green-100 truncate">
+                            {chat.fileName}
+                          </p>
+                          <p className="text-xs text-center text-green-300 mt-2">
+                            Continue chat
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
 
-                {menuIndex === index && (
-                  <div className="absolute top-10 right-2 bg-blue-950 border border-blue-800 rounded-md shadow-lg z-50">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownload(file);
-                        setMenuIndex(null);
-                      }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
-                    >
-                      <Download size={16} className="mr-2" />
-                      Download
-                    </button>
+              </section>
+            )}
+            <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Uploaded Files
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:mt-10">
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShare(file);
-                        setMenuIndex(null);
-                      }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
-                    >
-                      <Share2 size={16} className="mr-2" />
-                      Share
-                    </button>
+              {files.map((file, index) => (
+                <div
+                  key={file.id}
+                  onClick={() => handleOpen(file)}
+                  className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-6 hover:bg-blue-500/30 transition-all ease-in-out transform hover:scale-105 cursor-pointer relative shadow-lg"
+                >
+                  <Folder size={50} className="text-blue-500 mb-4 mx-auto" />
+                  <p className="text-lg font-semibold text-center text-blue-100 truncate">
+                    {file.name}
+                  </p>
+                  <p className="text-xs text-center text-blue-300 mt-2">
+                    {(file.size / 1024).toFixed(2)} KB
+                  </p>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(file.id);
-                      }}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
-                    >
-                      <Trash2 size={16} className="mr-2" />
-                      Delete
-                    </button>
+                  <div
+                    className="absolute top-2 right-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMenuIndex(index === menuIndex ? null : index);
+                    }}
+                  >
+                    <MoreVertical className="text-blue-200 cursor-pointer hover:text-blue-400 transition duration-200" />
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+
+                  {menuIndex === index && (
+                    <div className="absolute top-10 right-2 bg-blue-950 border border-blue-800 rounded-md shadow-lg z-50">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(file);
+                          setMenuIndex(null);
+                        }}
+                        className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
+                      >
+                        <Download size={16} className="mr-2" />
+                        Download
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(file);
+                          setMenuIndex(null);
+                        }}
+                        className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
+                      >
+                        <Share2 size={16} className="mr-2" />
+                        Share
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(file.id);
+                        }}
+                        className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </>
         )}
 
