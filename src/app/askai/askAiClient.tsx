@@ -260,24 +260,24 @@ export default function AskAi() {
             </header>
 
             {/* SAVED CHATS */}
-            <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800">
+            <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800 ">
               <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-blue-400" />
-                Saved Chats
+                <MessageSquare className="w-5 h-5 text-green-400" />
+                Recent Saved Chats
               </h2>
               {loadingChats ? (
-                <div className="py-4 flex justify-center">
+                <div className="py-4 flex justify-center ">
                   <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
                 </div>
               ) : savedChatsMeta.length === 0 ? (
                 <p className="text-gray-500 text-sm">No saved conversations yet.</p>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 cursor-pointer">
                   {savedChatsMeta.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => handleLoadSavedChat(c.id)}
-                      className="flex flex-col items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition"
+                      className="flex flex-col cursor-pointer items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition"
                     >
                       <MessageSquare className="w-7 h-7 text-green-400 mb-2" />
                       <span className="text-xs truncate text-green-200 text-center w-full">{c.fileName}</span>
@@ -315,7 +315,7 @@ export default function AskAi() {
 
             {/* UPLOAD */}
             <div
-              className={`rounded-2xl p-6 border-2 border-dashed ${analyzing ? "border-blue-300 bg-blue-900/20" : "border-blue-500 hover:border-blue-400"
+              className={`rounded-2xl p-6 border-2 cursor-pointer border-dashed ${analyzing ? "border-blue-300 bg-blue-900/20" : "border-blue-500 hover:border-blue-600 hover:bg-blue-900/10"
                 }`}
               onClick={() => document.getElementById("fileInput")?.click()}
             >
@@ -352,7 +352,7 @@ export default function AskAi() {
             <div className="flex items-center gap-4">
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
@@ -456,7 +456,7 @@ export default function AskAi() {
 
                 <button
                   onClick={handleAsk}
-                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg cursor-pointer"
                 >
                   <Send className="w-5 h-5" />
                 </button>
@@ -465,14 +465,14 @@ export default function AskAi() {
               <div className="flex gap-2">
                 <button
                   onClick={handleClearConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-red-600/80 hover:bg-red-900 rounded-lg"
+                  className="flex items-center gap-2 px-4 py-3 bg-red-600/80 hover:bg-red-900 rounded-lg cursor-pointer"
                 >
                   <Trash size={16} /> Clear
                 </button>
 
                 <button
                   onClick={handleSaveConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-green-600/80 hover:bg-green-900 rounded-lg"
+                  className="flex items-center gap-2 px-4 py-3 bg-green-600/80 hover:bg-green-900 rounded-lg cursor-pointer"
                 >
                   <Save size={16} /> Save
                 </button>

@@ -13,6 +13,7 @@ import {
   Trash2,
   Bot,
   MessageSquare,
+  FileText,
 } from "lucide-react";
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -188,7 +189,7 @@ export default function UploadsPage() {
         ) : (
           <>
           {savedChats.length > 0 && (
-            <section className="mb-10">
+            <section className="mb-20">
               <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Saved Chats
@@ -210,7 +211,12 @@ export default function UploadsPage() {
               </div>
             </section>
           )}
+          <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Uploaded Files
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:mt-10">
+            
             {files.map((file, index) => (
               <div
                 key={file.id}
