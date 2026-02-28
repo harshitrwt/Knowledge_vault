@@ -275,14 +275,7 @@ export default function DashboardPage() {
                       <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 group-hover:scale-110 transition-transform duration-300">
                         <FileText className="text-blue-300 w-6 h-6" />
                       </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700/50 transition-colors">
-                          <Eye className="w-4 h-4 text-gray-400" />
-                        </button>
-                        <button className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700/50 transition-colors">
-                          <Download className="w-4 h-4 text-gray-400" />
-                        </button>
-                      </div>
+                      
                     </div>
                     <div className="space-y-2">
                       <h3 className="text-sm font-semibold text-blue-100 truncate group-hover:text-blue-50 transition-colors">

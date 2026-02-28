@@ -189,9 +189,11 @@ export default function MindmapPage() {
                 <BrainCog className="w-7 h-7 text-blue-500" />
               </div>
               <h2 className="text-xl md:text-3xl font-bold">Mind-Map</h2>
+              
             </div>
+            <h1  className="text-xl md:text-3xl font-bold"> Work In Progress </h1>
 
-            {loading ? (
+            {/* {loading ? (
               <div className="flex justify-center py-20">
                 <Loader />
               </div>
@@ -207,7 +209,7 @@ export default function MindmapPage() {
               <p className="text-gray-500 mt-8">
                 Select or upload a PDF to get started.
               </p>
-            )}
+            )} */}
           </div>
         </div>
       </main>
