@@ -37,7 +37,7 @@ export default function Navbar() {
     >
       {/* Left Section */}
       <div className="flex items-center gap-8">
-        <Link href="/" className="text-xl font-semibold hover:text-blue-400 transition">
+        <Link href="/" className="text-xl font-bold hover:text-blue-400 transition">
           VAULT
         </Link>
 

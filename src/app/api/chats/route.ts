@@ -27,7 +27,7 @@ export async function GET() {
   }
 }
 
-// POST /api/chats - save a chat
+// POST /api/chats - save a chat (creates or updates)
 export async function POST(req: Request) {
   try {
     const { userId, sessionClaims } = await auth();
@@ -45,14 +45,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fileName, messages, or context" }, { status: 400 });
     }
 
-    const chat = await prisma.savedChat.create({
-      data: {
-        fileName,
-        messages,
-        context: String(context),
-        userId: user.id,
-      },
+    // Check if chat with same fileName already exists
+    const existingChat = await prisma.savedChat.findFirst({
+      where: { fileName, userId: user.id },
     });
+
+    let chat;
+    if (existingChat) {
+      // Update existing chat
+      chat = await prisma.savedChat.update({
+        where: { id: existingChat.id },
+        data: {
+          messages,
+          context: String(context),
+          createdAt: new Date(), // Update timestamp
+        },
+      });
+    } else {
+      // Create new chat
+      chat = await prisma.savedChat.create({
+        data: {
+          fileName,
+          messages,
+          context: String(context),
+          userId: user.id,
+        },
+      });
+    }
 
     return NextResponse.json({ id: chat.id, fileName: chat.fileName });
   } catch (err) {

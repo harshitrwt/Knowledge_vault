@@ -182,6 +182,15 @@ export default function AskAi() {
       return;
     }
 
+    // Check for duplicate
+    const isDuplicate = savedChatsMeta.some(chat => chat.fileName === selectedFile.name);
+    if (isDuplicate) {
+      const update = confirm(
+        `A chat with name "${selectedFile.name}" already exists. Update it instead?`
+      );
+      if (!update) return;
+    }
+
     try {
       const res = await fetch("/api/chats", {
         method: "POST",
@@ -199,7 +208,7 @@ export default function AskAi() {
         return;
       }
 
-      pushToast("success", "Conversation saved to Saved Chats.");
+      pushToast("success", isDuplicate ? "Conversation updated." : "Conversation saved to Saved Chats.");
       const listRes = await fetch("/api/chats");
       if (listRes.ok) setSavedChatsMeta(await listRes.json());
       setContext("");
@@ -225,6 +234,28 @@ export default function AskAi() {
       pushToast("error", "Failed to load chat.");
     }
   }, []);
+
+  const handleDeleteChat = async (chatId: string, fileName: string) => {
+    if (confirm(`Delete saved chat "${fileName}"?`)) {
+      try {
+        const res = await fetch(`/api/chats/${chatId}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          pushToast("error", data?.error ?? "Failed to delete chat.");
+          return;
+        }
+
+        pushToast("success", "Chat deleted successfully.");
+        const listRes = await fetch("/api/chats");
+        if (listRes.ok) setSavedChatsMeta(await listRes.json());
+      } catch (e) {
+        pushToast("error", `Delete failed: ${e instanceof Error ? e.message : "Network error"}`);
+      }
+    }
+  };
 
   // Load chat from URL ?chat=id (e.g. from Uploads page)
   useEffect(() => {
@@ -274,14 +305,28 @@ export default function AskAi() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 cursor-pointer">
                   {savedChatsMeta.map((c) => (
-                    <button
+                    <div
                       key={c.id}
-                      onClick={() => handleLoadSavedChat(c.id)}
-                      className="flex flex-col cursor-pointer items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition"
+                      className="relative group"
                     >
-                      <MessageSquare className="w-7 h-7 text-green-400 mb-2" />
-                      <span className="text-xs truncate text-green-200 text-center w-full">{c.fileName}</span>
-                    </button>
+                      <button
+                        onClick={() => handleLoadSavedChat(c.id)}
+                        className="flex flex-col cursor-pointer items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition w-full"
+                      >
+                        <MessageSquare className="w-7 h-7 text-green-400 mb-2" />
+                        <span className="text-xs truncate text-green-200 text-center w-full">{c.fileName}</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteChat(c.id, c.fileName);
+                        }}
+                        className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition p-1 rounded bg-red-600/80 hover:bg-red-700"
+                        title="Delete this chat"
+                      >
+                        <Trash size={14} className="text-white" />
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
