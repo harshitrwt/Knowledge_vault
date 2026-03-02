@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import Sidebar from "@/components/Sidebar";
-import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy, MessageSquare } from "lucide-react";
+import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy, MessageSquare, VoicemailIcon, Speech } from "lucide-react";
 
 type StoredFile = { id: string; name: string; size: number; url?: string };
 type Message = { role: "user" | "assistant"; content: string };
@@ -303,25 +303,54 @@ export default function AskAi() {
               ) : savedChatsMeta.length === 0 ? (
                 <p className="text-gray-500 text-sm">No saved conversations yet.</p>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 cursor-pointer">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
                   {savedChatsMeta.map((c) => (
-                    <div
-                      key={c.id}
-                      className="relative group"
-                    >
+                    <div key={c.id} className="relative group">
                       <button
                         onClick={() => handleLoadSavedChat(c.id)}
-                        className="flex flex-col cursor-pointer items-center p-3 rounded-lg bg-green-600/10 border border-green-600/50 hover:bg-green-600/20 transition w-full"
+                        className="
+          relative w-full cursor-pointer aspect-square
+          flex flex-col items-center justify-center
+          p-4 rounded-2xl
+          bg-gradient-to-br from-green-900/80 via-gray-900/80 to-green-900/80
+          backdrop-blur-xl
+          border border-green-800/50
+          shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+          hover:border-green-500/50
+          hover:shadow-[0_8px_40px_rgba(34,197,94,0.3)]
+          transition-all duration-500
+          overflow-hidden
+        "
                       >
-                        <MessageSquare className="w-7 h-7 text-green-400 mb-2" />
-                        <span className="text-xs truncate text-green-200 text-center w-full">{c.fileName}</span>
+                        {/* Glow Hover Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-transparent group-hover:from-green-500/10 transition-all duration-500" />
+
+                        {/* Content */}
+                        <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                          <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 mb-3">
+                            <MessageSquare className="w-6 h-6 text-green-400" />
+                          </div>
+
+                          <span className="text-xs text-green-200 font-medium line-clamp-2 px-2">
+                            {c.fileName}
+                          </span>
+                        </div>
                       </button>
+
+                      {/* Delete Button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteChat(c.id, c.fileName);
                         }}
-                        className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition p-1 rounded bg-red-600/80 hover:bg-red-700"
+                        className="
+          absolute top-2 right-2 cursor-pointer
+          opacity-0 group-hover:opacity-100
+          transition-all duration-300
+          p-1.5 rounded-lg
+          bg-red-600/80 hover:bg-red-900
+          shadow-md
+        "
                         title="Delete this chat"
                       >
                         <Trash size={14} className="text-white" />
@@ -343,15 +372,39 @@ export default function AskAi() {
               ) : files.length === 0 ? (
                 <div className="text-gray-500">No files yet.</div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
                   {files.map((f) => (
                     <button
                       key={f.id}
                       onClick={() => handleAnalyzeExisting(f)}
-                      className="flex flex-col items-center p-3 rounded-lg bg-blue-600/10 border border-blue-600 hover:bg-blue-600/20 transition"
+                      className="
+        relative cursor-pointer w-full aspect-square
+        flex flex-col items-center justify-center
+        p-4 rounded-2xl
+        bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90
+        backdrop-blur-xl
+        border border-gray-800/50
+        shadow-[0_8px_32px_rgba(0,0,0,0.4)]
+        hover:border-blue-500/50
+        hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)]
+        hover:scale-[1.03]
+        transition-all duration-500
+        overflow-hidden
+        group
+      "
                     >
-                      <FileText className="w-7 h-7 text-blue-300 mb-2" />
-                      <span className="text-xs truncate text-blue-200 text-center">{f.name}</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/10 transition-all duration-500" />
+
+                    
+                      <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 mb-3">
+                          <FileText className="w-6 h-6 text-blue-400" />
+                        </div>
+
+                        <span className="text-xs text-blue-200 font-medium line-clamp-2 px-2">
+                          {f.name}
+                        </span>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -389,11 +442,11 @@ export default function AskAi() {
           </>
         )}
 
-        
+
         {context && (
           <div className="flex flex-col gap-4">
 
-            
+
             <div className="flex items-center gap-4">
               <button
                 onClick={handleBack}
@@ -404,7 +457,7 @@ export default function AskAi() {
               <div className="text-blue-400 font-semibold">{selectedFile?.name}</div>
             </div>
 
-            
+
             <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800 h-[70vh] overflow-y-auto space-y-3">
 
               {messages.map((m, i) => (
@@ -521,6 +574,12 @@ export default function AskAi() {
                 >
                   <Save size={16} /> Save
                 </button>
+                <button
+
+                  className="flex items-center gap-2 px-4 py-3 bg-blue-600/80 hover:bg-blue-900 rounded-lg cursor-pointer"
+                >
+                  <Speech size={16} /> Talk
+                </button>
               </div>
             </div>
           </div>
@@ -533,10 +592,10 @@ export default function AskAi() {
           <div
             key={t.id}
             className={`px-4 py-2 rounded-lg shadow-lg ${t.type === "success"
-                ? "bg-green-600"
-                : t.type === "error"
-                  ? "bg-red-600"
-                  : "bg-gray-700"
+              ? "bg-green-600"
+              : t.type === "error"
+                ? "bg-red-600"
+                : "bg-gray-700"
               }`}
           >
             {t.text}
