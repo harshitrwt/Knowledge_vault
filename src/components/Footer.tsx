@@ -1,42 +1,47 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight, Archive } from "lucide-react";
+
 export default function Footer() {
   return (
-    <footer className="relative md:rounded-tl-[20vh] md:rounded-tr-[20vh] border-t bg-[#0A0A15] border-blue-400 text-gray-300 py-24 overflow-hidden">
-      {/* Grid and Glow Layers */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(55,55,75,0.15) 0px, rgba(55,55,75,0.15) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.15) 0px, rgba(55,55,75,0.15) 1px, transparent 1px, transparent 64px)",
-        }}
-      />
-      <div className="absolute w-[700px] h-[700px] bg-[#1a1a25] rounded-full blur-[300px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40" />
-
-      {/* Center Branding */}
-      <div className="relative text-center z-10">
-        <h1 className="text-[7rem] md:text-[12rem] lg:text-[15rem] font-extrabold text-white/5 tracking-widest select-none leading-none mb-10">
-          VAULT
-        </h1>
-
-        {/* Call to Action Buttons */}
-        <div className="flex flex-wrap justify-center gap-6 mb-12">
-          <button className="px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-300 text-black font-semibold rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
-            Get Started
-          </button>
-          <button className="px-8 py-3 border border-gray-500 text-gray-300 rounded-full hover:text-white hover:border-gray-300 hover:scale-105 transition-transform duration-300">
-            Learn More
-          </button>
+    <footer className="border-t border-[var(--vault-line)] bg-[var(--vault-ink)] px-4 py-14 text-white sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div>
+          <Link href="/" className="mb-5 inline-flex items-center gap-2 font-extrabold">
+            <span className="grid h-10 w-10 place-items-center rounded-md bg-white text-[var(--vault-brand)]">
+              <Archive className="h-5 w-5" />
+            </span>
+            Vault
+          </Link>
+          <h2 className="max-w-xl text-3xl font-black leading-tight sm:text-4xl">
+            A calmer, faster workspace for document intelligence.
+          </h2>
+          <p className="mt-4 max-w-lg text-sm font-semibold leading-6 text-white/60">
+            Upload, analyze, ask, save, and map your files from one coherent product surface.
+          </p>
         </div>
 
-        <div className="text-gray-500 text-sm">
-          © 2025 Smart Vault. All rights reserved.
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/dashboard"
+            className="vault-button-primary bg-white text-[var(--vault-ink)] hover:bg-[var(--vault-soft)]"
+          >
+            Open Dashboard
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            href="/askai"
+            className="vault-button-secondary border-white/20 bg-white/10 text-white hover:bg-white/20"
+          >
+            Ask AI
+          </Link>
         </div>
       </div>
 
-      {/* Subtle Reflection Line */}
-      <div className="absolute bottom-0 w-full flex justify-center mt-10">
-        <div className="w-[90%] h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-25"></div>
+      <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-white/10 pt-6 text-xs font-bold text-white/45 sm:flex-row sm:items-center sm:justify-between">
+        <span>Copyright 2026 Smart Vault. All rights reserved.</span>
+        <span>Built for focused file analysis.</span>
       </div>
     </footer>
   );

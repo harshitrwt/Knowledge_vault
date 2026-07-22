@@ -1,22 +1,20 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import { 
-  Shield, 
-  Upload, 
-  FileText, 
-  TrendingUp, 
-  HardDrive, 
-  Zap, 
-  Lock, 
-  Clock, 
-  BarChart3,
-  ArrowRight,
-  CheckCircle2,
+import {
   Activity,
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  FileText,
   FolderOpen,
-  Download,
-  Eye
+  HardDrive,
+  Lock,
+  Shield,
+  Sparkles,
+  Upload,
+  Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
@@ -62,7 +60,7 @@ export default function DashboardPage() {
 
   const totalSize = files.reduce((acc, file) => acc + Number(file.size || 0), 0);
   const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
-  const storagePercentage = Math.min((totalSize / (100 * 1024 * 1024)) * 100, 100); // Assuming 100MB limit
+  const storagePercentage = Math.min((totalSize / (100 * 1024 * 1024)) * 100, 100);
 
   const recentFiles = files.slice(0, 6);
   const formatFileSize = (bytes: number | string) => {
@@ -72,270 +70,230 @@ export default function DashboardPage() {
     return (n / (1024 * 1024)).toFixed(2) + " MB";
   };
 
+  const metrics = [
+    {
+      label: "Total Files",
+      value: files.length,
+      helper: "All time uploads",
+      icon: FileText,
+      accessory: BarChart3,
+      tone: "bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]",
+    },
+    {
+      label: "Storage Used",
+      value: `${totalSizeMB} MB`,
+      helper: `${storagePercentage.toFixed(1)}% of 100 MB`,
+      icon: HardDrive,
+      accessory: Activity,
+      tone: "bg-[var(--vault-info-soft)] text-[var(--vault-info)]",
+    },
+    {
+      label: "Encrypted",
+      value: "100%",
+      helper: "All files secured",
+      icon: Shield,
+      accessory: CheckCircle2,
+      tone: "bg-[var(--vault-brand-soft)] text-[var(--vault-success)]",
+    },
+    {
+      label: "AI Ready",
+      value: "Live",
+      helper: "Ask questions anytime",
+      icon: Zap,
+      accessory: Sparkles,
+      tone: "bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]",
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-950 to-gray-900 text-white overflow-x-hidden">
+    <div className="vault-grid flex min-h-screen text-[var(--vault-ink)]">
       <Sidebar />
 
-      <main className="flex-grow p-4 sm:p-6 lg:p-8 xl:p-10 transition-all duration-300 ease-in-out overflow-y-auto">
-        {/* Animated Header Section */}
-        <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <p className="text-sm text-gray-500 font-medium mb-2">{getGreeting()}</p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-blue-500 mb-2">
-                {user?.firstName || "User"}
-              </h1>
-              <p className="text-gray-600 text-base sm:text-lg">
-                 Your vault today
-              </p>
-            </div>
-            <Link
-              href="/uploads"
-              className="group flex items-center gap-2 px-6 py-3 bg-blue-600 rounded-xl font-semibold hover:bg-blue-500 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105"
-            >
-              <Upload className="w-5 h-5" />
-              <span>Upload Files</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Statistics Cards Grid */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {/* Total Files Card */}
-          <div className="group relative p-6 bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)] transition-all duration-500 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-transparent transition-all duration-500" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30">
-                  <FileText className="w-6 h-6 text-blue-500" />
-                </div>
-                <TrendingUp className="w-5 h-5 text-blue-500 opacity-70" />
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-1">{files.length}</h3>
-              <p className="text-sm text-blue-500">Total Files</p>
-              <div className="mt-3 pt-3 border-t border-gray-800">
-                <p className="text-xs text-blue-500">All time uploads</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Storage Used Card */}
-          <div className="group relative p-6 bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)] transition-all duration-500 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-transparent transition-all duration-500" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30">
-                  <HardDrive className="w-6 h-6 text-blue-500" />
-                </div>
-                <Activity className="w-5 h-5 text-blue-500 opacity-70" />
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-1">{totalSizeMB} MB</h3>
-              <p className="text-sm text-blue-500">Storage Used</p>
-              <div className="mt-3 pt-3 border-t border-gray-800">
-                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-                  <div 
-                    className="h-full bg-blue-500 transition-all duration-1000 ease-out"
-                    style={{ width: `${storagePercentage}%` }}
-                  />
-                </div>
-                <p className="text-xs text-blue-500 mt-2">{storagePercentage.toFixed(1)}% of 100 MB</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Security Status Card */}
-          <div className="group relative p-6 bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)] transition-all duration-500 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-transparent transition-all duration-500" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30">
-                  <Shield className="w-6 h-6 text-blue-500" />
-                </div>
-                <CheckCircle2 className="w-5 h-5 text-blue-500 opacity-70" />
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-1">100%</h3>
-              <p className="text-sm text-blue-500">Encrypted</p>
-              <div className="mt-3 pt-3 border-t border-gray-800">
-                <p className="text-xs text-blue-500 flex items-center gap-1">
-                  <Lock className="w-3 h-3" />
-                  All files secured
+      <main className="flex-grow overflow-y-auto px-4 pb-10 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
+        <header className="mb-8 grid gap-4 lg:grid-cols-[1fr_320px]">
+          <div className="vault-panel p-6 sm:p-8">
+            <p className="vault-kicker mb-3">{getGreeting()}</p>
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+                  {user?.firstName || "User"}
+                </h1>
+                <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+                  Your files, saved chats, and AI actions are ready from this command surface.
                 </p>
               </div>
+              <Link href="/uploads" className="vault-button-primary w-full sm:w-auto">
+                <Upload className="h-5 w-5" />
+                Upload Files
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
 
-          {/* Quick Access Card */}
-          <div className="group relative p-6 bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)] transition-all duration-500 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-transparent transition-all duration-500" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30">
-                  <Zap className="w-6 h-6 text-blue-500" />
+          <div className="vault-panel-solid p-5">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-[var(--vault-ink)]">Workspace Health</p>
+                <p className="text-xs font-bold text-[var(--vault-muted)]">Secure and synced</p>
+              </div>
+            </div>
+            <div className="mt-5 h-2 overflow-hidden rounded-sm bg-[var(--vault-soft)]">
+              <div
+                className="h-full bg-[var(--vault-brand)] transition-all duration-700"
+                style={{ width: `${storagePercentage}%` }}
+              />
+            </div>
+            <p className="mt-3 text-xs font-extrabold text-[var(--vault-muted)]">
+              {formatFileSize(totalSize)} stored across {files.length} files
+            </p>
+          </div>
+        </header>
+
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {metrics.map((metric) => {
+            const Icon = metric.icon;
+            const Accessory = metric.accessory;
+            return (
+              <div key={metric.label} className="vault-panel-solid p-5 transition duration-300 hover:-translate-y-1">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className={`grid h-11 w-11 place-items-center rounded-md ${metric.tone}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <Accessory className="h-5 w-5 text-[var(--vault-muted)]" />
                 </div>
-                <BarChart3 className="w-5 h-5 text-blue-500 opacity-70" />
+                <p className="text-3xl font-black text-[var(--vault-ink)]">{metric.value}</p>
+                <p className="mt-1 text-sm font-extrabold text-[var(--vault-brand)]">{metric.label}</p>
+                <p className="mt-3 border-t border-[var(--vault-line)] pt-3 text-xs font-bold text-[var(--vault-muted)]">
+                  {metric.helper}
+                </p>
               </div>
-              <h3 className="text-3xl font-bold text-white mb-1">AI Ready</h3>
-              <p className="text-sm text-blue-500">Ask Questions</p>
-              <div className="mt-3 pt-3 border-t border-gray-800">
-                <Link href="/askai" className="text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
-                  Try AI Assistant
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Feature Highlights */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3 mb-8">
-          <div className="group p-6 bg-gradient-to-br from-gray-900/80 via-blue-900/20 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)] transition-all duration-500 hover:scale-[1.02]">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-600/10 border border-blue-500/40">
-                <Shield className="w-7 h-7 text-blue-500" />
+        <section className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {[
+            {
+              title: "Security First",
+              label: "Private file access",
+              copy: "Authenticated document actions remain scoped to the current account.",
+              icon: Shield,
+            },
+            {
+              title: "Fast Uploads",
+              label: "Short path to storage",
+              copy: "Upload flows stay one click away from the dashboard and file library.",
+              icon: Upload,
+            },
+            {
+              title: "AI Analysis",
+              label: "Answers on demand",
+              copy: "Use Ask AI to summarize, inspect, and save useful document conversations.",
+              icon: FileText,
+            },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.title} className="vault-panel-solid p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-[var(--vault-ink)]">{item.title}</h3>
+                    <p className="text-xs font-bold text-[var(--vault-muted)]">{item.label}</p>
+                  </div>
+                </div>
+                <p className="text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                  {item.copy}
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-blue-500">Military-Grade Security</h3>
-                <p className="text-xs text-blue-500">AES-256 encryption</p>
-              </div>
-            </div>
-            <p className="text-sm text-blue-500 leading-relaxed">
-              Your documents are protected with industry-leading encryption standards. Every file is encrypted at rest and in transit.
-            </p>
-          </div>
+            );
+          })}
+        </section>
 
-          <div className="group p-6 bg-gradient-to-br from-gray-900/80 via-blue-900/20 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)] transition-all duration-500 hover:scale-[1.02]">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-600/10 border border-blue-500/40">
-                <Upload className="w-7 h-7 text-blue-500" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-blue-500">Lightning Fast</h3>
-                <p className="text-xs text-blue-500">Instant uploads</p>
-              </div>
-            </div>
-            <p className="text-sm text-blue-500 leading-relaxed">
-              Upload and access your files in seconds. Our optimized infrastructure ensures minimal latency and maximum performance.
-            </p>
-          </div>
-
-          <div className="group p-6 bg-gradient-to-br from-gray-900/80 via-blue-900/20 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)] transition-all duration-500 hover:scale-[1.02]">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-600/10 border border-blue-500/40">
-                <FileText className="w-7 h-7 text-blue-500" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-blue-500">AI-Powered Insights</h3>
-                <p className="text-xs text-blue-500">Smart analysis</p>
-              </div>
-            </div>
-            <p className="text-sm text-blue-500 leading-relaxed">
-              Get instant summaries, extract key information, and ask questions about your documents using advanced AI technology.
-            </p>
-          </div>
-        </div>
-
-        {/* Recent Files Section */}
         {loading ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="vault-panel-solid py-16">
             <Loader />
           </div>
         ) : files.length > 0 ? (
           <section className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/20 border border-blue-500/30">
-                  <FolderOpen className="w-5 h-5 text-blue-500" />
-                </div>
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-100">
-                    Recent Files
-                  </h2>
-                  <p className="text-sm text-blue-500">Your latest uploads and documents</p>
-                </div>
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="vault-kicker mb-2">Library</p>
+                <h2 className="text-2xl font-black text-[var(--vault-ink)] sm:text-3xl">
+                  Recent Files
+                </h2>
+                <p className="mt-1 text-sm font-semibold text-[var(--vault-muted)]">
+                  Your latest uploads and documents.
+                </p>
               </div>
-              <Link
-                href="/uploads"
-                className="hidden sm:flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400 transition-colors"
-              >
+              <Link href="/uploads" className="vault-button-secondary">
                 View All
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {recentFiles.map((f, index) => (
                 <div
                   key={f.id}
-                  className="group relative p-5 bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90 backdrop-blur-xl rounded-xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-blue-500/50 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)] transition-all duration-500 hover:scale-[1.02] overflow-hidden"
+                  className="vault-panel-solid p-5 transition duration-300 hover:-translate-y-1"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-blue-500/5 transition-all duration-500" />
-                  <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 group-hover:scale-110 transition-transform duration-300">
-                        <FileText className="text-blue-300 w-6 h-6" />
-                      </div>
-                      
+                  <div className="mb-4 flex items-start justify-between gap-3">
+                    <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                      <FileText className="h-5 w-5" />
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-semibold text-blue-100 truncate group-hover:text-blue-50 transition-colors">
-                        {f.name}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {formatFileSize(f.size)}
-                        </p>
-                        <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                          PDF
-                        </span>
-                      </div>
-                    </div>
+                    <span className="rounded-md bg-[var(--vault-brand-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-brand)]">
+                      PDF
+                    </span>
                   </div>
+                  <h3 className="truncate text-base font-black text-[var(--vault-ink)]">
+                    {f.name}
+                  </h3>
+                  <p className="mt-3 flex items-center gap-2 text-xs font-bold text-[var(--vault-muted)]">
+                    <Clock className="h-3.5 w-3.5" />
+                    {formatFileSize(f.size)}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
         ) : (
-          <div className="relative p-12 sm:p-16 bg-gradient-to-br from-gray-900/80 to-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.3)] text-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-500/5" />
-            <div className="relative z-10">
-              <div className="inline-flex p-4 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/20 border border-blue-500/30 mb-6">
-                <FolderOpen className="w-12 h-12 text-blue-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-200 mb-3">Your Vault is Empty</h3>
-              <p className="text-blue-500 mb-6 max-w-md mx-auto">
-                Start by uploading your first document. Your files will be securely stored and ready for AI-powered analysis.
-              </p>
-              <Link
-                href="/uploads"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 rounded-xl font-semibold hover:bg-blue-500 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105"
-              >
-                <Upload className="w-5 h-5" />
-                <span>Upload Your First File</span>
-              </Link>
+          <div className="vault-panel-solid p-10 text-center sm:p-14">
+            <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+              <FolderOpen className="h-7 w-7" />
             </div>
+            <h3 className="text-2xl font-black text-[var(--vault-ink)]">
+              Your Vault is Empty
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+              Start by uploading your first document. Your files will be ready for AI-powered analysis.
+            </p>
+            <Link href="/uploads" className="vault-button-primary mt-6">
+              <Upload className="h-5 w-5" />
+              Upload Your First File
+            </Link>
           </div>
         )}
 
-        {/* Quick Actions Footer */}
-        <div className="mt-8 p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/40 backdrop-blur-md rounded-2xl border border-gray-800/50">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="vault-panel-solid mt-8 p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-200 mb-1">Need Help?</h3>
-              <p className="text-sm text-gray-400">Explore our features or get started with AI assistance</p>
+              <h3 className="text-lg font-black text-[var(--vault-ink)]">Need a faster path?</h3>
+              <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                Jump directly into document chat or upload another source.
+              </p>
             </div>
-            <div className="flex gap-3">
-              <Link
-                href="/askai"
-                className="px-5 py-2.5 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700/50 rounded-lg text-sm font-medium text-gray-300 hover:text-white transition-all duration-300"
-              >
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link href="/askai" className="vault-button-secondary">
                 Ask AI
               </Link>
-              <Link
-                href="/uploads"
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-all duration-300 shadow-lg shadow-blue-500/25"
-              >
+              <Link href="/uploads" className="vault-button-primary">
                 Upload Files
               </Link>
             </div>

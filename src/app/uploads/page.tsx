@@ -5,15 +5,16 @@ import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import Loader from "@/components/Loader";
 import {
-  Plus,
-  Folder,
-  MoreVertical,
+  Bot,
   Download,
+  FileText,
+  Folder,
+  MessageSquare,
+  MoreVertical,
+  Plus,
   Share2,
   Trash2,
-  Bot,
-  MessageSquare,
-  FileText,
+  UploadCloud,
 } from "lucide-react";
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -133,7 +134,6 @@ export default function UploadsPage() {
     );
     if (!confirmed) return;
 
-    // 🔥 OPTIMISTIC UPDATE
     setSavedChats((prev) => prev.filter((chat) => chat.id !== id));
     setMenuIndex(null);
 
@@ -147,15 +147,13 @@ export default function UploadsPage() {
 
       if (!res.ok) {
         console.error("Failed to delete chat:", await res.text());
-        refreshFiles(); // rollback safety
+        refreshFiles();
       }
     } catch (error) {
       console.error("Error deleting chat:", error);
-      refreshFiles(); // rollback safety
+      refreshFiles();
     }
   };
-
-
 
   const handleShare = async (file: StoredFile) => {
     const blob = base64ToBlob(file.url, "application/octet-stream");
@@ -163,7 +161,7 @@ export default function UploadsPage() {
 
     try {
       await navigator.clipboard.writeText(url);
-      setToast("📋 Link copied to clipboard!");
+      setToast("Link copied to clipboard.");
       setTimeout(() => setToast(null), 2500);
     } catch {
       window.prompt("Copy this link:", url);
@@ -200,176 +198,220 @@ export default function UploadsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
+    <div className="vault-grid flex min-h-screen text-[var(--vault-ink)]">
       <Sidebar />
 
-      <main className="flex-1 relative p-8 md:p-12">
-        <h1 className="text-4xl font-bold mb-5 text-gradient">
-          Your Files
-        </h1>
+      <main className="relative flex-1 px-4 pb-28 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
+        <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="vault-kicker mb-3">Library</p>
+            <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+              Your Files
+            </h1>
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+              Review uploaded documents, reopen saved chats, or add a fresh PDF for analysis.
+            </p>
+          </div>
+          <button onClick={handleUploadClick} className="vault-button-primary">
+            <UploadCloud className="h-5 w-5" />
+            Upload Files
+          </button>
+        </header>
 
         {loading ? (
-          <Loader />
+          <div className="vault-panel-solid py-20">
+            <Loader />
+          </div>
         ) : files.length === 0 && savedChats.length === 0 ? (
-          <div className="flex items-center justify-center h-[70vh]">
-            <span className="text-6xl font-bold text-gray-600 opacity-40">
-              Empty
-            </span>
+          <div className="vault-panel-solid flex min-h-[58vh] items-center justify-center p-8 text-center">
+            <div>
+              <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                <Folder className="h-8 w-8" />
+              </div>
+              <h2 className="text-2xl font-black text-[var(--vault-ink)]">
+                No files yet
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                Upload a PDF to start building your searchable document workspace.
+              </p>
+              <button onClick={handleUploadClick} className="vault-button-primary mt-6">
+                <Plus className="h-5 w-5" />
+                Add First File
+              </button>
+            </div>
           </div>
         ) : (
           <>
             {savedChats.length > 0 && (
-              <section className="mb-20">
-                <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5" />
-                  Saved Chats
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              <section className="mb-10">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-[var(--vault-ink)]">
+                      Saved Chats
+                    </h2>
+                    <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                      Continue from previous document sessions.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {savedChats.map((chat, index) => {
                     const menuId = `chat-${index}`;
 
                     return (
-                      <Link key={chat.id} href={`/askai?chat=${chat.id}`}>
-                        <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-6 hover:bg-green-500/30 transition-all cursor-pointer relative">
-
-                          {/* Menu dots */}
-                          {/* <div
-                            className="absolute top-2 right-2"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setMenuIndex(menuIndex === menuId ? null : menuId);
-                            }}
-                          >
-                            <MoreVertical className="text-green-200 cursor-pointer hover:text-green-400 transition duration-200" />
-                          </div> */}
-
-                          {/* Dropdown */}
-                          {menuIndex === menuId && (
-                            <div
-                              className="absolute top-10 right-2 bg-green-950 border border-green-800 rounded-md shadow-lg z-50"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleDeleteChat(chat.id);
-                                }}
-                                className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
+                      <div key={chat.id} className="relative">
+                        <Link href={`/askai?chat=${chat.id}`}>
+                          <div className="vault-panel-solid cursor-pointer p-5 transition duration-300 hover:-translate-y-1">
+                            {menuIndex === menuId && (
+                              <div
+                                className="absolute right-3 top-12 z-50 overflow-hidden rounded-md border border-[var(--vault-line)] bg-white shadow-[var(--vault-shadow)]"
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <Trash2 size={16} className="mr-2" />
-                                Delete
-                              </button>
-                            </div>
-                          )}
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDeleteChat(chat.id);
+                                  }}
+                                  className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-danger)] transition hover:bg-[var(--vault-accent-soft)]"
+                                >
+                                  <Trash2 size={16} className="mr-2" />
+                                  Delete
+                                </button>
+                              </div>
+                            )}
 
-                          {/* Card content */}
-                          <MessageSquare size={50} className="text-green-400 mb-4" />
-                          <p className="text-lg font-semibold text-center text-green-100 truncate">
-                            {chat.fileName}
-                          </p>
-                          <p className="text-xs text-center text-green-300 mt-2">
-                            Continue chat
-                          </p>
-                        </div>
-                      </Link>
+                            <div className="mb-4 flex items-center justify-between">
+                              <div className="grid h-12 w-12 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                                <MessageSquare className="h-6 w-6" />
+                              </div>
+                              <span className="rounded-md bg-[var(--vault-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-muted)]">
+                                Chat
+                              </span>
+                            </div>
+                            <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                              {chat.fileName}
+                            </p>
+                            <p className="mt-2 text-xs font-bold text-[var(--vault-muted)]">
+                              Continue conversation
+                            </p>
+                          </div>
+                        </Link>
+                      </div>
                     );
                   })}
                 </div>
-
               </section>
             )}
-            <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Uploaded Files
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:mt-10">
 
-              {files.map((file, index) => (
-                <div
-                  key={file.id}
-                  onClick={() => handleOpen(file)}
-                  className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-6 hover:bg-blue-500/30 transition-all ease-in-out transform hover:scale-105 cursor-pointer relative shadow-lg"
-                >
-                  <Folder size={50} className="text-blue-500 mb-4 mx-auto" />
-                  <p className="text-lg font-semibold text-center text-blue-100 truncate">
-                    {file.name}
+            <section>
+              <div className="mb-4 flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-[var(--vault-ink)]">
+                    Uploaded Files
+                  </h2>
+                  <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                    Open, download, share, or remove documents.
                   </p>
-                  <p className="text-xs text-center text-blue-300 mt-2">
-                    {(file.size / 1024).toFixed(2)} KB
-                  </p>
+                </div>
+              </div>
 
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {files.map((file, index) => (
                   <div
-                    className="absolute top-2 right-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setMenuIndex(index === menuIndex ? null : index);
-                    }}
+                    key={file.id}
+                    onClick={() => handleOpen(file)}
+                    className="vault-panel-solid group relative cursor-pointer p-5 transition duration-300 hover:-translate-y-1"
                   >
-                    <MoreVertical className="text-blue-200 cursor-pointer hover:text-blue-400 transition duration-200" />
-                  </div>
-
-                  {menuIndex === index && (
-                    <div className="absolute top-10 right-2 bg-blue-950 border border-blue-800 rounded-md shadow-lg z-50">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(file);
-                          setMenuIndex(null);
-                        }}
-                        className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
-                      >
-                        <Download size={16} className="mr-2" />
-                        Download
-                      </button>
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                      <div className="grid h-12 w-12 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                        <Folder className="h-6 w-6" />
+                      </div>
 
                       <button
+                        className="vault-icon-button min-h-9 min-w-9"
+                        title="File actions"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleShare(file);
-                          setMenuIndex(null);
+                          setMenuIndex(index === menuIndex ? null : index);
                         }}
-                        className="flex items-center px-4 py-2 text-sm hover:bg-blue-800 w-full text-blue-200 transition-all duration-200"
                       >
-                        <Share2 size={16} className="mr-2" />
-                        Share
-                      </button>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(file.id);
-                        }}
-                        className="flex items-center px-4 py-2 text-sm hover:bg-red-800 w-full text-red-400 transition-all duration-200"
-                      >
-                        <Trash2 size={16} className="mr-2" />
-                        Delete
+                        <MoreVertical className="h-4 w-4" />
                       </button>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
+
+                    <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                      {file.name}
+                    </p>
+                    <p className="mt-2 text-xs font-bold text-[var(--vault-muted)]">
+                      {(file.size / 1024).toFixed(2)} KB
+                    </p>
+
+                    {menuIndex === index && (
+                      <div className="absolute right-3 top-14 z-50 overflow-hidden rounded-md border border-[var(--vault-line)] bg-white shadow-[var(--vault-shadow)]">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(file);
+                            setMenuIndex(null);
+                          }}
+                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-ink)] transition hover:bg-[var(--vault-soft)]"
+                        >
+                          <Download size={16} className="mr-2" />
+                          Download
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(file);
+                            setMenuIndex(null);
+                          }}
+                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-ink)] transition hover:bg-[var(--vault-soft)]"
+                        >
+                          <Share2 size={16} className="mr-2" />
+                          Share
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(file.id);
+                          }}
+                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-danger)] transition hover:bg-[var(--vault-accent-soft)]"
+                        >
+                          <Trash2 size={16} className="mr-2" />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
           </>
         )}
 
         <div
-          className="absolute bottom-32 right-8 flex flex-col items-center"
+          className="fixed bottom-24 right-5 z-40 flex flex-col items-end gap-2 sm:right-8"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {isHovered && (
-            <div className="mb-2 px-2 py-1 text-sm text-white bg-gray-800 rounded shadow-md transition-opacity duration-200">
+            <div className="rounded-md border border-[var(--vault-line)] bg-white px-3 py-1.5 text-sm font-extrabold text-[var(--vault-ink)] shadow-[var(--vault-shadow-soft)]">
               Ask AI
             </div>
           )}
 
-          <a href="/askai">
-            <button className="w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition transform hover:scale-110">
-              <Bot size={28} className="text-white" />
-            </button>
-          </a>
+          <Link href="/askai" className="vault-icon-button h-14 w-14 bg-[var(--vault-ink)] text-white hover:bg-[var(--vault-brand-dark)]" title="Ask AI">
+            <Bot size={26} />
+          </Link>
         </div>
 
         <input
@@ -381,14 +423,15 @@ export default function UploadsPage() {
         />
 
         <button
-          className="absolute bottom-8 right-8 w-14 h-14 flex items-center justify-center cursor-pointer rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 hover:bg-gradient-to-br hover:from-blue-700 hover:to-indigo-700 shadow-lg transition transform hover:scale-110"
+          className="fixed bottom-6 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-lg bg-[var(--vault-brand)] text-white shadow-[var(--vault-shadow)] transition hover:-translate-y-1 hover:bg-[var(--vault-brand-dark)] sm:right-8"
           onClick={handleUploadClick}
+          title="Upload files"
         >
-          <Plus size={28} className="text-white" />
+          <Plus size={28} />
         </button>
 
         {toast && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg">
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[var(--vault-line)] bg-[var(--vault-ink)] px-4 py-2 text-sm font-bold text-white shadow-[var(--vault-shadow)]">
             {toast}
           </div>
         )}

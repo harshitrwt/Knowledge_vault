@@ -2,6 +2,13 @@
 
 import { useRef } from "react";
 import { motion, useInView, Variants } from "framer-motion";
+import { CheckCircle2, FileText, MessageSquareText, Search } from "lucide-react";
+
+const workflow = [
+  "Read upload context",
+  "Surface exact answers",
+  "Save useful conversations",
+];
 
 export default function AboutSection() {
   const ref = useRef(null);
@@ -36,76 +43,71 @@ export default function AboutSection() {
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={sectionVariants}
-      className="relative bg-black rounded-tl-[20vh] md:rounded-tr-[20vh] border-t border-blue-300 text-white py-32 overflow-hidden md:h-full h-[110vh]"
+      className="relative border-t border-[var(--vault-line)] px-4 py-24 sm:px-6 lg:px-8"
     >
-      {/* Grid Background */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
-        }}
-      />
-
-      {/* Accent Glows */}
-      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[200px] top-[-100px] left-[-160px]" />
-      <div className="absolute w-[400px] h-[300px] bg-blue-300 rounded-full blur-[180px] top-[120px] right-[-120px]" />
-
-      {/* Main Content */}
       <motion.div
-        className="container mx-auto px-8 md:px-20 text-center relative z-10 max-w-6xl"
+        className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]"
         variants={contentVariants}
       >
-        {/* Heading */}
-        <motion.h2
-          variants={childVariants}
-          className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight mb-8"
-        >
-          Vault
-        </motion.h2>
-
-        {/* Shorter Use Case Paragraph */}
-        <motion.p
-          variants={childVariants}
-          className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-20"
-        >
-          Vault lets you chat with your documents, simply <span className="text-blue-500">upload a PDF and ask questions</span> to extract precise answers instantly.
-        </motion.p>
-
-        {/* Image + Description Section */}
-        <motion.div
-          variants={childVariants}
-          className="grid md:grid-cols-2 gap-10 items-center justify-center text-center md:text-left"
-        >
-          {/* Image */}
-          <div className="flex justify-center">
-            <img
-              src="https://img.freepik.com/premium-vector/bank-vault-door-clipart-vector-art-illustration_761413-24107.jpg?w=360"
-              alt="About Smart Contract Vault"
-              className="rounded-3xl w-[80vw] max-w-[420px] md:w-[38vh] opacity-90 hover:opacity-100 transition-opacity duration-300 object-cover"
-              loading="lazy"
-            />
+        <motion.div variants={childVariants}>
+          <p className="vault-kicker mb-3">Product Shape</p>
+          <h2 className="text-3xl font-black tracking-normal text-[var(--vault-ink)] sm:text-4xl">
+            From static PDFs to an active workspace.
+          </h2>
+          <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-[var(--vault-muted)] sm:text-lg">
+            Vault keeps the familiar upload, analyze, and chat workflow, but presents it with cleaner hierarchy, stronger affordances, and more useful scanning surfaces.
+          </p>
+          <div className="mt-8 space-y-3">
+            {workflow.map((item) => (
+              <div key={item} className="flex items-center gap-3 text-sm font-extrabold text-[var(--vault-ink)]">
+                <CheckCircle2 className="h-5 w-5 text-[var(--vault-success)]" />
+                {item}
+              </div>
+            ))}
           </div>
+        </motion.div>
 
-          {/* Right - Short Description */}
-          <motion.div
-            variants={childVariants}
-            className="flex flex-col justify-center md:pl-6 lg:pl-10 mx-auto max-w-md space-y-4"
-          >
-            <h3 className="text-3xl font-semibold text-gray-100">
-              Ask Extract <span className="text-blue-500">Understand</span>
-            </h3>
-            <p className="text-gray-400 leading-relaxed">
-              Upload your papers, audits, or whitepapers and get instant, contextual answers from them. Vault transforms static documents into dynamic knowledge you can converse with.
-            </p>
-          </motion.div>
+        <motion.div variants={childVariants} className="vault-panel p-4">
+          <div className="grid gap-3 sm:grid-cols-[0.82fr_1.18fr]">
+            <div className="rounded-lg border border-[var(--vault-line)] bg-[var(--vault-soft)] p-4">
+              <div className="mb-4 flex items-center gap-2">
+                <Search className="h-4 w-4 text-[var(--vault-brand)]" />
+                <p className="text-sm font-black text-[var(--vault-ink)]">Source Explorer</p>
+              </div>
+              {["Clause summary", "Risk language", "Payment schedule", "Renewal window"].map((item) => (
+                <div key={item} className="mb-2 rounded-md border border-[var(--vault-line)] bg-white/80 p-3 last:mb-0">
+                  <p className="text-sm font-extrabold text-[var(--vault-ink)]">{item}</p>
+                  <div className="mt-2 h-1.5 rounded-sm bg-[var(--vault-brand-soft)]" />
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-[var(--vault-line)] bg-white/80 p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquareText className="h-4 w-4 text-[var(--vault-accent)]" />
+                  <p className="text-sm font-black text-[var(--vault-ink)]">AI Response</p>
+                </div>
+                <span className="rounded-md bg-[var(--vault-accent-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-accent)]">
+                  Saved
+                </span>
+              </div>
+              <p className="text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                The agreement includes a 14-day notice period, a late fee after day 45, and a renewal clause that should be reviewed before approval.
+              </p>
+              <div className="mt-5 rounded-lg border border-[var(--vault-line)] bg-[var(--vault-info-soft)] p-4">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-[var(--vault-info)]" />
+                  <p className="text-sm font-black text-[var(--vault-ink)]">Linked evidence</p>
+                </div>
+                <p className="mt-2 text-xs font-bold leading-5 text-[var(--vault-muted)]">
+                  Section 4.2, page 8, source excerpt available in chat context.
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
-
-      {/* Subtle Bottom Divider */}
-      <div className="absolute bottom-0 w-full flex justify-center mt-20">
-        <div className="w-[85%] h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-20"></div>
-      </div>
     </motion.section>
   );
 }

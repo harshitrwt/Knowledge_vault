@@ -1,11 +1,11 @@
 export default function FileCard({ file }: { file: { id: number; name: string; size: string } }) {
   return (
-    <div className="p-4 bg-gray-900 rounded-lg text-white flex justify-between items-center">
+    <div className="vault-panel-solid flex items-center justify-between gap-4 p-4 text-[var(--vault-ink)]">
       <div>
-        <p className="font-semibold">{file.name}</p>
-        <p className="text-sm text-gray-400">{file.size}</p>
+        <p className="font-extrabold">{file.name}</p>
+        <p className="text-sm font-semibold text-[var(--vault-muted)]">{file.size}</p>
       </div>
-      <button className="px-3 py-1 bg-blue-600 rounded">Download</button>
+      <button className="vault-button-secondary min-h-9 px-3 py-1.5 text-sm">Download</button>
     </div>
   );
 }

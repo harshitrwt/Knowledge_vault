@@ -2,22 +2,23 @@
 
 import { useRef } from "react";
 import { motion, Variants, Transition, useInView } from "framer-motion";
+import { BrainCircuit, LockKeyhole, Workflow } from "lucide-react";
 
 const features = [
   {
-    title: "Hyper-Intelligent Retrieval",
-    desc: "Extract accurate insights from complex documents instantly, powered by adaptive AI cognition.",
-    icon: "⚙️",
+    title: "Grounded Retrieval",
+    desc: "Extract precise answers from dense files while keeping the source context close at hand.",
+    icon: BrainCircuit,
   },
   {
-    title: "Secure Knowledge Architecture",
-    desc: "Enterprise-grade encryption ensures your knowledge stays safe, synchronized, and private.",
-    icon: "🔐",
+    title: "Private Workspace",
+    desc: "Authenticated flows, scoped uploads, and saved chats keep sensitive document work contained.",
+    icon: LockKeyhole,
   },
   {
-    title: "Collaborative Intelligence",
-    desc: "Real-time team access with layered permissions, fostering clarity and shared understanding.",
-    icon: "🤝",
+    title: "Actionable Flow",
+    desc: "Move from upload to chat to mind map without switching mental modes or losing momentum.",
+    icon: Workflow,
   },
 ];
 
@@ -36,7 +37,7 @@ const cardsContainerVariants: Variants = {
 const cardTransition: Transition = { duration: 0.6, ease: "easeOut" };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.9, y: 30 },
+  hidden: { opacity: 0, scale: 0.96, y: 24 },
   visible: {
     opacity: 1,
     scale: 1,
@@ -47,7 +48,7 @@ const cardVariants: Variants = {
 
 export default function Features() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" }); // triggers when near view
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <motion.section
@@ -62,63 +63,43 @@ export default function Features() {
           transition: { duration: 0.9, ease: "easeOut" },
         },
       }}
-      className="relative mt-[-30px] py-32 px-6 md:px-12 text-white bg-black md:rounded-tl-[20vh] rounded-tr-[20vh] border-t border-blue-300 md:mt-0  flex flex-col justify-center items-center overflow-hidden"
+      className="relative border-t border-[var(--vault-line)] bg-white/60 px-4 py-24 sm:px-6 lg:px-8"
     >
-      {/* Grid Background */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
-        }}
-      />
-
-      {/* Accent Glows */}
-      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[200px] top-[-100px] left-[-160px]" />
-      <div className="absolute w-[400px] h-[300px] bg-blue-300 rounded-full blur-[180px] top-[120px] right-[-120px]" />
-
-      {/* Header Text */}
-      <motion.div
-        className="relative z-10 text-center max-w-3xl mb-20"
-        variants={headerVariants}
-      >
-        <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-8 tracking-tight">
-          Intelligent Features
+      <motion.div className="mx-auto mb-12 max-w-3xl text-center" variants={headerVariants}>
+        <p className="vault-kicker mb-3">Core Capabilities</p>
+        <h2 className="text-3xl font-black tracking-normal text-[var(--vault-ink)] sm:text-4xl">
+          A sharper way to work through documents.
         </h2>
-        <p className="text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          Unlock the next era of intelligent document processing with precise reasoning,
-          contextual awareness, and seamless collaboration built for scale.
+        <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)] sm:text-lg">
+          The new interface favors scannability, fast action, and a visual rhythm built for repeated daily use.
         </p>
       </motion.div>
 
-      {/* Feature Cards */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-7xl w-full relative z-10 perspective-[1000px]"
+        className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         variants={cardsContainerVariants}
       >
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            variants={cardVariants}
-            className="group border-3 shadow-gray-600/70 border-gray-600/70 bg-[#14161e]/60 hover:bg-[#191c24]/70 transition-all duration-500 rounded-2xl p-10 flex flex-col items-center text-center shadow-[0_0_30px_rgba(0,0,0,0.25)] hover:shadow-[0_0_50px_rgba(255,255,255,0.08)]"
-            style={{ transformStyle: "preserve-3d" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "rotateY(5deg) rotateX(3deg)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "rotateY(0deg) rotateX(0deg)";
-            }}
-          >
-            <div className="text-5xl mb-6">{feature.icon}</div>
-            <h3 className="text-2xl font-semibold mb-3 text-white">{feature.title}</h3>
-            <p className="text-gray-400 text-base leading-relaxed">{feature.desc}</p>
-          </motion.div>
-        ))}
+        {features.map((feature, index) => {
+          const Icon = feature.icon;
+          return (
+            <motion.div
+              key={index}
+              variants={cardVariants}
+              className="vault-panel-solid p-6 transition duration-300 hover:-translate-y-1"
+            >
+              <div className="mb-5 grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-black text-[var(--vault-ink)]">
+                {feature.title}
+              </h3>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                {feature.desc}
+              </p>
+            </motion.div>
+          );
+        })}
       </motion.div>
-
-      <div className="absolute bottom-0 w-full flex justify-center mt-20">
-        <div className="w-[85%] h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-20"></div>
-      </div>
     </motion.section>
   );
 }

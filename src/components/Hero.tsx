@@ -1,60 +1,58 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import {
+  ArrowRight,
+  CheckCircle2,
+  FileSearch,
+  Files,
+  MessageSquareText,
+  ShieldCheck,
+  Sparkles,
+  UploadCloud,
+} from "lucide-react";
 
-type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
-const CARDS: {
-  label: string;
-  question?: string;
-  answer?: string;
-  steps?: string[];
-  position: Position;
-}[] = [
+const insightCards = [
   {
-    label: "ORDER EXAMINE",
-    question: "🤔 What's the summary of section 4?",
-    answer: "AI: Section 4 covers refund policies and dispute resolution steps ...",
-    position: "top-left",
+    label: "Analyze",
+    title: "Contract risk summary",
+    copy: "Three clauses need review before sign-off.",
+    icon: FileSearch,
   },
   {
-    label: "INSTRUCTIONS",
-    steps: [
-      "🗂️ Upload any PDF or document",
-      "💬 Type or speak your question",
-      "✅ Get step-by-step, exact answers",
-    ],
-    position: "top-right",
+    label: "Ask",
+    title: "What changed in section 4?",
+    copy: "Vault answers from the uploaded source.",
+    icon: MessageSquareText,
   },
   {
-    label: "QUICK INSIGHT",
-    question: "🔍 Find total transactions for Q3?",
-    answer: "AI: Q3 had 128,768 transactions, a 12.4% growth over Q2.",
-    position: "bottom-left",
-  },
-  {
-    label: "PDF MISSION",
-    steps: [
-      "📈 Extract analytics instantly",
-      "📑 Summarize contract changes",
-      "☑️ Validate legal compliance",
-    ],
-    position: "bottom-right",
+    label: "Protect",
+    title: "Private by default",
+    copy: "Authenticated files stay scoped to your account.",
+    icon: ShieldCheck,
   },
 ];
 
-const scatterPositions: Record<Position, { x: number; y: number }> = {
-  "top-left": { x: -550, y: -230 },
-  "top-right": { x: 300, y: -160 },
-  "bottom-left": { x: -600, y: 100 },
-  "bottom-right": { x: 300, y: 150 },
-};
+const pipeline = [
+  { label: "Upload", value: "128 docs", icon: UploadCloud },
+  { label: "Indexed", value: "92%", icon: Files },
+  { label: "Ready", value: "AI live", icon: Sparkles },
+];
+
+const answers = [
+  {
+    question: "Summarize the payment terms.",
+    answer: "Net 30 payment with late-fee exposure after day 45.",
+  },
+  {
+    question: "Find termination conditions.",
+    answer: "Mutual termination requires 14 days written notice.",
+  },
+];
 
 export default function HeroSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const contentVariants = {
@@ -67,139 +65,181 @@ export default function HeroSection() {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="md:h-full h-[70vh] mb-13 font-sans relative text-white overflow-hidden bg-black"
-    >
-      {/* Luxurious grid background */}
-      <div
-        className="absolute inset-0 pointer-events-none -z-10"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px), repeating-linear-gradient(180deg, rgba(55,55,75,0.18) 0px, rgba(55,55,75,0.18) 1px, transparent 1px, transparent 64px)",
-        }}
-      />
-
-      {/* Subtle dark glows */}
-      <div className="absolute w-[300px] h-[300px] bg-blue-300 rounded-full blur-[200px] top-[-100px] left-[-160px] pointer-events-none" />
-      <div className="absolute w-[300px] h-[300px] bg-blue-400 rounded-full blur-[180px] top-[100px] right-[0px] pointer-events-none" />
-
-      <section className="relative flex flex-col items-center justify-center pt-20 pb-32 px-4 md:px-0 mt-10 md:mt-22">
+    <section className="relative overflow-hidden px-4 pt-28 sm:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-[82vh] max-w-7xl items-center gap-10 py-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
         <motion.div
-          className="relative z-10 max-w-4xl w-full flex flex-col items-center text-center md:mt-0 mt-14"
+          className="max-w-2xl"
           initial="hidden"
           animate="visible"
           variants={contentVariants}
         >
-          <h1 className="text-5xl md:text-6xl font-bold leading-[1.07] mb-4 tracking-tight">
-            The <span className="text-[#faffff]/80">#1 AI Agent</span>
-            <br />
-            <span className="font-extralight text-gray-200">for resolving</span>
-            <br />
-            <span className="font-bold text-white">all your queries</span>
+          <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-[var(--vault-line)] bg-white/70 px-3 py-2 text-sm font-extrabold text-[var(--vault-brand)] shadow-sm">
+            <Sparkles className="h-4 w-4" />
+            Document intelligence, redesigned
+          </div>
+
+          <h1 className="text-5xl font-black leading-[1.02] tracking-normal text-[var(--vault-ink)] sm:text-6xl lg:text-7xl">
+            Vault
           </h1>
 
-          <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-            Instantly chat with your PDFs—ask questions, extract insights, and let
-            AI tackle complex file analysis in seconds. No more endless scrolling—just upload and talk.
+          <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-[var(--vault-muted)] sm:text-xl">
+            Upload PDFs, ask pointed questions, and turn static documents into a searchable workspace with a calm, premium interface.
           </p>
 
-          <div className="flex gap-4 flex-col sm:flex-row justify-center mb-8">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <SignedOut>
               <SignInButton fallbackRedirectUrl="/dashboard">
-                <button
-                  className="px-7 py-3 bg-white text-black cursor-pointer rounded font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition"
-                >
-                  Start free trial
+                <button className="vault-button-primary">
+                  Open Vault
+                  <ArrowRight className="h-4 w-4" />
                 </button>
               </SignInButton>
             </SignedOut>
             <SignedIn>
               <button
                 onClick={() => router.push("/dashboard")}
-                className="px-7 py-3 bg-white text-black cursor-pointer rounded font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition"
+                className="vault-button-primary"
               >
-                Start free trial
+                Open Vault
+                <ArrowRight className="h-4 w-4" />
               </button>
             </SignedIn>
 
             <SignedOut>
               <SignInButton fallbackRedirectUrl="/askai">
-                <button className="px-7 py-3 border border-gray-400 cursor-pointer text-gray-200 rounded font-semibold backdrop-blur-sm hover:bg-white/10 hover:text-white hover:scale-105 transition">
-                  View demo
-                </button>
+                <button className="vault-button-secondary">Try Ask AI</button>
               </SignInButton>
             </SignedOut>
             <SignedIn>
               <button
                 onClick={() => router.push("/askai")}
-                className="px-7 py-3 border border-gray-400 cursor-pointer text-gray-200 rounded font-semibold backdrop-blur-sm hover:bg-white/10 hover:text-white hover:scale-105 transition"
+                className="vault-button-secondary"
               >
-                View demo
+                Try Ask AI
               </button>
             </SignedIn>
           </div>
+
+          <div className="mt-10 grid gap-3 sm:grid-cols-3">
+            {insightCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={card.label}
+                  className="vault-panel-solid p-4 transition hover:-translate-y-1"
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="grid h-8 w-8 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="text-xs font-extrabold uppercase text-[var(--vault-muted)]">
+                      {card.label}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-black text-[var(--vault-ink)]">
+                    {card.title}
+                  </h3>
+                  <p className="mt-1 text-sm font-semibold leading-5 text-[var(--vault-muted)]">
+                    {card.copy}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
 
-        {/* Floating cards */}
-        <div className="hidden md:block absolute inset-0 w-full h-full pointer-events-none">
-          {CARDS.map((card, i) => (
-            <motion.div
-              key={i}
-              drag
-              dragConstraints={containerRef}
-              dragMomentum={false}
-              className="absolute z-20 w-[300px] bg-[#15192b]/90 border border-gray-700 rounded-2xl shadow-2xl px-6 py-5 opacity-95 select-none cursor-grab"
-              initial={{ opacity: 0, scale: 0.8, x: 0, y: 0 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                x: scatterPositions[card.position].x,
-                y: scatterPositions[card.position].y,
-                transition: {
-                  type: "spring",
-                  stiffness: 80,
-                  damping: 22,
-                  delay: 0.9,
-                },
-              }}
-              style={{
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                pointerEvents: "auto",
-              }}
-              whileHover={{
-                scale: 1.06,
-                boxShadow: "0 0 48px 0 rgba(100,100,145,0.17)",
-              }}
-            >
-              <p className="text-xs text-gray-400 uppercase mb-2">
-                {card.label}
-              </p>
-
-              {card.question && (
-                <>
-                  <div className="text-white font-semibold text-lg mb-1">
-                    {card.question}
+        <motion.div
+          className="vault-panel relative overflow-hidden p-4 sm:p-5"
+          initial={{ opacity: 0, y: 36 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.18 }}
+        >
+          <div className="grid gap-3 border-b border-[var(--vault-line)] pb-4 sm:grid-cols-3">
+            {pipeline.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.label}
+                  className="rounded-lg border border-[var(--vault-line)] bg-white/70 p-3"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-extrabold uppercase text-[var(--vault-muted)]">
+                      {item.label}
+                    </span>
+                    <Icon className="h-4 w-4 text-[var(--vault-brand)]" />
                   </div>
-                  <div className="text-gray-300 text-sm">
-                    {card.answer}
-                  </div>
-                </>
-              )}
+                  <p className="mt-2 text-2xl font-black text-[var(--vault-ink)]">
+                    {item.value}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
 
-              {card.steps && (
-                <ul className="list-disc list-inside text-gray-200 text-sm space-y-1">
-                  {card.steps.map((step, idx) => (
-                    <li key={idx}>{step}</li>
-                  ))}
-                </ul>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      </section>
-    </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-[0.7fr_1fr]">
+            <div className="rounded-lg border border-[var(--vault-line)] bg-[var(--vault-soft)] p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-black text-[var(--vault-ink)]">
+                  File Stack
+                </p>
+                <span className="rounded-md bg-white px-2 py-1 text-xs font-extrabold text-[var(--vault-brand)]">
+                  PDF
+                </span>
+              </div>
+              {["Service agreement.pdf", "Audit notes.pdf", "Investor memo.pdf"].map((file, index) => (
+                <div
+                  key={file}
+                  className="mb-2 flex items-center gap-3 rounded-md border border-[var(--vault-line)] bg-white/80 p-3 last:mb-0"
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                    <Files className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-extrabold text-[var(--vault-ink)]">
+                      {file}
+                    </p>
+                    <p className="text-xs font-bold text-[var(--vault-muted)]">
+                      Indexed {index + 2} min ago
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-[var(--vault-line)] bg-white/80 p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-black text-[var(--vault-ink)]">
+                    Ask Vault
+                  </p>
+                  <p className="text-xs font-bold text-[var(--vault-muted)]">
+                    Answers grounded in your uploads
+                  </p>
+                </div>
+                <CheckCircle2 className="h-5 w-5 text-[var(--vault-success)]" />
+              </div>
+              <div className="space-y-3">
+                {answers.map((item, index) => (
+                  <div
+                    key={item.question}
+                    className="rounded-lg border border-[var(--vault-line)] p-3"
+                  >
+                    <p className="text-xs font-extrabold uppercase text-[var(--vault-muted)]">
+                      Question {index + 1}
+                    </p>
+                    <p className="mt-1 text-sm font-black text-[var(--vault-ink)]">
+                      {item.question}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                      {item.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 }

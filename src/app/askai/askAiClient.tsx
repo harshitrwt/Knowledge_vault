@@ -4,7 +4,19 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import Sidebar from "@/components/Sidebar";
-import { FileText, UploadCloud, Send, Loader2, Trash, Save, ArrowLeft, Copy, MessageSquare, VoicemailIcon, Speech } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  FileText,
+  Loader2,
+  MessageSquare,
+  Save,
+  Send,
+  Speech,
+  Trash,
+  UploadCloud,
+} from "lucide-react";
 
 type StoredFile = { id: string; name: string; size: number; url?: string };
 type Message = { role: "user" | "assistant"; content: string };
@@ -29,19 +41,16 @@ export default function AskAi() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const searchParams = useSearchParams();
 
-  // Auto scroll on new message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, aiTyping]);
 
-  // Toast
   function pushToast(type: Toast["type"], text: string) {
     const id = nextToastId.current++;
     setToasts((t) => [...t, { id, type, text }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 5000);
   }
 
-  // Fetch saved chats from API
   useEffect(() => {
     async function fetchChats() {
       setLoadingChats(true);
@@ -60,7 +69,6 @@ export default function AskAi() {
     fetchChats();
   }, []);
 
-  // Fetch files
   useEffect(() => {
     async function fetchFiles() {
       setLoadingFiles(true);
@@ -76,7 +84,6 @@ export default function AskAi() {
     fetchFiles();
   }, []);
 
-  // Analyze PDF
   async function analyzeFormData(formData: FormData) {
     setAnalyzing(true);
     try {
@@ -182,7 +189,6 @@ export default function AskAi() {
       return;
     }
 
-    // Check for duplicate
     const isDuplicate = savedChatsMeta.some(chat => chat.fileName === selectedFile.name);
     if (isDuplicate) {
       const update = confirm(
@@ -257,7 +263,6 @@ export default function AskAi() {
     }
   };
 
-  // Load chat from URL ?chat=id (e.g. from Uploads page)
   useEffect(() => {
     const chatId = searchParams.get("chat");
     if (chatId) {
@@ -276,145 +281,154 @@ export default function AskAi() {
     setMessages([]);
   };
 
+  const toastClass = (type: Toast["type"]) => {
+    if (type === "success") return "bg-[var(--vault-success)] text-white";
+    if (type === "error") return "bg-[var(--vault-danger)] text-white";
+    return "bg-[var(--vault-ink)] text-white";
+  };
+
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-black to-gray-900 text-white">
+    <div className="vault-grid flex min-h-screen flex-col text-[var(--vault-ink)] md:flex-row">
       <Sidebar />
 
-      <main className="flex-1 flex flex-col p-6 space-y-6">
-
-        {/* MAIN SCREEN (NO CHAT LOADED) */}
+      <main className="flex-1 px-4 pb-8 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
         {!context && (
-          <>
-            <header>
-              <h1 className="text-4xl font-bold text-white">Ask Vault</h1>
-              <p className="mt-2 text-gray-400">Upload a PDF and ask anything.</p>
+          <div className="space-y-6">
+            <header className="vault-panel p-6 sm:p-8">
+              <p className="vault-kicker mb-3">Ask AI</p>
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+                    Ask Vault
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+                    Choose an uploaded file, reopen a saved chat, or analyze a new PDF.
+                  </p>
+                </div>
+                <label className="vault-button-primary cursor-pointer">
+                  <UploadCloud className="h-5 w-5" />
+                  Analyze PDF
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+                  />
+                </label>
+              </div>
             </header>
 
-            {/* SAVED CHATS */}
-            <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800 ">
-              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-green-400" />
-                Recent Saved Chats
-              </h2>
-              {loadingChats ? (
-                <div className="py-4 flex justify-center ">
-                  <Loader2 className="animate-spin w-6 h-6 text-blue-400" />
+            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+              <section className="vault-panel-solid p-5">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                      <MessageSquare className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-black text-[var(--vault-ink)]">
+                        Recent Saved Chats
+                      </h2>
+                      <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                        Continue an existing conversation.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ) : savedChatsMeta.length === 0 ? (
-                <p className="text-gray-500 text-sm">No saved conversations yet.</p>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
-                  {savedChatsMeta.map((c) => (
-                    <div key={c.id} className="relative group">
-                      <button
-                        onClick={() => handleLoadSavedChat(c.id)}
-                        className="
-          relative w-full cursor-pointer aspect-square
-          flex flex-col items-center justify-center
-          p-4 rounded-2xl
-          bg-gradient-to-br from-green-900/80 via-gray-900/80 to-green-900/80
-          backdrop-blur-xl
-          border border-green-800/50
-          shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-          hover:border-green-500/50
-          hover:shadow-[0_8px_40px_rgba(34,197,94,0.3)]
-          transition-all duration-500
-          overflow-hidden
-        "
-                      >
-                        {/* Glow Hover Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-transparent group-hover:from-green-500/10 transition-all duration-500" />
 
-                        {/* Content */}
-                        <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                          <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 mb-3">
-                            <MessageSquare className="w-6 h-6 text-green-400" />
+                {loadingChats ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-[var(--vault-brand)]" />
+                  </div>
+                ) : savedChatsMeta.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-sm font-semibold text-[var(--vault-muted)]">
+                    No saved conversations yet.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {savedChatsMeta.map((c) => (
+                      <div key={c.id} className="group relative">
+                        <button
+                          onClick={() => handleLoadSavedChat(c.id)}
+                          className="w-full rounded-lg border border-[var(--vault-line)] bg-white/80 p-4 text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--vault-line-strong)]"
+                        >
+                          <div className="mb-3 flex items-center justify-between">
+                            <span className="grid h-9 w-9 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                              <MessageSquare className="h-4 w-4" />
+                            </span>
+                            <span className="rounded-md bg-[var(--vault-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-muted)]">
+                              Saved
+                            </span>
                           </div>
-
-                          <span className="text-xs text-green-200 font-medium line-clamp-2 px-2">
+                          <span className="line-clamp-2 text-sm font-black text-[var(--vault-ink)]">
                             {c.fileName}
                           </span>
-                        </div>
-                      </button>
+                        </button>
 
-                      {/* Delete Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteChat(c.id, c.fileName);
+                          }}
+                          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-md bg-white text-[var(--vault-danger)] opacity-0 shadow-sm transition hover:bg-[var(--vault-accent-soft)] group-hover:opacity-100"
+                          title="Delete this chat"
+                        >
+                          <Trash size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="vault-panel-solid p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-[var(--vault-ink)]">Your Files</h2>
+                    <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                      Select a PDF to analyze.
+                    </p>
+                  </div>
+                </div>
+
+                {loadingFiles ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-[var(--vault-brand)]" />
+                  </div>
+                ) : files.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-sm font-semibold text-[var(--vault-muted)]">
+                    No files yet.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {files.map((f) => (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteChat(c.id, c.fileName);
-                        }}
-                        className="
-          absolute top-2 right-2 cursor-pointer
-          opacity-0 group-hover:opacity-100
-          transition-all duration-300
-          p-1.5 rounded-lg
-          bg-red-600/80 hover:bg-red-900
-          shadow-md
-        "
-                        title="Delete this chat"
+                        key={f.id}
+                        onClick={() => handleAnalyzeExisting(f)}
+                        className="group w-full rounded-lg border border-[var(--vault-line)] bg-white/80 p-4 text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--vault-line-strong)]"
                       >
-                        <Trash size={14} className="text-white" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            {/* FILES */}
-            <section className="bg-gray-950/60 p-4 rounded-2xl border border-gray-800">
-              <h2 className="text-lg font-semibold mb-3">Your Files</h2>
-
-              {loadingFiles ? (
-                <div className="py-6 flex justify-center">
-                  <Loader2 className="animate-spin w-8 h-8 text-blue-400" />
-                </div>
-              ) : files.length === 0 ? (
-                <div className="text-gray-500">No files yet.</div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
-                  {files.map((f) => (
-                    <button
-                      key={f.id}
-                      onClick={() => handleAnalyzeExisting(f)}
-                      className="
-        relative cursor-pointer w-full aspect-square
-        flex flex-col items-center justify-center
-        p-4 rounded-2xl
-        bg-gradient-to-br from-gray-900/90 via-gray-800/70 to-gray-900/90
-        backdrop-blur-xl
-        border border-gray-800/50
-        shadow-[0_8px_32px_rgba(0,0,0,0.4)]
-        hover:border-blue-500/50
-        hover:shadow-[0_8px_40px_rgba(59,130,246,0.3)]
-        hover:scale-[1.03]
-        transition-all duration-500
-        overflow-hidden
-        group
-      "
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/10 transition-all duration-500" />
-
-                    
-                      <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 mb-3">
-                          <FileText className="w-6 h-6 text-blue-400" />
+                        <div className="mb-3 grid h-9 w-9 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                          <FileText className="h-4 w-4" />
                         </div>
-
-                        <span className="text-xs text-blue-200 font-medium line-clamp-2 px-2">
+                        <span className="line-clamp-2 text-sm font-black text-[var(--vault-ink)]">
                           {f.name}
                         </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </section>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
 
-            {/* UPLOAD */}
             <div
-              className={`rounded-2xl p-6 border-2 cursor-pointer border-dashed ${analyzing ? "border-blue-300 bg-blue-900/20" : "border-blue-500 hover:border-blue-600 hover:bg-blue-900/10"
-                }`}
+              className={`cursor-pointer rounded-lg border-2 border-dashed p-8 transition ${
+                analyzing
+                  ? "border-[var(--vault-brand)] bg-[var(--vault-brand-soft)]"
+                  : "border-[var(--vault-line-strong)] bg-white/70 hover:border-[var(--vault-brand)] hover:bg-white"
+              }`}
               onClick={() => document.getElementById("fileInput")?.click()}
             >
               <input
@@ -425,178 +439,174 @@ export default function AskAi() {
                 onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
               />
 
-              <div className="flex flex-col items-center py-8">
+              <div className="flex flex-col items-center py-6 text-center">
                 {analyzing ? (
                   <>
-                    <Loader2 className="animate-spin w-12 h-12 text-blue-400 mb-4" />
-                    <div className="text-blue-200">Analyzing file...</div>
+                    <Loader2 className="mb-4 h-12 w-12 animate-spin text-[var(--vault-brand)]" />
+                    <div className="font-black text-[var(--vault-brand)]">Analyzing file...</div>
                   </>
                 ) : (
                   <>
-                    <UploadCloud className="w-12 h-12 text-blue-400 mb-3" />
-                    <p className="text-gray-300">Click to upload & analyze PDF</p>
+                    <UploadCloud className="mb-3 h-12 w-12 text-[var(--vault-brand)]" />
+                    <p className="font-black text-[var(--vault-ink)]">Click to upload and analyze PDF</p>
+                    <p className="mt-2 text-sm font-semibold text-[var(--vault-muted)]">
+                      The existing analyzer and chat flow will start after upload.
+                    </p>
                   </>
                 )}
               </div>
             </div>
-          </>
+          </div>
         )}
 
-
         {context && (
-          <div className="flex flex-col gap-4">
-
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleBack}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back
-              </button>
-              <div className="text-blue-400 font-semibold">{selectedFile?.name}</div>
-            </div>
-
-
-            <div className="bg-gray-950/50 p-4 rounded-xl border border-gray-800 h-[70vh] overflow-y-auto space-y-3">
-
-              {messages.map((m, i) => (
-                <div
-                  key={i}
-                  className={`relative p-4 rounded-lg max-w-[85%] ${m.role === "user" ? "ml-auto bg-blue-600/30" : "bg-gray-800/70"
-                    }`}
-                >
-                  {m.role === "user" ? (
-                    <span className="whitespace-pre-wrap">{m.content}</span>
-                  ) : (
-                    <div className="prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                      <ReactMarkdown
-                        components={{
-                          h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-4 mb-2 first:mt-0">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-lg font-semibold text-blue-200 mt-4 mb-2 first:mt-0">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-base font-semibold text-gray-200 mt-3 mb-1.5">{children}</h3>,
-                          p: ({ children }) => <p className="mb-3 leading-relaxed last:mb-0">{children}</p>,
-                          ul: ({ children }) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
-                          ol: ({ children }) => <ol className="list-decimal list-inside mb-3 space-y-1.5 pl-1">{children}</ol>,
-                          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
-                          code: ({ children }) => <code className="bg-gray-700/80 px-1.5 py-0.5 rounded text-sm">{children}</code>,
-                        }}
-                      >
-                        {m.content}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-
-                  {/* Copy Icon / Check Icon */}
-                  {m.role === "assistant" && (
-                    <div
-                      className="absolute bottom-2 right-2 cursor-pointer"
-                      onClick={() => {
-                        navigator.clipboard.writeText(m.content);
-                        setCopiedIndex(i);
-
-                        // revert icon back after 1.2 seconds
-                        setTimeout(() => setCopiedIndex(null), 1200);
-                      }}
-                    >
-                      {copiedIndex === i ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 text-gray-500"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8.25 8.25a1 1 0 01-1.414 0l-3.75-3.75a1 1 0 011.414-1.414L7.5 12.086l7.543-7.543a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ) : (
-                        <Copy
-                          size={16}
-                          className="text-gray-300 hover:text-white"
-                        />
-                      )}
-                    </div>
-                  )}
-
-                </div>
-              ))}
-
-              {aiTyping && (
-                <div className="bg-gray-800/70 p-3 rounded-lg w-20 flex justify-between">
-                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full"></span>
-                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full [animation-delay:0.2s]"></span>
-                  <span className="w-2 h-2 animate-bounce bg-gray-400 rounded-full [animation-delay:0.4s]"></span>
-                </div>
-              )}
-
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* INPUT */}
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="flex flex-1 gap-2">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleAsk();
-                    }
-                  }}
-                  placeholder="Ask something..."
-                  className="flex-1 px-4 py-3 rounded-lg border border-gray-700 bg-gray-900"
-                />
-
+          <div className="flex min-h-[calc(100vh-7rem)] flex-col gap-4">
+            <div className="vault-panel-solid flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
                 <button
-                  onClick={handleAsk}
-                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg cursor-pointer"
+                  onClick={handleBack}
+                  className="vault-icon-button"
+                  title="Back to files"
                 >
-                  <Send className="w-5 h-5" />
+                  <ArrowLeft className="h-4 w-4" />
                 </button>
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold uppercase text-[var(--vault-muted)]">
+                    Active Document
+                  </p>
+                  <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                    {selectedFile?.name}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={handleClearConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-red-600/80 hover:bg-red-900 rounded-lg cursor-pointer"
+                  className="vault-button-secondary min-h-10 px-3 py-2 text-sm text-[var(--vault-danger)]"
                 >
                   <Trash size={16} /> Clear
                 </button>
 
                 <button
                   onClick={handleSaveConversation}
-                  className="flex items-center gap-2 px-4 py-3 bg-green-600/80 hover:bg-green-900 rounded-lg cursor-pointer"
+                  className="vault-button-secondary min-h-10 px-3 py-2 text-sm text-[var(--vault-success)]"
                 >
                   <Save size={16} /> Save
                 </button>
-                <button
-
-                  className="flex items-center gap-2 px-4 py-3 bg-blue-600/80 hover:bg-blue-900 rounded-lg cursor-pointer"
-                >
+                <button className="vault-button-secondary min-h-10 px-3 py-2 text-sm">
                   <Speech size={16} /> Talk
                 </button>
+              </div>
+            </div>
+
+            <div className="vault-panel flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="border-b border-[var(--vault-line)] px-4 py-3">
+                <p className="text-sm font-black text-[var(--vault-ink)]">Conversation</p>
+                <p className="text-xs font-bold text-[var(--vault-muted)]">
+                  Ask specific questions about the analyzed source.
+                </p>
+              </div>
+
+              <div className="vault-scrollbar h-[58vh] flex-1 space-y-3 overflow-y-auto p-4 sm:h-[64vh]">
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={`relative max-w-[88%] rounded-lg p-4 shadow-sm ${
+                      m.role === "user"
+                        ? "ml-auto bg-[var(--vault-brand)] text-white"
+                        : "border border-[var(--vault-line)] bg-white/90 text-[var(--vault-ink)]"
+                    }`}
+                  >
+                    {m.role === "user" ? (
+                      <span className="whitespace-pre-wrap text-sm font-semibold leading-6">
+                        {m.content}
+                      </span>
+                    ) : (
+                      <div className="max-w-none pr-6 text-sm font-semibold leading-6 text-[var(--vault-muted)] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                        <ReactMarkdown
+                          components={{
+                            h1: ({ children }) => <h1 className="mb-2 mt-4 text-xl font-black text-[var(--vault-ink)] first:mt-0">{children}</h1>,
+                            h2: ({ children }) => <h2 className="mb-2 mt-4 text-lg font-black text-[var(--vault-brand)] first:mt-0">{children}</h2>,
+                            h3: ({ children }) => <h3 className="mb-1.5 mt-3 text-base font-black text-[var(--vault-ink)]">{children}</h3>,
+                            p: ({ children }) => <p className="mb-3 leading-relaxed last:mb-0">{children}</p>,
+                            ul: ({ children }) => <ul className="mb-3 list-inside list-disc space-y-1">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-3 list-inside list-decimal space-y-1.5 pl-1">{children}</ol>,
+                            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                            strong: ({ children }) => <strong className="font-black text-[var(--vault-ink)]">{children}</strong>,
+                            code: ({ children }) => <code className="rounded bg-[var(--vault-soft)] px-1.5 py-0.5 text-sm text-[var(--vault-ink)]">{children}</code>,
+                          }}
+                        >
+                          {m.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+
+                    {m.role === "assistant" && (
+                      <button
+                        className="absolute bottom-2 right-2 text-[var(--vault-muted)] transition hover:text-[var(--vault-ink)]"
+                        title="Copy answer"
+                        onClick={() => {
+                          navigator.clipboard.writeText(m.content);
+                          setCopiedIndex(i);
+                          setTimeout(() => setCopiedIndex(null), 1200);
+                        }}
+                      >
+                        {copiedIndex === i ? (
+                          <Check size={16} className="text-[var(--vault-success)]" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {aiTyping && (
+                  <div className="flex w-20 justify-between rounded-lg border border-[var(--vault-line)] bg-white/90 p-3">
+                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)]"></span>
+                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)] [animation-delay:0.2s]"></span>
+                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)] [animation-delay:0.4s]"></span>
+                  </div>
+                )}
+
+                <div ref={chatEndRef} />
+              </div>
+
+              <div className="border-t border-[var(--vault-line)] bg-white/70 p-3">
+                <div className="flex gap-2">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAsk();
+                      }
+                    }}
+                    placeholder="Ask something..."
+                    className="vault-input min-h-12 flex-1 px-4 py-3 font-semibold"
+                  />
+
+                  <button
+                    onClick={handleAsk}
+                    className="vault-button-primary min-h-12 px-4"
+                    title="Send question"
+                  >
+                    <Send className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
       </main>
 
-      {/* Toasts */}
-      <div className="fixed right-4 top-16 flex flex-col gap-3 z-50">
+      <div className="fixed right-4 top-20 z-50 flex flex-col gap-3">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`px-4 py-2 rounded-lg shadow-lg ${t.type === "success"
-              ? "bg-green-600"
-              : t.type === "error"
-                ? "bg-red-600"
-                : "bg-gray-700"
-              }`}
+            className={`rounded-md px-4 py-2 text-sm font-bold shadow-[var(--vault-shadow)] ${toastClass(t.type)}`}
           >
             {t.text}
           </div>

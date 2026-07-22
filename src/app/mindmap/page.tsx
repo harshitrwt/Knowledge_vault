@@ -6,10 +6,11 @@ import {
   BrainCog,
   FileText,
   FolderOpen,
+  GitBranch,
+  UploadCloud,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import Loader from "@/components/Loader";
 
 type StoredFile = {
   id: string;
@@ -93,54 +94,72 @@ export default function MindmapPage() {
   const hasSelectedFile = Boolean(file || selectedStoredFile);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-black via-gray-950 to-gray-900 text-white overflow-x-hidden">
+    <div className="vault-grid flex min-h-screen text-[var(--vault-ink)]">
       <Sidebar />
 
-      <main className="flex-grow p-4 sm:p-6 lg:p-8 xl:p-10 overflow-y-auto">
-        {/* Header */}
-        <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
-          <p className="text-sm text-gray-500 mb-1">{getGreeting()}</p>
-          <h1 className="text-5xl font-extrabold text-blue-500 mb-2">
+      <main className="flex-grow overflow-y-auto px-4 pb-10 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
+        <header className="vault-panel mb-8 p-6 sm:p-8">
+          <p className="vault-kicker mb-3">{getGreeting()}</p>
+          <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
             Mind-Map Creator
           </h1>
-          <p className="text-gray-400">
+          <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
             Upload a PDF or choose from your files to generate a mind-map.
           </p>
-        </div>
+          {user?.firstName && (
+            <p className="mt-4 text-sm font-extrabold text-[var(--vault-brand)]">
+              Workspace for {user.firstName}
+            </p>
+          )}
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10 items-start">
-          {/* LEFT PANEL */}
-          <div className="lg:col-span-1 p-6 rounded-2xl border border-gray-800/50 bg-gradient-to-br from-gray-900/90 via-gray-800/60 to-gray-900/90 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <Bolt className="w-7 h-7 text-blue-500" />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <section className="vault-panel-solid p-5">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+                <Bolt className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-bold">Select PDF</h2>
+              <div>
+                <h2 className="text-xl font-black text-[var(--vault-ink)]">Select PDF</h2>
+                <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                  Choose one source for the generator.
+                </p>
+              </div>
             </div>
 
-            <label className="text-sm text-gray-400">Upload New PDF</label>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => {
-                setFile(e.target.files?.[0] || null);
-                setSelectedStoredFile(null);
-              }}
-              className="w-full mt-2 p-3 bg-gray-800/40 border border-gray-700 rounded-xl text-gray-200"
-            />
+            <label className="text-sm font-extrabold text-[var(--vault-ink)]">
+              Upload New PDF
+            </label>
+            <div className="mt-2 rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-4">
+              <div className="mb-3 flex items-center gap-2 text-sm font-bold text-[var(--vault-muted)]">
+                <UploadCloud className="h-4 w-4 text-[var(--vault-brand)]" />
+                Select a local PDF
+              </div>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => {
+                  setFile(e.target.files?.[0] || null);
+                  setSelectedStoredFile(null);
+                }}
+                className="vault-input w-full p-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[var(--vault-brand)] file:px-3 file:py-2 file:text-sm file:font-bold file:text-white"
+              />
+            </div>
 
             <div className="mt-6">
-              <div className="flex items-center gap-2 mb-3">
-                <FolderOpen className="w-4 h-4 text-blue-500" />
-                <p className="text-sm font-semibold text-blue-400">
+              <div className="mb-3 flex items-center gap-2">
+                <FolderOpen className="h-4 w-4 text-[var(--vault-brand)]" />
+                <p className="text-sm font-black text-[var(--vault-ink)]">
                   Your Uploaded Files
                 </p>
               </div>
 
               {fetchingFiles ? (
-                <p className="text-xs text-gray-500">Loading files…</p>
+                <p className="rounded-lg border border-[var(--vault-line)] bg-white/70 p-4 text-sm font-semibold text-[var(--vault-muted)]">
+                  Loading files...
+                </p>
               ) : storedFiles.length > 0 ? (
-                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                <div className="vault-scrollbar max-h-[280px] space-y-2 overflow-y-auto pr-1">
                   {storedFiles.map((f) => (
                     <button
                       key={f.id}
@@ -148,19 +167,21 @@ export default function MindmapPage() {
                         setSelectedStoredFile(f);
                         setFile(null);
                       }}
-                      className={`w-full text-left p-3 rounded-xl border transition-all ${
+                      className={`w-full rounded-lg border p-3 text-left transition ${
                         selectedStoredFile?.id === f.id
-                          ? "border-blue-500 bg-blue-500/10"
-                          : "border-gray-700 bg-gray-800/40 hover:bg-gray-700/40"
+                          ? "border-[var(--vault-brand)] bg-[var(--vault-brand-soft)]"
+                          : "border-[var(--vault-line)] bg-white/80 hover:border-[var(--vault-line-strong)]"
                       }`}
                     >
-                      <div className="flex gap-3">
-                        <FileText className="w-5 h-5 text-blue-400 mt-1" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-200 truncate">
+                      <div className="flex min-w-0 gap-3">
+                        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                          <FileText className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-black text-[var(--vault-ink)]">
                             {f.name}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs font-bold text-[var(--vault-muted)]">
                             {formatFileSize(f.size)}
                           </p>
                         </div>
@@ -169,48 +190,60 @@ export default function MindmapPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-gray-500">No uploaded files found.</p>
+                <p className="rounded-lg border border-[var(--vault-line)] bg-[var(--vault-soft)] p-4 text-sm font-semibold text-[var(--vault-muted)]">
+                  No uploaded files found.
+                </p>
               )}
             </div>
 
             <button
               onClick={generateMindmap}
               disabled={loading || !hasSelectedFile}
-              className="w-full mt-6 px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold shadow-lg shadow-blue-500/25 disabled:bg-gray-700 disabled:cursor-not-allowed"
+              className="vault-button-primary mt-6 w-full disabled:cursor-not-allowed disabled:bg-[var(--vault-muted)] disabled:shadow-none"
             >
-              Generate Mind-Map
+              <GitBranch className="h-5 w-5" />
+              {loading ? "Generating..." : "Generate Mind-Map"}
             </button>
-          </div>
+          </section>
 
-          {/* RIGHT PANEL */}
-          <div className="lg:col-span-2 p-6 rounded-2xl border border-gray-800/50 bg-gradient-to-br from-gray-900/90 via-gray-800/60 to-gray-900/90 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <BrainCog className="w-7 h-7 text-blue-500" />
+          <section className="vault-panel-solid min-h-[520px] p-5">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                <BrainCog className="h-5 w-5" />
               </div>
-              <h2 className="text-xl md:text-3xl font-bold">Mind-Map</h2>
-              
+              <div>
+                <h2 className="text-xl font-black text-[var(--vault-ink)] md:text-2xl">
+                  Mind-Map
+                </h2>
+                <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                  Visual output surface
+                </p>
+              </div>
             </div>
-            <h1  className="text-xl md:text-3xl font-bold"> Work In Progress </h1>
 
-            {/* {loading ? (
-              <div className="flex justify-center py-20">
-                <Loader />
+            <div className="grid min-h-[380px] place-items-center rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-center">
+              <div>
+                <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-md bg-white text-[var(--vault-brand)] shadow-sm">
+                  <GitBranch className="h-8 w-8" />
+                </div>
+                <h3 className="text-2xl font-black text-[var(--vault-ink)]">
+                  Work In Progress
+                </h3>
+                <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                  {loading
+                    ? "The generator is processing your selected document."
+                    : hasSelectedFile
+                      ? "File selected. Generate when you are ready."
+                      : "Select or upload a PDF to get started."}
+                </p>
+                {mindmap && (
+                  <p className="mt-4 text-xs font-extrabold text-[var(--vault-brand)]">
+                    Mind-map data received.
+                  </p>
+                )}
               </div>
-            ) : mindmap ? (
-              <pre className="whitespace-pre-wrap bg-gray-800/40 p-6 rounded-xl border border-gray-700 text-blue-300 text-sm leading-relaxed">
-                {mindmap}
-              </pre>
-            ) : hasSelectedFile ? (
-              <p className="text-gray-400 mt-8">
-                File selected. Click <span className="text-blue-400 font-semibold">Generate Mind-Map</span> to continue.
-              </p>
-            ) : (
-              <p className="text-gray-500 mt-8">
-                Select or upload a PDF to get started.
-              </p>
-            )} */}
-          </div>
+            </div>
+          </section>
         </div>
       </main>
     </div>

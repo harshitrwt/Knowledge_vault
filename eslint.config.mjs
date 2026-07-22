@@ -23,6 +23,8 @@ const eslintConfig = [
       "**/migrations/**",         // prisma migrations folder
       "node_modules/@prisma/**",  // prisma client package
     ],
+  },
+  {
     rules: {
       "@typescript-eslint/no-this-alias": "off",
       "@typescript-eslint/no-unused-expressions": "off",
