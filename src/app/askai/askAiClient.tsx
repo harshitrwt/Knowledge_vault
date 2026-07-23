@@ -281,31 +281,33 @@ export default function AskAi() {
     setMessages([]);
   };
 
-  const toastClass = (type: Toast["type"]) => {
-    if (type === "success") return "bg-[var(--vault-success)] text-white";
-    if (type === "error") return "bg-[var(--vault-danger)] text-white";
-    return "bg-[var(--vault-ink)] text-white";
+    const toastClass = (type: Toast["type"]) => {
+    if (type === "success") return "neu-extruded bg-[#38B2AC] text-white";
+    if (type === "error") return "neu-extruded bg-[#E53E3E] text-white";
+    return "neu-extruded bg-[#3D4852] text-white";
   };
 
   return (
-    <div className="vault-grid flex min-h-screen flex-col text-[var(--vault-ink)] md:flex-row">
+    <div className="flex min-h-screen bg-[#E0E5EC] font-sans text-[#3D4852] md:flex-row">
       <Sidebar />
 
-      <main className="flex-1 px-4 pb-8 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
+      <main className="flex-1 px-4 pb-12 pt-24 sm:px-6 lg:px-10 md:pt-8">
         {!context && (
-          <div className="space-y-6">
-            <header className="vault-panel p-6 sm:p-8">
-              <p className="vault-kicker mb-3">Ask AI</p>
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-8">
+            <header className="neu-extruded rounded-[32px] p-8 sm:p-10">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-xs font-extrabold text-[#6C63FF] neu-inset-sm">
+                <span>Ask AI</span>
+              </div>
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+                  <h1 className="font-display text-4xl font-extrabold tracking-tight text-[#3D4852] sm:text-5xl">
                     Ask Vault
                   </h1>
-                  <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+                  <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-[#6B7280]">
                     Choose an uploaded file, reopen a saved chat, or analyze a new PDF.
                   </p>
                 </div>
-                <label className="vault-button-primary cursor-pointer">
+                <label className="neu-btn-primary cursor-pointer rounded-2xl px-6 py-3.5 text-base font-bold">
                   <UploadCloud className="h-5 w-5" />
                   Analyze PDF
                   <input
@@ -318,18 +320,18 @@ export default function AskAi() {
               </div>
             </header>
 
-            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-              <section className="vault-panel-solid p-5">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+            <div className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
+              <section className="neu-extruded rounded-[32px] p-6 sm:p-8">
+                <div className="mb-6 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3.5">
+                    <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                       <MessageSquare className="h-5 w-5" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-black text-[var(--vault-ink)]">
+                      <h2 className="font-display text-xl font-extrabold text-[#3D4852]">
                         Recent Saved Chats
                       </h2>
-                      <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                      <p className="text-xs font-medium text-[#6B7280]">
                         Continue an existing conversation.
                       </p>
                     </div>
@@ -338,29 +340,29 @@ export default function AskAi() {
 
                 {loadingChats ? (
                   <div className="flex justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-[var(--vault-brand)]" />
+                    <Loader2 className="h-6 w-6 animate-spin text-[#6C63FF]" />
                   </div>
                 ) : savedChatsMeta.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-sm font-semibold text-[var(--vault-muted)]">
+                  <div className="neu-inset-sm rounded-2xl p-6 text-center text-sm font-medium text-[#6B7280]">
                     No saved conversations yet.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {savedChatsMeta.map((c) => (
                       <div key={c.id} className="group relative">
                         <button
                           onClick={() => handleLoadSavedChat(c.id)}
-                          className="w-full rounded-lg border border-[var(--vault-line)] bg-white/80 p-4 text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--vault-line-strong)]"
+                          className="neu-extruded-sm neu-extruded-hover w-full rounded-2xl p-4 text-left"
                         >
                           <div className="mb-3 flex items-center justify-between">
-                            <span className="grid h-9 w-9 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                            <span className="neu-inset-sm flex h-8 w-8 items-center justify-center rounded-xl text-[#6C63FF]">
                               <MessageSquare className="h-4 w-4" />
                             </span>
-                            <span className="rounded-md bg-[var(--vault-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-muted)]">
+                            <span className="neu-inset-sm rounded-full px-2.5 py-0.5 font-display text-[10px] font-extrabold text-[#38B2AC]">
                               Saved
                             </span>
                           </div>
-                          <span className="line-clamp-2 text-sm font-black text-[var(--vault-ink)]">
+                          <span className="line-clamp-2 font-display text-sm font-bold text-[#3D4852]">
                             {c.fileName}
                           </span>
                         </button>
@@ -370,7 +372,7 @@ export default function AskAi() {
                             e.stopPropagation();
                             handleDeleteChat(c.id, c.fileName);
                           }}
-                          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-md bg-white text-[var(--vault-danger)] opacity-0 shadow-sm transition hover:bg-[var(--vault-accent-soft)] group-hover:opacity-100"
+                          className="absolute right-2 top-2 neu-icon-btn h-8 w-8 rounded-xl text-[#E53E3E] opacity-0 transition group-hover:opacity-100"
                           title="Delete this chat"
                         >
                           <Trash size={14} />
@@ -381,14 +383,14 @@ export default function AskAi() {
                 )}
               </section>
 
-              <section className="vault-panel-solid p-5">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+              <section className="neu-extruded rounded-[32px] p-6 sm:p-8">
+                <div className="mb-6 flex items-center gap-3.5">
+                  <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#38B2AC]">
                     <FileText className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-[var(--vault-ink)]">Your Files</h2>
-                    <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                    <h2 className="font-display text-xl font-extrabold text-[#3D4852]">Your Files</h2>
+                    <p className="text-xs font-medium text-[#6B7280]">
                       Select a PDF to analyze.
                     </p>
                   </div>
@@ -396,24 +398,24 @@ export default function AskAi() {
 
                 {loadingFiles ? (
                   <div className="flex justify-center py-8">
-                    <Loader2 className="h-8 w-8 animate-spin text-[var(--vault-brand)]" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#6C63FF]" />
                   </div>
                 ) : files.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-sm font-semibold text-[var(--vault-muted)]">
+                  <div className="neu-inset-sm rounded-2xl p-6 text-center text-sm font-medium text-[#6B7280]">
                     No files yet.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {files.map((f) => (
                       <button
                         key={f.id}
                         onClick={() => handleAnalyzeExisting(f)}
-                        className="group w-full rounded-lg border border-[var(--vault-line)] bg-white/80 p-4 text-left transition duration-300 hover:-translate-y-1 hover:border-[var(--vault-line-strong)]"
+                        className="neu-extruded-sm neu-extruded-hover w-full rounded-2xl p-4 text-left"
                       >
-                        <div className="mb-3 grid h-9 w-9 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                        <div className="neu-inset-sm mb-3 flex h-8 w-8 items-center justify-center rounded-xl text-[#38B2AC]">
                           <FileText className="h-4 w-4" />
                         </div>
-                        <span className="line-clamp-2 text-sm font-black text-[var(--vault-ink)]">
+                        <span className="line-clamp-2 font-display text-sm font-bold text-[#3D4852]">
                           {f.name}
                         </span>
                       </button>
@@ -424,10 +426,8 @@ export default function AskAi() {
             </div>
 
             <div
-              className={`cursor-pointer rounded-lg border-2 border-dashed p-8 transition ${
-                analyzing
-                  ? "border-[var(--vault-brand)] bg-[var(--vault-brand-soft)]"
-                  : "border-[var(--vault-line-strong)] bg-white/70 hover:border-[var(--vault-brand)] hover:bg-white"
+              className={`neu-inset-deep cursor-pointer rounded-[32px] p-8 text-center transition ${
+                analyzing ? "opacity-80" : ""
               }`}
               onClick={() => document.getElementById("fileInput")?.click()}
             >
@@ -439,17 +439,19 @@ export default function AskAi() {
                 onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
               />
 
-              <div className="flex flex-col items-center py-6 text-center">
+              <div className="flex flex-col items-center py-8">
                 {analyzing ? (
                   <>
-                    <Loader2 className="mb-4 h-12 w-12 animate-spin text-[var(--vault-brand)]" />
-                    <div className="font-black text-[var(--vault-brand)]">Analyzing file...</div>
+                    <Loader2 className="mb-4 h-12 w-12 animate-spin text-[#6C63FF]" />
+                    <div className="font-display text-lg font-extrabold text-[#6C63FF]">Analyzing file...</div>
                   </>
                 ) : (
                   <>
-                    <UploadCloud className="mb-3 h-12 w-12 text-[var(--vault-brand)]" />
-                    <p className="font-black text-[var(--vault-ink)]">Click to upload and analyze PDF</p>
-                    <p className="mt-2 text-sm font-semibold text-[var(--vault-muted)]">
+                    <div className="neu-extruded mb-4 flex h-16 w-16 items-center justify-center rounded-3xl text-[#6C63FF]">
+                      <UploadCloud className="h-8 w-8" />
+                    </div>
+                    <p className="font-display text-lg font-extrabold text-[#3D4852]">Click to upload and analyze PDF</p>
+                    <p className="mt-2 text-sm font-medium text-[#6B7280]">
                       The existing analyzer and chat flow will start after upload.
                     </p>
                   </>
@@ -460,81 +462,81 @@ export default function AskAi() {
         )}
 
         {context && (
-          <div className="flex min-h-[calc(100vh-7rem)] flex-col gap-4">
-            <div className="vault-panel-solid flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-h-[calc(100vh-7rem)] flex-col gap-6">
+            <div className="neu-extruded flex flex-col gap-4 rounded-[32px] p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-4">
                 <button
                   onClick={handleBack}
-                  className="vault-icon-button"
+                  className="neu-icon-btn rounded-2xl"
                   title="Back to files"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div className="min-w-0">
-                  <p className="text-xs font-extrabold uppercase text-[var(--vault-muted)]">
+                  <p className="font-display text-xs font-extrabold uppercase text-[#6C63FF]">
                     Active Document
                   </p>
-                  <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                  <p className="truncate font-display text-lg font-extrabold text-[#3D4852]">
                     {selectedFile?.name}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 <button
                   onClick={handleClearConversation}
-                  className="vault-button-secondary min-h-10 px-3 py-2 text-sm text-[var(--vault-danger)]"
+                  className="neu-btn-secondary !rounded-2xl px-4 py-2 text-sm text-[#E53E3E]"
                 >
                   <Trash size={16} /> Clear
                 </button>
 
                 <button
                   onClick={handleSaveConversation}
-                  className="vault-button-secondary min-h-10 px-3 py-2 text-sm text-[var(--vault-success)]"
+                  className="neu-btn-secondary !rounded-2xl px-4 py-2 text-sm text-[#38B2AC]"
                 >
                   <Save size={16} /> Save
                 </button>
-                <button className="vault-button-secondary min-h-10 px-3 py-2 text-sm">
+                <button className="neu-btn-secondary !rounded-2xl px-4 py-2 text-sm">
                   <Speech size={16} /> Talk
                 </button>
               </div>
             </div>
 
-            <div className="vault-panel flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="border-b border-[var(--vault-line)] px-4 py-3">
-                <p className="text-sm font-black text-[var(--vault-ink)]">Conversation</p>
-                <p className="text-xs font-bold text-[var(--vault-muted)]">
+            <div className="neu-extruded flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] p-6">
+              <div className="border-b border-[#A3B1C6]/20 pb-4">
+                <p className="font-display text-lg font-extrabold text-[#3D4852]">Conversation</p>
+                <p className="text-xs font-medium text-[#6B7280]">
                   Ask specific questions about the analyzed source.
                 </p>
               </div>
 
-              <div className="vault-scrollbar h-[58vh] flex-1 space-y-3 overflow-y-auto p-4 sm:h-[64vh]">
+              <div className="vault-scrollbar h-[58vh] flex-1 space-y-4 overflow-y-auto py-4 sm:h-[64vh]">
                 {messages.map((m, i) => (
                   <div
                     key={i}
-                    className={`relative max-w-[88%] rounded-lg p-4 shadow-sm ${
+                    className={`relative max-w-[85%] rounded-3xl p-5 ${
                       m.role === "user"
-                        ? "ml-auto bg-[var(--vault-brand)] text-white"
-                        : "border border-[var(--vault-line)] bg-white/90 text-[var(--vault-ink)]"
+                        ? "neu-btn-primary ml-auto !rounded-3xl text-white"
+                        : "neu-extruded rounded-3xl text-[#3D4852]"
                     }`}
                   >
                     {m.role === "user" ? (
-                      <span className="whitespace-pre-wrap text-sm font-semibold leading-6">
+                      <span className="whitespace-pre-wrap text-sm font-semibold leading-relaxed">
                         {m.content}
                       </span>
                     ) : (
-                      <div className="max-w-none pr-6 text-sm font-semibold leading-6 text-[var(--vault-muted)] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                      <div className="max-w-none pr-6 text-sm font-medium leading-relaxed text-[#3D4852] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
                         <ReactMarkdown
                           components={{
-                            h1: ({ children }) => <h1 className="mb-2 mt-4 text-xl font-black text-[var(--vault-ink)] first:mt-0">{children}</h1>,
-                            h2: ({ children }) => <h2 className="mb-2 mt-4 text-lg font-black text-[var(--vault-brand)] first:mt-0">{children}</h2>,
-                            h3: ({ children }) => <h3 className="mb-1.5 mt-3 text-base font-black text-[var(--vault-ink)]">{children}</h3>,
-                            p: ({ children }) => <p className="mb-3 leading-relaxed last:mb-0">{children}</p>,
+                            h1: ({ children }) => <h1 className="mb-2 mt-4 font-display text-xl font-extrabold text-[#3D4852] first:mt-0">{children}</h1>,
+                            h2: ({ children }) => <h2 className="mb-2 mt-4 font-display text-lg font-extrabold text-[#6C63FF] first:mt-0">{children}</h2>,
+                            h3: ({ children }) => <h3 className="mb-1.5 mt-3 font-display text-base font-extrabold text-[#3D4852]">{children}</h3>,
+                            p: ({ children }) => <p className="mb-3 leading-relaxed last:mb-0 text-[#3D4852]">{children}</p>,
                             ul: ({ children }) => <ul className="mb-3 list-inside list-disc space-y-1">{children}</ul>,
                             ol: ({ children }) => <ol className="mb-3 list-inside list-decimal space-y-1.5 pl-1">{children}</ol>,
                             li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                            strong: ({ children }) => <strong className="font-black text-[var(--vault-ink)]">{children}</strong>,
-                            code: ({ children }) => <code className="rounded bg-[var(--vault-soft)] px-1.5 py-0.5 text-sm text-[var(--vault-ink)]">{children}</code>,
+                            strong: ({ children }) => <strong className="font-extrabold text-[#3D4852]">{children}</strong>,
+                            code: ({ children }) => <code className="neu-inset-sm rounded-lg px-2 py-0.5 text-xs text-[#6C63FF]">{children}</code>,
                           }}
                         >
                           {m.content}
@@ -544,7 +546,7 @@ export default function AskAi() {
 
                     {m.role === "assistant" && (
                       <button
-                        className="absolute bottom-2 right-2 text-[var(--vault-muted)] transition hover:text-[var(--vault-ink)]"
+                        className="absolute bottom-3 right-3 text-[#6B7280] transition hover:text-[#6C63FF]"
                         title="Copy answer"
                         onClick={() => {
                           navigator.clipboard.writeText(m.content);
@@ -553,7 +555,7 @@ export default function AskAi() {
                         }}
                       >
                         {copiedIndex === i ? (
-                          <Check size={16} className="text-[var(--vault-success)]" />
+                          <Check size={16} className="text-[#38B2AC]" />
                         ) : (
                           <Copy size={16} />
                         )}
@@ -563,18 +565,19 @@ export default function AskAi() {
                 ))}
 
                 {aiTyping && (
-                  <div className="flex w-20 justify-between rounded-lg border border-[var(--vault-line)] bg-white/90 p-3">
-                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)]"></span>
-                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)] [animation-delay:0.2s]"></span>
-                    <span className="h-2 w-2 animate-bounce rounded-sm bg-[var(--vault-muted)] [animation-delay:0.4s]"></span>
+                  <div className="neu-extruded flex w-24 items-center justify-center gap-2 rounded-2xl p-4">
+                    <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#6C63FF]"></span>
+                    <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#8B84FF] [animation-delay:0.2s]"></span>
+                    <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#38B2AC] [animation-delay:0.4s]"></span>
                   </div>
                 )}
 
                 <div ref={chatEndRef} />
               </div>
 
-              <div className="border-t border-[var(--vault-line)] bg-white/70 p-3">
-                <div className="flex gap-2">
+              {/* Chat Input Box */}
+              <div className="pt-3">
+                <div className="neu-inset-deep flex items-center gap-3 rounded-2xl p-2">
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -584,13 +587,13 @@ export default function AskAi() {
                         handleAsk();
                       }
                     }}
-                    placeholder="Ask something..."
-                    className="vault-input min-h-12 flex-1 px-4 py-3 font-semibold"
+                    placeholder="Ask a question about the document..."
+                    className="w-full bg-transparent px-4 py-3 text-sm font-medium text-[#3D4852] placeholder-[#6B7280] outline-none"
                   />
 
                   <button
                     onClick={handleAsk}
-                    className="vault-button-primary min-h-12 px-4"
+                    className="neu-btn-primary shrink-0 rounded-xl px-5 py-3"
                     title="Send question"
                   >
                     <Send className="h-5 w-5" />
@@ -602,11 +605,11 @@ export default function AskAi() {
         )}
       </main>
 
-      <div className="fixed right-4 top-20 z-50 flex flex-col gap-3">
+      <div className="fixed right-6 top-20 z-50 flex flex-col gap-3">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`rounded-md px-4 py-2 text-sm font-bold shadow-[var(--vault-shadow)] ${toastClass(t.type)}`}
+            className={`rounded-2xl px-5 py-3 font-display text-sm font-bold shadow-lg ${toastClass(t.type)}`}
           >
             {t.text}
           </div>
@@ -615,3 +618,4 @@ export default function AskAi() {
     </div>
   );
 }
+

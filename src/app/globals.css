@@ -1,35 +1,46 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :root {
-  --background: #f5f7f2;
-  --foreground: #15201b;
-  --vault-canvas: #f5f7f2;
-  --vault-ink: #15201b;
-  --vault-muted: #68726c;
-  --vault-soft: #eef2ea;
-  --vault-panel: rgba(255, 255, 252, 0.86);
-  --vault-panel-solid: #fffffc;
-  --vault-line: rgba(38, 58, 49, 0.14);
-  --vault-line-strong: rgba(38, 58, 49, 0.24);
-  --vault-brand: #225e4b;
-  --vault-brand-dark: #173d32;
-  --vault-brand-soft: #dfece5;
-  --vault-accent: #d65f45;
-  --vault-accent-soft: #f7e5df;
-  --vault-info: #3f5f9b;
-  --vault-info-soft: #e3e9f6;
-  --vault-success: #2d7a56;
-  --vault-danger: #b8453e;
-  --vault-shadow: 0 18px 60px rgba(31, 48, 39, 0.12);
-  --vault-shadow-soft: 0 10px 28px rgba(31, 48, 39, 0.08);
-  --vault-ring: 0 0 0 4px rgba(34, 94, 75, 0.16);
+  --background: #E0E5EC;
+  --foreground: #3D4852;
+  --muted: #6B7280;
+  --accent: #6C63FF;
+  --accent-light: #8B84FF;
+  --accent-secondary: #38B2AC;
+  
+  --vault-canvas: #E0E5EC;
+  --vault-ink: #3D4852;
+  --vault-muted: #6B7280;
+  --vault-soft: #E0E5EC;
+  --vault-panel: #E0E5EC;
+  --vault-panel-solid: #E0E5EC;
+  --vault-brand: #6C63FF;
+  --vault-brand-dark: #5851E0;
+  --vault-brand-soft: #E0E5EC;
+  --vault-accent: #6C63FF;
+  --vault-accent-soft: #E0E5EC;
+  --vault-info: #38B2AC;
+  --vault-info-soft: #E0E5EC;
+  --vault-success: #38B2AC;
+  --vault-danger: #E53E3E;
+  --vault-ring: 0 0 0 2px #E0E5EC, 0 0 0 4px #6C63FF;
+  
+  /* Neumorphic Dual Shadows */
+  --neu-shadow-extruded: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --neu-shadow-extruded-hover: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+  --neu-shadow-extruded-sm: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  --neu-shadow-inset: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  --neu-shadow-inset-deep: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+  --neu-shadow-inset-sm: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+  --neu-shadow-accent: 6px 6px 12px rgba(108, 99, 255, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.6);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-nunito, Arial);
-  --font-mono: var(--font-geist-mono, "Courier New");
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
 }
 
 * {
@@ -38,17 +49,24 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #E0E5EC;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-nunito, var(--font-geist-sans, Arial)), Helvetica, sans-serif;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.font-display {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 ::selection {
-  background: var(--vault-brand-soft);
-  color: var(--vault-brand-dark);
+  background: #6C63FF;
+  color: #FFFFFF;
 }
 
 button,
@@ -56,7 +74,7 @@ a,
 input,
 textarea,
 select {
-  outline-color: var(--vault-brand);
+  outline: none;
 }
 
 button:focus-visible,
@@ -64,38 +82,174 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  box-shadow: var(--vault-ring);
+  box-shadow: 0 0 0 2px #E0E5EC, 0 0 0 4px #6C63FF;
 }
 
+/* Neumorphic Utility Classes */
+
+.neu-bg {
+  background-color: #E0E5EC;
+}
+
+.neu-extruded {
+  background-color: #E0E5EC;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border-radius: 32px;
+}
+
+.neu-extruded-hover {
+  transition: all 300ms ease-out;
+}
+
+.neu-extruded-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+}
+
+.neu-extruded-sm {
+  background-color: #E0E5EC;
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+}
+
+.neu-inset {
+  background-color: #E0E5EC;
+  box-shadow: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+}
+
+.neu-inset-deep {
+  background-color: #E0E5EC;
+  box-shadow: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+}
+
+.neu-inset-sm {
+  background-color: #E0E5EC;
+  box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+/* Button variants */
+
+.neu-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #6C63FF;
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  border-radius: 16px;
+  min-height: 2.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 6px 6px 14px rgba(108, 99, 255, 0.35), -4px -4px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
+}
+
+.neu-btn-primary:hover {
+  background-color: #5851E0;
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 18px rgba(108, 99, 255, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.6);
+}
+
+.neu-btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.35), inset -4px -4px 8px rgba(255, 255, 255, 0.2);
+}
+
+.neu-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  border-radius: 16px;
+  min-height: 2.75rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
+}
+
+.neu-btn-secondary:hover {
+  color: #6C63FF;
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 14px rgba(163, 177, 198, 0.7), -8px -8px 14px rgba(255, 255, 255, 0.6);
+}
+
+.neu-btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+}
+
+.neu-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
+}
+
+.neu-icon-btn:hover {
+  color: #6C63FF;
+  transform: translateY(-2px);
+  box-shadow: 7px 7px 14px rgba(163, 177, 198, 0.7), -7px -7px 14px rgba(255, 255, 255, 0.6);
+}
+
+.neu-icon-btn:active {
+  transform: translateY(1px);
+  box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+}
+
+.neu-input {
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  box-shadow: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  border: none;
+  transition: all 300ms ease-out;
+}
+
+.neu-input:focus {
+  box-shadow: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6), 0 0 0 2px #6C63FF;
+}
+
+.neu-input::placeholder {
+  color: #6B7280;
+}
+
+/* Backward compatibility aliases */
 .vault-grid {
-  background-color: var(--vault-canvas);
-  background-image:
-    linear-gradient(rgba(34, 94, 75, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 94, 75, 0.045) 1px, transparent 1px);
-  background-size: 34px 34px;
+  background-color: #E0E5EC;
 }
 
 .vault-panel {
-  background: var(--vault-panel);
-  border: 1px solid var(--vault-line);
-  border-radius: 8px;
-  box-shadow: var(--vault-shadow-soft);
-  backdrop-filter: blur(18px);
+  background-color: #E0E5EC;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border-radius: 32px;
+  border: none;
 }
 
 .vault-panel-solid {
-  background: var(--vault-panel-solid);
-  border: 1px solid var(--vault-line);
-  border-radius: 8px;
-  box-shadow: var(--vault-shadow-soft);
-}
-
-.vault-kicker {
-  color: var(--vault-brand);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
+  background-color: #E0E5EC;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border-radius: 32px;
+  border: none;
 }
 
 .vault-button-primary {
@@ -103,19 +257,23 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 6px;
-  background: var(--vault-brand);
-  color: #fffffc;
-  font-weight: 800;
+  background-color: #6C63FF;
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  border-radius: 16px;
   min-height: 2.75rem;
-  padding: 0.75rem 1rem;
-  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
-  box-shadow: 0 12px 26px rgba(34, 94, 75, 0.18);
+  padding: 0.75rem 1.5rem;
+  box-shadow: 6px 6px 14px rgba(108, 99, 255, 0.35), -4px -4px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
 }
 
 .vault-button-primary:hover {
-  background: var(--vault-brand-dark);
-  transform: translateY(-1px);
+  background-color: #5851E0;
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 18px rgba(108, 99, 255, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.6);
 }
 
 .vault-button-secondary {
@@ -123,69 +281,98 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--vault-line-strong);
-  background: rgba(255, 255, 252, 0.72);
-  color: var(--vault-ink);
-  font-weight: 800;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  border-radius: 16px;
   min-height: 2.75rem;
-  padding: 0.75rem 1rem;
-  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
 }
 
 .vault-button-secondary:hover {
-  background: #fffffc;
-  border-color: rgba(34, 94, 75, 0.34);
-  transform: translateY(-1px);
+  color: #6C63FF;
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 14px rgba(163, 177, 198, 0.7), -8px -8px 14px rgba(255, 255, 255, 0.6);
 }
 
 .vault-icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  min-height: 2.5rem;
-  min-width: 2.5rem;
-  border: 1px solid var(--vault-line);
-  background: rgba(255, 255, 252, 0.76);
-  color: var(--vault-brand);
-  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  cursor: pointer;
+  border: none;
 }
 
 .vault-icon-button:hover {
-  background: #fffffc;
-  border-color: rgba(34, 94, 75, 0.34);
-  transform: translateY(-1px);
+  color: #6C63FF;
+  transform: translateY(-2px);
 }
 
 .vault-input {
-  border-radius: 6px;
-  border: 1px solid var(--vault-line-strong);
-  background: rgba(255, 255, 252, 0.9);
-  color: var(--vault-ink);
-  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  box-shadow: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  border: none;
+  transition: all 300ms ease-out;
 }
 
 .vault-input:focus {
-  border-color: var(--vault-brand);
-  background: #fffffc;
-  box-shadow: var(--vault-ring);
+  box-shadow: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6), 0 0 0 2px #6C63FF;
 }
 
+.vault-kicker {
+  color: #6C63FF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Scrollbar customization */
 .vault-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(34, 94, 75, 0.35) transparent;
+  scrollbar-color: rgba(163, 177, 198, 0.6) transparent;
 }
 
 .vault-scrollbar::-webkit-scrollbar {
-  width: 9px;
+  width: 8px;
 }
 
 .vault-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(34, 94, 75, 0.25);
+  background: rgba(163, 177, 198, 0.6);
   border-radius: 999px;
+  box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.4);
 }
 
 .vault-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* Floating animation */
+@keyframes neu-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-neu-float {
+  animation: neu-float 3s ease-in-out infinite;
+}
+

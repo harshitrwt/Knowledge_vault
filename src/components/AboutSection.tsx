@@ -15,16 +15,16 @@ export default function AboutSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   const sectionVariants: Variants = {
-    hidden: { opacity: 0, y: 80 },
+    hidden: { opacity: 0, y: 60 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.9, ease: "easeOut" },
+      transition: { duration: 0.8, ease: "easeOut" },
     },
   };
 
   const contentVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
@@ -39,69 +39,78 @@ export default function AboutSection() {
 
   return (
     <motion.section
+      id="about"
       ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={sectionVariants}
-      className="relative border-t border-[var(--vault-line)] px-4 py-24 sm:px-6 lg:px-8"
+      className="relative px-4 py-24 sm:px-6 lg:px-8"
     >
       <motion.div
-        className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]"
+        className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-16"
         variants={contentVariants}
       >
         <motion.div variants={childVariants}>
-          <p className="vault-kicker mb-3">Product Shape</p>
-          <h2 className="text-3xl font-black tracking-normal text-[var(--vault-ink)] sm:text-4xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-xs font-extrabold text-[#6C63FF] neu-inset-sm">
+            <span>Product Architecture</span>
+          </div>
+          <h2 className="font-display text-4xl font-extrabold tracking-tight text-[#3D4852] sm:text-5xl">
             From static PDFs to an active workspace.
           </h2>
-          <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-[var(--vault-muted)] sm:text-lg">
-            Vault keeps the familiar upload, analyze, and chat workflow, but presents it with cleaner hierarchy, stronger affordances, and more useful scanning surfaces.
+          <p className="mt-5 max-w-xl text-base font-medium leading-relaxed text-[#6B7280] sm:text-lg">
+            Vault presents your files with clear visual hierarchy, tactile affordances, and scannable surfaces designed for high-focus work.
           </p>
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 space-y-4">
             {workflow.map((item) => (
-              <div key={item} className="flex items-center gap-3 text-sm font-extrabold text-[var(--vault-ink)]">
-                <CheckCircle2 className="h-5 w-5 text-[var(--vault-success)]" />
+              <div key={item} className="flex items-center gap-3 font-display text-base font-bold text-[#3D4852]">
+                <div className="neu-inset-sm flex h-8 w-8 items-center justify-center rounded-xl text-[#38B2AC]">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
                 {item}
               </div>
             ))}
           </div>
         </motion.div>
 
-        <motion.div variants={childVariants} className="vault-panel p-4">
-          <div className="grid gap-3 sm:grid-cols-[0.82fr_1.18fr]">
-            <div className="rounded-lg border border-[var(--vault-line)] bg-[var(--vault-soft)] p-4">
-              <div className="mb-4 flex items-center gap-2">
-                <Search className="h-4 w-4 text-[var(--vault-brand)]" />
-                <p className="text-sm font-black text-[var(--vault-ink)]">Source Explorer</p>
+        <motion.div variants={childVariants} className="neu-extruded rounded-[32px] p-8 sm:p-10">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="neu-inset-deep rounded-[24px] p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="neu-inset-sm flex h-9 w-9 items-center justify-center rounded-xl text-[#6C63FF]">
+                  <Search className="h-4 w-4" />
+                </div>
+                <p className="font-display text-base font-bold text-[#3D4852]">Source Explorer</p>
               </div>
               {["Clause summary", "Risk language", "Payment schedule", "Renewal window"].map((item) => (
-                <div key={item} className="mb-2 rounded-md border border-[var(--vault-line)] bg-white/80 p-3 last:mb-0">
-                  <p className="text-sm font-extrabold text-[var(--vault-ink)]">{item}</p>
-                  <div className="mt-2 h-1.5 rounded-sm bg-[var(--vault-brand-soft)]" />
+                <div key={item} className="neu-extruded-sm mb-3 rounded-xl p-3.5 last:mb-0">
+                  <p className="font-display text-sm font-bold text-[#3D4852]">{item}</p>
+                  <div className="neu-inset-sm mt-2 h-1.5 w-full rounded-full" />
                 </div>
               ))}
             </div>
 
-            <div className="rounded-lg border border-[var(--vault-line)] bg-white/80 p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MessageSquareText className="h-4 w-4 text-[var(--vault-accent)]" />
-                  <p className="text-sm font-black text-[var(--vault-ink)]">AI Response</p>
+            <div className="neu-inset-deep rounded-[24px] p-6">
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="neu-inset-sm flex h-9 w-9 items-center justify-center rounded-xl text-[#6C63FF]">
+                    <MessageSquareText className="h-4 w-4" />
+                  </div>
+                  <p className="font-display text-base font-bold text-[#3D4852]">AI Response</p>
                 </div>
-                <span className="rounded-md bg-[var(--vault-accent-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-accent)]">
+                <span className="neu-inset-sm rounded-full px-3 py-1 text-xs font-bold text-[#38B2AC]">
                   Saved
                 </span>
               </div>
-              <p className="text-sm font-semibold leading-6 text-[var(--vault-muted)]">
-                The agreement includes a 14-day notice period, a late fee after day 45, and a renewal clause that should be reviewed before approval.
+              <p className="text-sm font-medium leading-relaxed text-[#6B7280]">
+                The agreement includes a 14-day notice period, a late fee after day 45, and a renewal clause for review.
               </p>
-              <div className="mt-5 rounded-lg border border-[var(--vault-line)] bg-[var(--vault-info-soft)] p-4">
+              <div className="neu-extruded-sm mt-6 rounded-2xl p-4">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[var(--vault-info)]" />
-                  <p className="text-sm font-black text-[var(--vault-ink)]">Linked evidence</p>
+                  <FileText className="h-4 w-4 text-[#6C63FF]" />
+                  <p className="font-display text-xs font-bold text-[#3D4852]">Linked evidence</p>
                 </div>
-                <p className="mt-2 text-xs font-bold leading-5 text-[var(--vault-muted)]">
-                  Section 4.2, page 8, source excerpt available in chat context.
+                <p className="mt-2 text-xs font-medium leading-normal text-[#6B7280]">
+                  Section 4.2, page 8, source excerpt active.
                 </p>
               </div>
             </div>
@@ -111,3 +120,4 @@ export default function AboutSection() {
     </motion.section>
   );
 }
+

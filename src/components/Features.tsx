@@ -52,31 +52,34 @@ export default function Features() {
 
   return (
     <motion.section
+      id="features"
       ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={{
-        hidden: { opacity: 0, y: 80 },
+        hidden: { opacity: 0, y: 60 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.9, ease: "easeOut" },
+          transition: { duration: 0.8, ease: "easeOut" },
         },
       }}
-      className="relative border-t border-[var(--vault-line)] bg-white/60 px-4 py-24 sm:px-6 lg:px-8"
+      className="relative px-4 py-24 sm:px-6 lg:px-8"
     >
-      <motion.div className="mx-auto mb-12 max-w-3xl text-center" variants={headerVariants}>
-        <p className="vault-kicker mb-3">Core Capabilities</p>
-        <h2 className="text-3xl font-black tracking-normal text-[var(--vault-ink)] sm:text-4xl">
+      <motion.div className="mx-auto mb-16 max-w-3xl text-center" variants={headerVariants}>
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-xs font-extrabold text-[#6C63FF] neu-inset-sm">
+          <span>Core Capabilities</span>
+        </div>
+        <h2 className="font-display text-4xl font-extrabold tracking-tight text-[#3D4852] sm:text-5xl">
           A sharper way to work through documents.
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)] sm:text-lg">
-          The new interface favors scannability, fast action, and a visual rhythm built for repeated daily use.
+        <p className="mx-auto mt-4 max-w-2xl text-base font-medium leading-relaxed text-[#6B7280] sm:text-lg">
+          The interface favors scannability, fast action, and a visual rhythm built for repeated daily use.
         </p>
       </motion.div>
 
       <motion.div
-        className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
         variants={cardsContainerVariants}
       >
         {features.map((feature, index) => {
@@ -85,15 +88,15 @@ export default function Features() {
             <motion.div
               key={index}
               variants={cardVariants}
-              className="vault-panel-solid p-6 transition duration-300 hover:-translate-y-1"
+              className="neu-extruded neu-extruded-hover rounded-[32px] p-8"
             >
-              <div className="mb-5 grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
-                <Icon className="h-5 w-5" />
+              <div className="neu-inset-deep mb-6 grid h-14 w-14 place-items-center rounded-2xl text-[#6C63FF]">
+                <Icon className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-black text-[var(--vault-ink)]">
+              <h3 className="font-display text-2xl font-bold text-[#3D4852]">
                 {feature.title}
               </h3>
-              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+              <p className="mt-3 text-base font-medium leading-relaxed text-[#6B7280]">
                 {feature.desc}
               </p>
             </motion.div>
@@ -103,3 +106,4 @@ export default function Features() {
     </motion.section>
   );
 }
+

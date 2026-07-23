@@ -198,43 +198,45 @@ export default function UploadsPage() {
   };
 
   return (
-    <div className="vault-grid flex min-h-screen text-[var(--vault-ink)]">
+    <div className="flex min-h-screen bg-[#E0E5EC] font-sans text-[#3D4852]">
       <Sidebar />
 
-      <main className="relative flex-1 px-4 pb-28 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
-        <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <main className="relative flex-1 px-4 pb-28 pt-24 sm:px-6 lg:px-10 md:pt-8">
+        <header className="neu-extruded mb-10 flex flex-col gap-6 rounded-[32px] p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="vault-kicker mb-3">Library</p>
-            <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-xs font-extrabold text-[#6C63FF] neu-inset-sm">
+              <span>Library</span>
+            </div>
+            <h1 className="font-display text-4xl font-extrabold tracking-tight text-[#3D4852] sm:text-5xl">
               Your Files
             </h1>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+            <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-[#6B7280]">
               Review uploaded documents, reopen saved chats, or add a fresh PDF for analysis.
             </p>
           </div>
-          <button onClick={handleUploadClick} className="vault-button-primary">
+          <button onClick={handleUploadClick} className="neu-btn-primary rounded-2xl px-6 py-3.5 text-base font-bold">
             <UploadCloud className="h-5 w-5" />
             Upload Files
           </button>
         </header>
 
         {loading ? (
-          <div className="vault-panel-solid py-20">
+          <div className="neu-extruded rounded-[32px] py-20">
             <Loader />
           </div>
         ) : files.length === 0 && savedChats.length === 0 ? (
-          <div className="vault-panel-solid flex min-h-[58vh] items-center justify-center p-8 text-center">
+          <div className="neu-extruded flex min-h-[50vh] items-center justify-center rounded-[32px] p-12 text-center">
             <div>
-              <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+              <div className="neu-inset-deep mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl text-[#6C63FF]">
                 <Folder className="h-8 w-8" />
               </div>
-              <h2 className="text-2xl font-black text-[var(--vault-ink)]">
+              <h2 className="font-display text-2xl font-extrabold text-[#3D4852]">
                 No files yet
               </h2>
-              <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+              <p className="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-[#6B7280]">
                 Upload a PDF to start building your searchable document workspace.
               </p>
-              <button onClick={handleUploadClick} className="vault-button-primary mt-6">
+              <button onClick={handleUploadClick} className="neu-btn-primary mt-8 rounded-2xl px-8 py-3.5 font-bold">
                 <Plus className="h-5 w-5" />
                 Add First File
               </button>
@@ -243,31 +245,31 @@ export default function UploadsPage() {
         ) : (
           <>
             {savedChats.length > 0 && (
-              <section className="mb-10">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+              <section className="mb-12">
+                <div className="mb-6 flex items-center gap-3.5">
+                  <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                     <MessageSquare className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-black text-[var(--vault-ink)]">
+                    <h2 className="font-display text-xl font-extrabold text-[#3D4852]">
                       Saved Chats
                     </h2>
-                    <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                    <p className="text-xs font-medium text-[#6B7280]">
                       Continue from previous document sessions.
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {savedChats.map((chat, index) => {
                     const menuId = `chat-${index}`;
 
                     return (
                       <div key={chat.id} className="relative">
                         <Link href={`/askai?chat=${chat.id}`}>
-                          <div className="vault-panel-solid cursor-pointer p-5 transition duration-300 hover:-translate-y-1">
+                          <div className="neu-extruded neu-extruded-hover cursor-pointer rounded-[32px] p-6">
                             {menuIndex === menuId && (
                               <div
-                                className="absolute right-3 top-12 z-50 overflow-hidden rounded-md border border-[var(--vault-line)] bg-white shadow-[var(--vault-shadow)]"
+                                className="neu-extruded absolute right-4 top-14 z-50 overflow-hidden rounded-2xl p-2"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <button
@@ -276,7 +278,7 @@ export default function UploadsPage() {
                                     e.stopPropagation();
                                     handleDeleteChat(chat.id);
                                   }}
-                                  className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-danger)] transition hover:bg-[var(--vault-accent-soft)]"
+                                  className="flex w-full items-center rounded-xl px-4 py-2 text.xs font-bold text-[#E53E3E] transition hover:bg-[#E53E3E]/10"
                                 >
                                   <Trash2 size={16} className="mr-2" />
                                   Delete
@@ -285,17 +287,17 @@ export default function UploadsPage() {
                             )}
 
                             <div className="mb-4 flex items-center justify-between">
-                              <div className="grid h-12 w-12 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+                              <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                                 <MessageSquare className="h-6 w-6" />
                               </div>
-                              <span className="rounded-md bg-[var(--vault-soft)] px-2 py-1 text-xs font-extrabold text-[var(--vault-muted)]">
+                              <span className="neu-inset-sm rounded-full px-3 py-1 font-display text-xs font-bold text-[#38B2AC]">
                                 Chat
                               </span>
                             </div>
-                            <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                            <p className="truncate font-display text-base font-bold text-[#3D4852]">
                               {chat.fileName}
                             </p>
-                            <p className="mt-2 text-xs font-bold text-[var(--vault-muted)]">
+                            <p className="mt-2 text-xs font-medium text-[#6B7280]">
                               Continue conversation
                             </p>
                           </div>
@@ -308,34 +310,34 @@ export default function UploadsPage() {
             )}
 
             <section>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+              <div className="mb-6 flex items-center gap-3.5">
+                <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#38B2AC]">
                   <FileText className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-[var(--vault-ink)]">
+                  <h2 className="font-display text-xl font-extrabold text-[#3D4852]">
                     Uploaded Files
                   </h2>
-                  <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                  <p className="text-xs font-medium text-[#6B7280]">
                     Open, download, share, or remove documents.
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {files.map((file, index) => (
                   <div
                     key={file.id}
                     onClick={() => handleOpen(file)}
-                    className="vault-panel-solid group relative cursor-pointer p-5 transition duration-300 hover:-translate-y-1"
+                    className="neu-extruded neu-extruded-hover group relative cursor-pointer rounded-[32px] p-6"
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
-                      <div className="grid h-12 w-12 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
+                      <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#38B2AC]">
                         <Folder className="h-6 w-6" />
                       </div>
 
                       <button
-                        className="vault-icon-button min-h-9 min-w-9"
+                        className="neu-icon-btn h-9 w-9 rounded-xl"
                         title="File actions"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -346,24 +348,24 @@ export default function UploadsPage() {
                       </button>
                     </div>
 
-                    <p className="truncate text-base font-black text-[var(--vault-ink)]">
+                    <p className="truncate font-display text-base font-bold text-[#3D4852]">
                       {file.name}
                     </p>
-                    <p className="mt-2 text-xs font-bold text-[var(--vault-muted)]">
+                    <p className="mt-2 text-xs font-medium text-[#6B7280]">
                       {(file.size / 1024).toFixed(2)} KB
                     </p>
 
                     {menuIndex === index && (
-                      <div className="absolute right-3 top-14 z-50 overflow-hidden rounded-md border border-[var(--vault-line)] bg-white shadow-[var(--vault-shadow)]">
+                      <div className="neu-extruded absolute right-4 top-16 z-50 flex flex-col gap-1 rounded-2xl p-2 shadow-xl">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDownload(file);
                             setMenuIndex(null);
                           }}
-                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-ink)] transition hover:bg-[var(--vault-soft)]"
+                          className="flex w-full items-center rounded-xl px-4 py-2 text-xs font-bold text-[#3D4852] transition hover:text-[#6C63FF]"
                         >
-                          <Download size={16} className="mr-2" />
+                          <Download size={14} className="mr-2" />
                           Download
                         </button>
 
@@ -373,9 +375,9 @@ export default function UploadsPage() {
                             handleShare(file);
                             setMenuIndex(null);
                           }}
-                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-ink)] transition hover:bg-[var(--vault-soft)]"
+                          className="flex w-full items-center rounded-xl px-4 py-2 text-xs font-bold text-[#3D4852] transition hover:text-[#6C63FF]"
                         >
-                          <Share2 size={16} className="mr-2" />
+                          <Share2 size={14} className="mr-2" />
                           Share
                         </button>
 
@@ -384,9 +386,9 @@ export default function UploadsPage() {
                             e.stopPropagation();
                             handleDelete(file.id);
                           }}
-                          className="flex w-full items-center px-4 py-2 text-sm font-bold text-[var(--vault-danger)] transition hover:bg-[var(--vault-accent-soft)]"
+                          className="flex w-full items-center rounded-xl px-4 py-2 text-xs font-bold text-[#E53E3E] transition hover:bg-[#E53E3E]/10"
                         >
-                          <Trash2 size={16} className="mr-2" />
+                          <Trash2 size={14} className="mr-2" />
                           Delete
                         </button>
                       </div>
@@ -399,17 +401,17 @@ export default function UploadsPage() {
         )}
 
         <div
-          className="fixed bottom-24 right-5 z-40 flex flex-col items-end gap-2 sm:right-8"
+          className="fixed bottom-24 right-6 z-40 flex flex-col items-end gap-2 sm:right-8"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           {isHovered && (
-            <div className="rounded-md border border-[var(--vault-line)] bg-white px-3 py-1.5 text-sm font-extrabold text-[var(--vault-ink)] shadow-[var(--vault-shadow-soft)]">
+            <div className="neu-extruded-sm rounded-xl px-3 py-1.5 font-display text-xs font-bold text-[#6C63FF]">
               Ask AI
             </div>
           )}
 
-          <Link href="/askai" className="vault-icon-button h-14 w-14 bg-[var(--vault-ink)] text-white hover:bg-[var(--vault-brand-dark)]" title="Ask AI">
+          <Link href="/askai" className="neu-btn-primary h-14 w-14 !rounded-2xl !p-0" title="Ask AI">
             <Bot size={26} />
           </Link>
         </div>
@@ -423,7 +425,7 @@ export default function UploadsPage() {
         />
 
         <button
-          className="fixed bottom-6 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-lg bg-[var(--vault-brand)] text-white shadow-[var(--vault-shadow)] transition hover:-translate-y-1 hover:bg-[var(--vault-brand-dark)] sm:right-8"
+          className="neu-btn-primary fixed bottom-6 right-6 z-40 h-14 w-14 !rounded-2xl !p-0 sm:right-8"
           onClick={handleUploadClick}
           title="Upload files"
         >
@@ -431,7 +433,7 @@ export default function UploadsPage() {
         </button>
 
         {toast && (
-          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[var(--vault-line)] bg-[var(--vault-ink)] px-4 py-2 text-sm font-bold text-white shadow-[var(--vault-shadow)]">
+          <div className="neu-extruded fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-[#3D4852] px-6 py-3 font-display text-sm font-bold text-white shadow-2xl">
             {toast}
           </div>
         )}
@@ -439,3 +441,4 @@ export default function UploadsPage() {
     </div>
   );
 }
+

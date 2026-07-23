@@ -94,45 +94,47 @@ export default function MindmapPage() {
   const hasSelectedFile = Boolean(file || selectedStoredFile);
 
   return (
-    <div className="vault-grid flex min-h-screen text-[var(--vault-ink)]">
+    <div className="flex min-h-screen bg-[#E0E5EC] font-sans text-[#3D4852]">
       <Sidebar />
 
-      <main className="flex-grow overflow-y-auto px-4 pb-10 pt-24 sm:px-6 lg:px-8 xl:px-10 md:pt-8">
-        <header className="vault-panel mb-8 p-6 sm:p-8">
-          <p className="vault-kicker mb-3">{getGreeting()}</p>
-          <h1 className="text-4xl font-black tracking-normal text-[var(--vault-ink)] sm:text-5xl">
+      <main className="flex-grow overflow-y-auto px-4 pb-12 pt-24 sm:px-6 lg:px-10 md:pt-8">
+        <header className="neu-extruded mb-10 rounded-[32px] p-8 sm:p-10">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-display text-xs font-extrabold text-[#6C63FF] neu-inset-sm">
+            <span>{getGreeting()}</span>
+          </div>
+          <h1 className="font-display text-4xl font-extrabold tracking-tight text-[#3D4852] sm:text-5xl">
             Mind-Map Creator
           </h1>
-          <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[var(--vault-muted)]">
+          <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-[#6B7280]">
             Upload a PDF or choose from your files to generate a mind-map.
           </p>
           {user?.firstName && (
-            <p className="mt-4 text-sm font-extrabold text-[var(--vault-brand)]">
+            <p className="mt-4 font-display text-xs font-bold text-[#6C63FF]">
               Workspace for {user.firstName}
             </p>
           )}
         </header>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <section className="vault-panel-solid p-5">
-            <div className="mb-5 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-brand-soft)] text-[var(--vault-brand)]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+          <section className="neu-extruded rounded-[32px] p-8">
+            <div className="mb-6 flex items-center gap-3.5">
+              <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                 <Bolt className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-xl font-black text-[var(--vault-ink)]">Select PDF</h2>
-                <p className="text-sm font-semibold text-[var(--vault-muted)]">
+                <h2 className="font-display text-xl font-extrabold text-[#3D4852]">Select PDF</h2>
+                <p className="text-xs font-medium text-[#6B7280]">
                   Choose one source for the generator.
                 </p>
               </div>
             </div>
 
-            <label className="text-sm font-extrabold text-[var(--vault-ink)]">
+            <label className="font-display text-sm font-bold text-[#3D4852]">
               Upload New PDF
             </label>
-            <div className="mt-2 rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-bold text-[var(--vault-muted)]">
-                <UploadCloud className="h-4 w-4 text-[var(--vault-brand)]" />
+            <div className="neu-inset-deep mt-3 rounded-2xl p-5">
+              <div className="mb-3 flex items-center gap-2 font-display text-xs font-bold text-[#6B7280]">
+                <UploadCloud className="h-4 w-4 text-[#6C63FF]" />
                 Select a local PDF
               </div>
               <input
@@ -142,24 +144,24 @@ export default function MindmapPage() {
                   setFile(e.target.files?.[0] || null);
                   setSelectedStoredFile(null);
                 }}
-                className="vault-input w-full p-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[var(--vault-brand)] file:px-3 file:py-2 file:text-sm file:font-bold file:text-white"
+                className="neu-input w-full p-2 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-[#6C63FF] file:px-3 file:py-2 file:text-xs file:font-bold file:text-white"
               />
             </div>
 
-            <div className="mt-6">
-              <div className="mb-3 flex items-center gap-2">
-                <FolderOpen className="h-4 w-4 text-[var(--vault-brand)]" />
-                <p className="text-sm font-black text-[var(--vault-ink)]">
+            <div className="mt-8">
+              <div className="mb-4 flex items-center gap-2.5">
+                <FolderOpen className="h-4 w-4 text-[#6C63FF]" />
+                <p className="font-display text-sm font-bold text-[#3D4852]">
                   Your Uploaded Files
                 </p>
               </div>
 
               {fetchingFiles ? (
-                <p className="rounded-lg border border-[var(--vault-line)] bg-white/70 p-4 text-sm font-semibold text-[var(--vault-muted)]">
+                <p className="neu-inset-sm rounded-2xl p-4 text-center text-xs font-medium text-[#6B7280]">
                   Loading files...
                 </p>
               ) : storedFiles.length > 0 ? (
-                <div className="vault-scrollbar max-h-[280px] space-y-2 overflow-y-auto pr-1">
+                <div className="vault-scrollbar max-h-[280px] space-y-3 overflow-y-auto pr-1">
                   {storedFiles.map((f) => (
                     <button
                       key={f.id}
@@ -167,21 +169,21 @@ export default function MindmapPage() {
                         setSelectedStoredFile(f);
                         setFile(null);
                       }}
-                      className={`w-full rounded-lg border p-3 text-left transition ${
+                      className={`w-full rounded-2xl p-4 text-left transition ${
                         selectedStoredFile?.id === f.id
-                          ? "border-[var(--vault-brand)] bg-[var(--vault-brand-soft)]"
-                          : "border-[var(--vault-line)] bg-white/80 hover:border-[var(--vault-line-strong)]"
+                          ? "neu-inset border-2 border-[#6C63FF]/30 text-[#6C63FF]"
+                          : "neu-extruded-sm neu-extruded-hover text-[#3D4852]"
                       }`}
                     >
-                      <div className="flex min-w-0 gap-3">
-                        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[var(--vault-info-soft)] text-[var(--vault-info)]">
-                          <FileText className="h-5 w-5" />
+                      <div className="flex min-w-0 items-center gap-3.5">
+                        <div className="neu-inset-sm flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#38B2AC]">
+                          <FileText className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-black text-[var(--vault-ink)]">
+                          <p className="truncate font-display text-sm font-bold">
                             {f.name}
                           </p>
-                          <p className="text-xs font-bold text-[var(--vault-muted)]">
+                          <p className="text-xs font-medium text-[#6B7280]">
                             {formatFileSize(f.size)}
                           </p>
                         </div>
@@ -190,7 +192,7 @@ export default function MindmapPage() {
                   ))}
                 </div>
               ) : (
-                <p className="rounded-lg border border-[var(--vault-line)] bg-[var(--vault-soft)] p-4 text-sm font-semibold text-[var(--vault-muted)]">
+                <p className="neu-inset-sm rounded-2xl p-4 text-center text-xs font-medium text-[#6B7280]">
                   No uploaded files found.
                 </p>
               )}
@@ -199,37 +201,37 @@ export default function MindmapPage() {
             <button
               onClick={generateMindmap}
               disabled={loading || !hasSelectedFile}
-              className="vault-button-primary mt-6 w-full disabled:cursor-not-allowed disabled:bg-[var(--vault-muted)] disabled:shadow-none"
+              className="neu-btn-primary mt-8 w-full rounded-2xl py-3.5 text-base font-bold disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               <GitBranch className="h-5 w-5" />
               {loading ? "Generating..." : "Generate Mind-Map"}
             </button>
           </section>
 
-          <section className="vault-panel-solid min-h-[520px] p-5">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-md bg-[var(--vault-accent-soft)] text-[var(--vault-accent)]">
+          <section className="neu-extruded min-h-[520px] rounded-[32px] p-8">
+            <div className="mb-6 flex items-center gap-3.5">
+              <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                 <BrainCog className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-xl font-black text-[var(--vault-ink)] md:text-2xl">
-                  Mind-Map
+                <h2 className="font-display text-xl font-extrabold text-[#3D4852]">
+                  Mind-Map Output
                 </h2>
-                <p className="text-sm font-semibold text-[var(--vault-muted)]">
-                  Visual output surface
+                <p className="text-xs font-medium text-[#6B7280]">
+                  Visual analysis surface
                 </p>
               </div>
             </div>
 
-            <div className="grid min-h-[380px] place-items-center rounded-lg border border-dashed border-[var(--vault-line-strong)] bg-[var(--vault-soft)] p-6 text-center">
+            <div className="neu-inset-deep flex min-h-[380px] items-center justify-center rounded-[28px] p-8 text-center">
               <div>
-                <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-md bg-white text-[var(--vault-brand)] shadow-sm">
-                  <GitBranch className="h-8 w-8" />
+                <div className="neu-extruded mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full text-[#6C63FF]">
+                  <GitBranch className="h-9 w-9" />
                 </div>
-                <h3 className="text-2xl font-black text-[var(--vault-ink)]">
+                <h3 className="font-display text-2xl font-extrabold text-[#3D4852]">
                   Work In Progress
                 </h3>
-                <p className="mx-auto mt-3 max-w-md text-sm font-semibold leading-6 text-[var(--vault-muted)]">
+                <p className="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-[#6B7280]">
                   {loading
                     ? "The generator is processing your selected document."
                     : hasSelectedFile
@@ -237,7 +239,7 @@ export default function MindmapPage() {
                       : "Select or upload a PDF to get started."}
                 </p>
                 {mindmap && (
-                  <p className="mt-4 text-xs font-extrabold text-[var(--vault-brand)]">
+                  <p className="mt-4 font-display text-xs font-bold text-[#38B2AC]">
                     Mind-map data received.
                   </p>
                 )}
@@ -249,3 +251,4 @@ export default function MindmapPage() {
     </div>
   );
 }
+
