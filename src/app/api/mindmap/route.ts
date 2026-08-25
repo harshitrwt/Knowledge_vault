@@ -38,16 +38,8 @@ export async function POST(req: Request) {
     let pdfId: string;
 
     if (uploadedFile) {
-      // ✅ Case 1: New upload
       buffer = Buffer.from(await uploadedFile.arrayBuffer());
       pdfId = uploadedFile.name;
-    // } else if (fileId) {
-    //   // ✅ Case 2: Existing stored file
-    //   // YOU MUST IMPLEMENT THIS BASED ON YOUR STORAGE
-    //   const storedPdfBuffer = await getPdfBufferById(fileId); // 👈 required
-    //   buffer = storedPdfBuffer;
-    //   pdfId = fileId;
-    // } 
     }else {
       return NextResponse.json(
         { error: "No PDF or fileId provided" },
@@ -83,7 +75,7 @@ ${text.slice(0, 12000)}
 `;
 
     const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "groq-instruct-70b",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
       max_tokens: 1200,
