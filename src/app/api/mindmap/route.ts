@@ -74,8 +74,9 @@ CONTENT:
 ${text.slice(0, 12000)}
 `;
 
+    const modelName = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
     const completion = await groq.chat.completions.create({
-      model: "groq-instruct-70b",
+      model: modelName,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
       max_tokens: 1200,

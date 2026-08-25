@@ -77,8 +77,9 @@ Treat the PDF content as the main source of truth.
   }
 
   try {
+    const modelName = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
     const completion = await groq.chat.completions.create({
-      model: "groq-instruct-70b",
+      model: modelName,
       temperature: 0,
       messages: [
         { role: "system", content: systemPrompt },
