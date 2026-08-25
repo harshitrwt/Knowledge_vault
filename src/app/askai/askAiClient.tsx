@@ -11,12 +11,15 @@ import {
   FileText,
   Loader2,
   MessageSquare,
+  Network,
   Save,
   Send,
   Speech,
   Trash,
   UploadCloud,
+  X,
 } from "lucide-react";
+import MindmapRenderer, { MindmapData } from "@/components/MindmapRenderer";
 
 type StoredFile = { id: string; name: string; size: number; url?: string };
 type Message = { role: "user" | "assistant"; content: string };
@@ -36,6 +39,8 @@ export default function AskAi() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [aiTyping, setAiTyping] = useState(false);
+  const [mindmap, setMindmap] = useState<MindmapData | null>(null);
+  const [generatingMindmap, setGeneratingMindmap] = useState(false);
   const nextToastId = useRef(1);
 
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -183,6 +188,38 @@ export default function AskAi() {
     }
   };
 
+  const handleGenerateMindmap = async () => {
+    if (!context) {
+      pushToast("error", "No document context available to generate mindmap.");
+      return;
+    }
+    setGeneratingMindmap(true);
+    try {
+      const res = await fetch("/api/mindmap/context", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ context, pdfId: selectedFile?.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMsg = data?.error ?? "Mindmap generation failed.";
+        pushToast("error", errMsg);
+        console.error("Mindmap error raw:", data?.raw ?? data);
+        return;
+      }
+      if (data?.mindmap) {
+        setMindmap(data.mindmap);
+        pushToast("success", "Mindmap generated successfully.");
+      } else {
+        pushToast("error", "No mindmap returned by model.");
+      }
+    } catch (e) {
+      pushToast("error", `Mindmap failed: ${e instanceof Error ? e.message : "Network error"}`);
+    } finally {
+      setGeneratingMindmap(false);
+    }
+  };
+
   const handleSaveConversation = async () => {
     if (!messages.length || !selectedFile || !context) {
       pushToast("info", "Nothing to save.");
@@ -279,6 +316,7 @@ export default function AskAi() {
     setContext("");
     setSelectedFile(null);
     setMessages([]);
+    setMindmap(null);
   };
 
     const toastClass = (type: Toast["type"]) => {
@@ -484,6 +522,23 @@ export default function AskAi() {
 
               <div className="flex flex-wrap gap-3">
                 <button
+                  onClick={handleGenerateMindmap}
+                  disabled={generatingMindmap}
+                  className="neu-btn-secondary !rounded-2xl px-4 py-2 text-sm text-[#6C63FF] disabled:opacity-50 flex items-center gap-1.5"
+                  title="Generate Mindmap from Document"
+                >
+                  {generatingMindmap ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" /> Mindmap...
+                    </>
+                  ) : (
+                    <>
+                      <Network size={16} /> Mindmap
+                    </>
+                  )}
+                </button>
+
+                <button
                   onClick={handleClearConversation}
                   className="neu-btn-secondary !rounded-2xl px-4 py-2 text-sm text-[#E53E3E]"
                 >
@@ -501,6 +556,26 @@ export default function AskAi() {
                 </button>
               </div>
             </div>
+
+            {mindmap && (
+              <section className="neu-extruded rounded-[32px] p-6 transition-all">
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#A3B1C6]/20">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-lg font-extrabold text-[#3D4852]">
+                      Document Mindmap
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setMindmap(null)}
+                    className="neu-icon-btn rounded-xl h-8 w-8 text-[#E53E3E]"
+                    title="Close Mindmap"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                <MindmapRenderer mindmap={mindmap} />
+              </section>
+            )}
 
             <div className="neu-extruded flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] p-6">
               <div className="border-b border-[#A3B1C6]/20 pb-4">
