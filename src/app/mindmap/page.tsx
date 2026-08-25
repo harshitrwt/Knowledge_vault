@@ -1,13 +1,16 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
+import MindmapRenderer, { MindmapData } from "@/components/MindmapRenderer";
 import {
   Bolt,
   BrainCog,
   FileText,
   FolderOpen,
   GitBranch,
+  Loader2,
   UploadCloud,
+  AlertCircle,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
@@ -16,17 +19,19 @@ type StoredFile = {
   id: string;
   name: string;
   size: number;
+  url?: string;
 };
 
 export default function MindmapPage() {
   const { user } = useUser();
 
   const [file, setFile] = useState<File | null>(null);
-  const [selectedStoredFile, setSelectedStoredFile] =
-    useState<StoredFile | null>(null);
+  const [selectedStoredFile, setSelectedStoredFile] = useState<StoredFile | null>(null);
   const [storedFiles, setStoredFiles] = useState<StoredFile[]>([]);
-  const [mindmap, setMindmap] = useState<string | null>(null);
+  const [mindmap, setMindmap] = useState<MindmapData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [fetchingFiles, setFetchingFiles] = useState(false);
 
@@ -67,28 +72,69 @@ export default function MindmapPage() {
 
     setLoading(true);
     setMindmap(null);
-
-    const formData = new FormData();
-
-    if (file) {
-      formData.append("pdf", file);
-    } else if (selectedStoredFile) {
-      formData.append("fileId", selectedStoredFile.id);
-    }
+    setErrorMessage(null);
+    setStatusMessage("Extracting text from PDF...");
 
     try {
-      const res = await fetch("/api/mindmap", {
+      let contextText = "";
+      const pdfTitle = file ? file.name : selectedStoredFile?.name || "Document";
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const analyzeRes = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData,
+        });
+        const analyzeData = await analyzeRes.json().catch(() => ({}));
+        if (!analyzeRes.ok || !analyzeData?.text) {
+          throw new Error(analyzeData?.error || "Failed to extract text from uploaded PDF");
+        }
+        contextText = analyzeData.text;
+      } else if (selectedStoredFile) {
+        if (!selectedStoredFile.url) {
+          throw new Error("Selected file has no downloadable URL");
+        }
+        const fileRes = await fetch(selectedStoredFile.url);
+        const blob = await fileRes.blob();
+        const f = new File([blob], selectedStoredFile.name, { type: "application/pdf" });
+        const formData = new FormData();
+        formData.append("file", f);
+        const analyzeRes = await fetch("/api/analyze", {
+          method: "POST",
+          body: formData,
+        });
+        const analyzeData = await analyzeRes.json().catch(() => ({}));
+        if (!analyzeRes.ok || !analyzeData?.text) {
+          throw new Error(analyzeData?.error || "Failed to extract text from stored PDF");
+        }
+        contextText = analyzeData.text;
+      }
+
+      setStatusMessage("Synthesizing concepts with AI...");
+
+      const mindmapRes = await fetch("/api/mindmap/context", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          context: contextText,
+          pdfId: pdfTitle,
+        }),
       });
 
-      const data = await res.json();
-      setMindmap(data.mindmap);
-    } catch (err) {
-      console.error("Mindmap error:", err);
-    }
+      const mindmapData = await mindmapRes.json().catch(() => ({}));
+      if (!mindmapRes.ok || !mindmapData?.mindmap) {
+        throw new Error(mindmapData?.error || "AI failed to generate mindmap structure");
+      }
 
-    setLoading(false);
+      setMindmap(mindmapData.mindmap);
+    } catch (err: unknown) {
+      console.error("Mindmap error:", err);
+      setErrorMessage(err instanceof Error ? err.message : "Mindmap generation failed");
+    } finally {
+      setLoading(false);
+      setStatusMessage("");
+    }
   };
 
   const hasSelectedFile = Boolean(file || selectedStoredFile);
@@ -106,7 +152,7 @@ export default function MindmapPage() {
             Mind-Map Creator
           </h1>
           <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-[#6B7280]">
-            Upload a PDF or choose from your files to generate a mind-map.
+            Upload a PDF or choose from your files to generate an interactive mind-map.
           </p>
           {user?.firstName && (
             <p className="mt-4 font-display text-xs font-bold text-[#6C63FF]">
@@ -143,6 +189,7 @@ export default function MindmapPage() {
                 onChange={(e) => {
                   setFile(e.target.files?.[0] || null);
                   setSelectedStoredFile(null);
+                  setErrorMessage(null);
                 }}
                 className="neu-input w-full p-2 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-[#6C63FF] file:px-3 file:py-2 file:text-xs file:font-bold file:text-white"
               />
@@ -168,6 +215,7 @@ export default function MindmapPage() {
                       onClick={() => {
                         setSelectedStoredFile(f);
                         setFile(null);
+                        setErrorMessage(null);
                       }}
                       className={`w-full rounded-2xl p-4 text-left transition ${
                         selectedStoredFile?.id === f.id
@@ -201,14 +249,23 @@ export default function MindmapPage() {
             <button
               onClick={generateMindmap}
               disabled={loading || !hasSelectedFile}
-              className="neu-btn-primary mt-8 w-full rounded-2xl py-3.5 text-base font-bold disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+              className="neu-btn-primary mt-8 w-full rounded-2xl py-3.5 text-base font-bold disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
             >
-              <GitBranch className="h-5 w-5" />
-              {loading ? "Generating..." : "Generate Mind-Map"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>{statusMessage || "Generating..."}</span>
+                </>
+              ) : (
+                <>
+                  <GitBranch className="h-5 w-5" />
+                  <span>Generate Mind-Map</span>
+                </>
+              )}
             </button>
           </section>
 
-          <section className="neu-extruded min-h-[520px] rounded-[32px] p-8">
+          <section className="neu-extruded min-h-[520px] rounded-[32px] p-8 flex flex-col">
             <div className="mb-6 flex items-center gap-3.5">
               <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
                 <BrainCog className="h-5 w-5" />
@@ -218,37 +275,52 @@ export default function MindmapPage() {
                   Mind-Map Output
                 </h2>
                 <p className="text-xs font-medium text-[#6B7280]">
-                  Visual analysis surface
+                  Interactive concept graph
                 </p>
               </div>
             </div>
 
-            <div className="neu-inset-deep flex min-h-[380px] items-center justify-center rounded-[28px] p-8 text-center">
-              <div>
-                <div className="neu-extruded mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full text-[#6C63FF]">
-                  <GitBranch className="h-9 w-9" />
-                </div>
-                <h3 className="font-display text-2xl font-extrabold text-[#3D4852]">
-                  Work In Progress
-                </h3>
-                <p className="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-[#6B7280]">
-                  {loading
-                    ? "The generator is processing your selected document."
-                    : hasSelectedFile
-                      ? "File selected. Generate when you are ready."
-                      : "Select or upload a PDF to get started."}
-                </p>
-                {mindmap && (
-                  <p className="mt-4 font-display text-xs font-bold text-[#38B2AC]">
-                    Mind-map data received.
-                  </p>
-                )}
+            {errorMessage && (
+              <div className="neu-inset-sm mb-4 flex items-center gap-3 rounded-2xl p-4 text-sm font-medium text-[#E53E3E]">
+                <AlertCircle className="h-5 w-5 shrink-0" />
+                <span>{errorMessage}</span>
               </div>
-            </div>
+            )}
+
+            {loading ? (
+              <div className="neu-inset-deep flex flex-1 min-h-[380px] flex-col items-center justify-center rounded-[28px] p-8 text-center">
+                <Loader2 className="mb-4 h-12 w-12 animate-spin text-[#6C63FF]" />
+                <h3 className="font-display text-lg font-extrabold text-[#3D4852]">
+                  Generating Concept Map
+                </h3>
+                <p className="mt-2 text-sm font-medium text-[#6B7280]">
+                  {statusMessage || "Processing with Groq AI..."}
+                </p>
+              </div>
+            ) : mindmap ? (
+              <div className="flex-1 flex flex-col">
+                <MindmapRenderer mindmap={mindmap} />
+              </div>
+            ) : (
+              <div className="neu-inset-deep flex flex-1 min-h-[380px] items-center justify-center rounded-[28px] p-8 text-center">
+                <div>
+                  <div className="neu-extruded mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full text-[#6C63FF]">
+                    <GitBranch className="h-9 w-9" />
+                  </div>
+                  <h3 className="font-display text-2xl font-extrabold text-[#3D4852]">
+                    Ready to Generate
+                  </h3>
+                  <p className="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-[#6B7280]">
+                    {hasSelectedFile
+                      ? "File selected. Click 'Generate Mind-Map' to start."
+                      : "Select or upload a PDF on the left to begin."}
+                  </p>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       </main>
     </div>
   );
 }
-

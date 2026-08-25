@@ -30,27 +30,34 @@ export default function MindmapRenderer({ mindmap }: MindmapRendererProps) {
     lines.push("  classDef default fill:#E0E5EC,stroke:#6C63FF,stroke-width:2px,color:#3D4852,font-family:inherit,font-weight:600,rx:12px,ry:12px;");
     lines.push("  classDef root fill:#6C63FF,stroke:#5A52E0,stroke-width:2px,color:#FFFFFF,font-family:inherit,font-weight:800,rx:16px,ry:16px;");
 
-    const nodeIds = new Set<string>();
+    const idMap = new Map<string, string>();
 
     (m.nodes || []).forEach((n, index) => {
-      nodeIds.add(n.id);
-      const safeLabel = (n.label || "")
-        .replace(/["`]/g, "'")
-        .replace(/[<>{}]/g, "")
-        .replace(/\n/g, " ")
+      const safeId = `node_${index}_${(n.id || `n${index}`).replace(/[^a-zA-Z0-9]/g, "_")}`;
+      idMap.set(n.id, safeId);
+      const safeLabel = (n.label || `Node ${index + 1}`)
+        .replace(/["`#;]/g, "")
+        .replace(/[\[\]\(\)\{\}]/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
-      const pageInfo = n.meta?.page ? ` (p.${n.meta.page})` : "";
-      lines.push(`  ${n.id}["${safeLabel}${pageInfo}"]`);
+      const pageInfo = n.meta?.page ? ` p${n.meta.page}` : "";
+      lines.push(`  ${safeId}["${safeLabel}${pageInfo}"]`);
       if (index === 0) {
-        lines.push(`  class ${n.id} root;`);
+        lines.push(`  class ${safeId} root;`);
       }
     });
 
     (m.edges || []).forEach((e) => {
-      if (nodeIds.has(e.from) && nodeIds.has(e.to)) {
-        const rawLabel = e.label ? e.label.replace(/["`]/g, "'").replace(/[<>{}]/g, "").trim() : "";
+      const fromId = idMap.get(e.from);
+      const toId = idMap.get(e.to);
+      if (fromId && toId && fromId !== toId) {
+        const rawLabel = (e.label || "")
+          .replace(/["`#;]/g, "")
+          .replace(/[\[\]\(\)\{\}]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
         const label = rawLabel ? `|"${rawLabel}"|` : "";
-        lines.push(`  ${e.from} -->${label} ${e.to}`);
+        lines.push(`  ${fromId} -->${label} ${toId}`);
       }
     });
 
@@ -60,11 +67,14 @@ export default function MindmapRenderer({ mindmap }: MindmapRendererProps) {
   useEffect(() => {
     let mounted = true;
     async function render() {
+      if (!mindmap || !mindmap.nodes || mindmap.nodes.length === 0) return;
       setRenderError(null);
       try {
         const mermaidModule = await import("mermaid");
         const mermaid = mermaidModule.default;
         if (!mounted) return;
+
+        const uniqueId = `mindmap-${Math.random().toString(36).slice(2, 9)}`;
 
         mermaid.initialize({
           startOnLoad: false,
@@ -87,7 +97,7 @@ export default function MindmapRenderer({ mindmap }: MindmapRendererProps) {
         });
 
         const definition = jsonToMermaid(mindmap);
-        const { svg } = await mermaid.render(svgId.current, definition);
+        const { svg } = await mermaid.render(uniqueId, definition);
 
         if (mounted && containerRef.current) {
           containerRef.current.innerHTML = svg;

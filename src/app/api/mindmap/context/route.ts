@@ -47,49 +47,55 @@ export async function POST(req: Request) {
 You are a document summarization assistant. Create a HIGH-LEVEL mind map of the provided document.
 Focus on core ideas only and create nodes for top-level concepts and edges for direct relationships/hierarchy.
 
-Return output STRICTLY as JSON ONLY, with NO extra text, no markdown backticks, and no commentary. Use this exact schema:
-
+Return output strictly matching this JSON schema:
 {
-  "title": "string",
+  "title": "Document Title",
   "nodes": [
-    { "id": "n1", "label": "string", "meta": { "page": 1 } }
+    { "id": "n1", "label": "Concise Label", "meta": { "page": 1 } }
   ],
   "edges": [
-    { "from": "n1", "to": "n2", "label": "string" }
+    { "from": "n1", "to": "n2", "label": "relationship" }
   ]
 }
 
-- Keep node labels short (3-8 words).
-- Include page numbers in meta.page when available.
-- Avoid overly fine-grained nodes; prefer higher-level concepts.
-- Return valid JSON only.
+Rules:
+- Keep node labels short (2 to 6 words).
+- All edge 'from' and 'to' values MUST match an existing node 'id'.
+- Do not include markdown or text outside of the JSON object.
 
 CONTENT:
-${context.slice(0, 12000)}
+${context.slice(0, 8000)}
 `;
 
     const completion = await groq.chat.completions.create({
       model: modelName,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.0,
-      max_tokens: 1500,
+      messages: [
+        { role: "system", content: "You are a JSON-only mindmap generator. Always return valid JSON." },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.1,
+      max_tokens: 1200,
+      response_format: { type: "json_object" },
     });
 
     const raw = completion.choices?.[0]?.message?.content ?? "";
+    let parsed = extractJson(raw);
 
-    const parsed = extractJson(raw);
-
-    if (!parsed) {
-      // return raw output for debugging
+    if (!parsed || typeof parsed !== "object") {
       return NextResponse.json({
         error: "Failed to parse JSON from model output",
         raw,
       }, { status: 502 });
     }
 
-    // Optional: Basic validation of schema
-    if (!parsed.nodes || !Array.isArray(parsed.nodes)) {
-      return NextResponse.json({ error: "Model JSON missing nodes array", parsed }, { status: 502 });
+    // Ensure nodes array exists and is valid
+    if (!parsed.nodes || !Array.isArray(parsed.nodes) || parsed.nodes.length === 0) {
+      // Fallback: create default root node
+      parsed.nodes = [{ id: "n1", label: parsed.title || "Main Concept" }];
+    }
+
+    if (!parsed.edges || !Array.isArray(parsed.edges)) {
+      parsed.edges = [];
     }
 
     return NextResponse.json({ mindmap: parsed, pdfId });
