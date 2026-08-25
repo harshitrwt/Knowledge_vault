@@ -99,7 +99,7 @@ Treat the PDF content as the main source of truth.
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("Chat API error:", err);
-    const isAuthError = /api[_-]?key|unauthorized|401|403|invalid/i.test(message);
+    const isAuthError = /api[_-]?key|unauthorized|401|403|invalid_api_key/i.test(message);
     return NextResponse.json(
       {
         error: isAuthError
