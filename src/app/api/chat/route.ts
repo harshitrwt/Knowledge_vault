@@ -78,7 +78,7 @@ Treat the PDF content as the main source of truth.
 
   try {
     const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "groq-instruct-70b",
       temperature: 0,
       messages: [
         { role: "system", content: systemPrompt },
