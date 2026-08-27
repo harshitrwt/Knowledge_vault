@@ -53,6 +53,28 @@ function extractTextFromPDF(buffer: Buffer): Promise<string> {
   });
 }
 
+function extractJson(raw: string): any | null {
+  if (!raw) return null;
+  let text = raw.trim();
+  if (text.startsWith("```")) {
+    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    const firstBrace = text.indexOf("{");
+    const lastBrace = text.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      try {
+        return JSON.parse(text.slice(firstBrace, lastBrace + 1));
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+}
+
 export async function POST(req: Request) {
   try {
     let text = "";
@@ -107,27 +129,44 @@ Return output strictly matching this JSON schema:
 }
 
 CONTENT:
-${text.slice(0, 8000)}
+${text.slice(0, 10000)}
 `;
 
-    const modelName = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
-    const completion = await groq.chat.completions.create({
-      model: modelName,
-      messages: [
-        { role: "system", content: "You are a JSON-only mindmap generator. Always return valid JSON." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.1,
-      max_tokens: 1200,
-      response_format: { type: "json_object" },
-    });
+    const candidateModels = Array.from(
+      new Set([process.env.GROQ_MODEL || "openai/gpt-oss-120b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"])
+    );
+
+    let completion = null;
+    let lastError: unknown = null;
+
+    for (const model of candidateModels) {
+      try {
+        completion = await groq.chat.completions.create({
+          model,
+          messages: [
+            { role: "system", content: "You are a JSON-only mindmap generator. Always return valid JSON." },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.1,
+          max_tokens: 1500,
+          response_format: { type: "json_object" },
+        });
+        if (completion?.choices?.[0]?.message?.content) {
+          break;
+        }
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    if (!completion?.choices?.[0]?.message?.content) {
+      throw lastError || new Error("Failed to call AI model for mindmap");
+    }
 
     const raw = completion.choices[0]?.message?.content || "{}";
-    let mindmapData = null;
-    try {
-      mindmapData = JSON.parse(raw);
-    } catch {
-      mindmapData = { nodes: [{ id: "n1", label: "Document" }], edges: [] };
+    let mindmapData = extractJson(raw);
+    if (!mindmapData || !mindmapData.nodes) {
+      mindmapData = { nodes: [{ id: "n1", label: pdfId || "Document" }], edges: [] };
     }
 
     return NextResponse.json({

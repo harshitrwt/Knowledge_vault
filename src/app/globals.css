@@ -77,6 +77,24 @@ select {
   outline: none;
 }
 
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+.btn {
+  cursor: pointer !important;
+  transition: all 250ms ease-out;
+}
+
+button:disabled,
+button[disabled],
+[role="button"][aria-disabled="true"],
+.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.55;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -98,11 +116,13 @@ select:focus-visible {
 }
 
 .neu-extruded-hover {
-  transition: all 300ms ease-out;
+  transition: all 250ms ease-out;
+  cursor: pointer;
 }
 
 .neu-extruded-hover:hover {
   transform: translateY(-2px);
+  background-color: #D6DEEA;
   box-shadow: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
 }
 
@@ -145,18 +165,19 @@ select:focus-visible {
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
   box-shadow: 6px 6px 14px rgba(108, 99, 255, 0.35), -4px -4px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.neu-btn-primary:hover {
-  background-color: #5851E0;
+.neu-btn-primary:hover:not(:disabled) {
+  background-color: #554CE1;
   transform: translateY(-2px);
   box-shadow: 8px 8px 18px rgba(108, 99, 255, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.6);
 }
 
-.neu-btn-primary:active {
+.neu-btn-primary:active:not(:disabled) {
+  background-color: #4840D0;
   transform: translateY(1px);
   box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.35), inset -4px -4px 8px rgba(255, 255, 255, 0.2);
 }
@@ -174,18 +195,20 @@ select:focus-visible {
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
   box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.neu-btn-secondary:hover {
-  color: #6C63FF;
+.neu-btn-secondary:hover:not(:disabled) {
+  background-color: #D3DBE7;
+  color: #5851E0;
   transform: translateY(-2px);
   box-shadow: 8px 8px 14px rgba(163, 177, 198, 0.7), -8px -8px 14px rgba(255, 255, 255, 0.6);
 }
 
-.neu-btn-secondary:active {
+.neu-btn-secondary:active:not(:disabled) {
+  background-color: #C5D0DE;
   transform: translateY(1px);
   box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 }
@@ -200,18 +223,20 @@ select:focus-visible {
   min-height: 2.75rem;
   min-width: 2.75rem;
   box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.neu-icon-btn:hover {
-  color: #6C63FF;
+.neu-icon-btn:hover:not(:disabled) {
+  background-color: #D3DBE7;
+  color: #5851E0;
   transform: translateY(-2px);
   box-shadow: 7px 7px 14px rgba(163, 177, 198, 0.7), -7px -7px 14px rgba(255, 255, 255, 0.6);
 }
 
-.neu-icon-btn:active {
+.neu-icon-btn:active:not(:disabled) {
+  background-color: #C5D0DE;
   transform: translateY(1px);
   box-shadow: inset 3px 3px 6px rgba(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 }
@@ -265,13 +290,13 @@ select:focus-visible {
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
   box-shadow: 6px 6px 14px rgba(108, 99, 255, 0.35), -4px -4px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.vault-button-primary:hover {
-  background-color: #5851E0;
+.vault-button-primary:hover:not(:disabled) {
+  background-color: #554CE1;
   transform: translateY(-2px);
   box-shadow: 8px 8px 18px rgba(108, 99, 255, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.6);
 }
@@ -289,13 +314,14 @@ select:focus-visible {
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
   box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.vault-button-secondary:hover {
-  color: #6C63FF;
+.vault-button-secondary:hover:not(:disabled) {
+  background-color: #D3DBE7;
+  color: #5851E0;
   transform: translateY(-2px);
   box-shadow: 8px 8px 14px rgba(163, 177, 198, 0.7), -8px -8px 14px rgba(255, 255, 255, 0.6);
 }
@@ -310,13 +336,14 @@ select:focus-visible {
   min-height: 2.75rem;
   min-width: 2.75rem;
   box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
-  transition: all 300ms ease-out;
-  cursor: pointer;
+  transition: all 250ms ease-out;
+  cursor: pointer !important;
   border: none;
 }
 
-.vault-icon-button:hover {
-  color: #6C63FF;
+.vault-icon-button:hover:not(:disabled) {
+  background-color: #D3DBE7;
+  color: #5851E0;
   transform: translateY(-2px);
 }
 

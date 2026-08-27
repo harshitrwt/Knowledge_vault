@@ -77,19 +77,38 @@ Treat the PDF content as the main source of truth.
   }
 
   try {
-    const modelName = process.env.GROQ_MODEL ?? "openai/gpt-oss-120b";
-    const completion = await groq.chat.completions.create({
-      model: modelName,
-      temperature: 0,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage },
-      ],
-    });
+    const candidateModels = Array.from(
+      new Set([process.env.GROQ_MODEL || "openai/gpt-oss-120b", "openai/gpt-oss-120b", "llama-3.3-70b-versatile", "llama-3.1-8b-instant"])
+    );
+
+    let completion = null;
+    let lastError: unknown = null;
+
+    for (const model of candidateModels) {
+      try {
+        completion = await groq.chat.completions.create({
+          model,
+          temperature: 0.1,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage },
+          ],
+        });
+        if (completion?.choices?.[0]?.message?.content) {
+          break;
+        }
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    if (!completion?.choices?.[0]?.message?.content) {
+      throw lastError || new Error("Failed to get chat response from AI.");
+    }
 
     const answer = completion.choices[0]?.message?.content?.trim() || "";
 
-  // Save chat memory when we have a pdfId (mindmap/context flow)
+    // Save chat memory when we have a pdfId (mindmap/context flow)
     if (pdfId) {
       addToChatHistory(pdfId, `User: ${question}`);
       addToChatHistory(pdfId, `AI: ${answer}`);

@@ -11,6 +11,7 @@ import {
   Loader2,
   UploadCloud,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
@@ -21,6 +22,24 @@ type StoredFile = {
   size: number;
   url?: string;
 };
+
+// Helper: convert data URI or URL to Blob safely
+async function urlToBlob(url: string, defaultName: string): Promise<File> {
+  if (url.startsWith("data:")) {
+    const parts = url.split(",");
+    const mime = parts[0].match(/:(.*?);/)?.[1] || "application/pdf";
+    const binary = atob(parts[1]);
+    const array = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      array[i] = binary.charCodeAt(i);
+    }
+    return new File([array], defaultName, { type: mime });
+  }
+
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new File([blob], defaultName, { type: "application/pdf" });
+}
 
 export default function MindmapPage() {
   const { user } = useUser();
@@ -79,39 +98,38 @@ export default function MindmapPage() {
       let contextText = "";
       const pdfTitle = file ? file.name : selectedStoredFile?.name || "Document";
 
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const analyzeRes = await fetch("/api/analyze", {
-          method: "POST",
-          body: formData,
-        });
-        const analyzeData = await analyzeRes.json().catch(() => ({}));
-        if (!analyzeRes.ok || !analyzeData?.text) {
-          throw new Error(analyzeData?.error || "Failed to extract text from uploaded PDF");
-        }
-        contextText = analyzeData.text;
-      } else if (selectedStoredFile) {
+      let fileToAnalyze: File | null = file;
+
+      if (!fileToAnalyze && selectedStoredFile) {
         if (!selectedStoredFile.url) {
-          throw new Error("Selected file has no downloadable URL");
+          throw new Error("Selected file has no downloadable content.");
         }
-        const fileRes = await fetch(selectedStoredFile.url);
-        const blob = await fileRes.blob();
-        const f = new File([blob], selectedStoredFile.name, { type: "application/pdf" });
-        const formData = new FormData();
-        formData.append("file", f);
-        const analyzeRes = await fetch("/api/analyze", {
-          method: "POST",
-          body: formData,
-        });
-        const analyzeData = await analyzeRes.json().catch(() => ({}));
-        if (!analyzeRes.ok || !analyzeData?.text) {
-          throw new Error(analyzeData?.error || "Failed to extract text from stored PDF");
-        }
-        contextText = analyzeData.text;
+        fileToAnalyze = await urlToBlob(selectedStoredFile.url, selectedStoredFile.name);
       }
 
-      setStatusMessage("Synthesizing concepts with AI...");
+      if (!fileToAnalyze) {
+        throw new Error("No PDF file selected.");
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileToAnalyze);
+
+      const analyzeRes = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
+
+      const analyzeData = await analyzeRes.json().catch(() => ({}));
+      if (!analyzeRes.ok || !analyzeData?.text) {
+        throw new Error(
+          analyzeData?.error ||
+            analyzeData?.details ||
+            "Could not extract text from this PDF. Please ensure it is not scanned/empty."
+        );
+      }
+      contextText = analyzeData.text;
+
+      setStatusMessage("Synthesizing concept graph with AI...");
 
       const mindmapRes = await fetch("/api/mindmap/context", {
         method: "POST",
@@ -138,6 +156,7 @@ export default function MindmapPage() {
   };
 
   const hasSelectedFile = Boolean(file || selectedStoredFile);
+  const activeFileName = file ? file.name : selectedStoredFile ? selectedStoredFile.name : null;
 
   return (
     <div className="flex min-h-screen bg-[#E0E5EC] font-sans text-[#3D4852]">
@@ -152,7 +171,7 @@ export default function MindmapPage() {
             Mind-Map Creator
           </h1>
           <p className="mt-3 max-w-xl text-base font-medium leading-relaxed text-[#6B7280]">
-            Upload a PDF or choose from your files to generate an interactive mind-map.
+            Upload a PDF or choose from your files to generate an interactive concept mind-map.
           </p>
           {user?.firstName && (
             <p className="mt-4 font-display text-xs font-bold text-[#6C63FF]">
@@ -162,6 +181,7 @@ export default function MindmapPage() {
         </header>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* Left Column: File Selector */}
           <section className="neu-extruded rounded-[32px] p-8">
             <div className="mb-6 flex items-center gap-3.5">
               <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
@@ -191,8 +211,14 @@ export default function MindmapPage() {
                   setSelectedStoredFile(null);
                   setErrorMessage(null);
                 }}
-                className="neu-input w-full p-2 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-[#6C63FF] file:px-3 file:py-2 file:text-xs file:font-bold file:text-white"
+                className="neu-input w-full p-2 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-[#6C63FF] file:px-3 file:py-2 file:text-xs file:font-bold file:text-white file:cursor-pointer"
               />
+              {file && (
+                <div className="mt-3 flex items-center gap-2 text-xs font-bold text-[#38B2AC]">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Selected: {file.name} ({formatFileSize(file.size)})
+                </div>
+              )}
             </div>
 
             <div className="mt-8">
@@ -209,62 +235,70 @@ export default function MindmapPage() {
                 </p>
               ) : storedFiles.length > 0 ? (
                 <div className="vault-scrollbar max-h-[280px] space-y-3 overflow-y-auto pr-1">
-                  {storedFiles.map((f) => (
-                    <button
-                      key={f.id}
-                      onClick={() => {
-                        setSelectedStoredFile(f);
-                        setFile(null);
-                        setErrorMessage(null);
-                      }}
-                      className={`w-full rounded-2xl p-4 text-left transition ${
-                        selectedStoredFile?.id === f.id
-                          ? "neu-inset border-2 border-[#6C63FF]/30 text-[#6C63FF]"
-                          : "neu-extruded-sm neu-extruded-hover text-[#3D4852]"
-                      }`}
-                    >
-                      <div className="flex min-w-0 items-center gap-3.5">
-                        <div className="neu-inset-sm flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#38B2AC]">
-                          <FileText className="h-4 w-4" />
+                  {storedFiles.map((f) => {
+                    const isSelected = selectedStoredFile?.id === f.id;
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedStoredFile(f);
+                          setFile(null);
+                          setErrorMessage(null);
+                        }}
+                        className={`w-full rounded-2xl p-4 text-left transition-all ${
+                          isSelected
+                            ? "neu-inset border-2 border-[#6C63FF] text-[#6C63FF]"
+                            : "neu-extruded-sm neu-extruded-hover text-[#3D4852]"
+                        }`}
+                      >
+                        <div className="flex min-w-0 items-center gap-3.5">
+                          <div className="neu-inset-sm flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#38B2AC]">
+                            <FileText className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate font-display text-sm font-bold">
+                              {f.name}
+                            </p>
+                            <p className="text-xs font-medium text-[#6B7280]">
+                              {formatFileSize(f.size)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="truncate font-display text-sm font-bold">
-                            {f.name}
-                          </p>
-                          <p className="text-xs font-medium text-[#6B7280]">
-                            {formatFileSize(f.size)}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="neu-inset-sm rounded-2xl p-4 text-center text-xs font-medium text-[#6B7280]">
-                  No uploaded files found.
+                  No uploaded files found. Upload a file above or in the Uploads page.
                 </p>
               )}
             </div>
 
             <button
+              type="button"
               onClick={generateMindmap}
               disabled={loading || !hasSelectedFile}
-              className="neu-btn-primary mt-8 w-full rounded-2xl py-3.5 text-base font-bold disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+              className="neu-btn-primary mt-8 w-full rounded-2xl py-3.5 text-base font-bold flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>{statusMessage || "Generating..."}</span>
+                  <span>{statusMessage || "Generating Mindmap..."}</span>
                 </>
               ) : (
                 <>
                   <GitBranch className="h-5 w-5" />
-                  <span>Generate Mind-Map</span>
+                  <span>
+                    {activeFileName ? `Generate from "${activeFileName.slice(0, 20)}..."` : "Generate Mind-Map"}
+                  </span>
                 </>
               )}
             </button>
           </section>
 
+          {/* Right Column: Output Visualization */}
           <section className="neu-extruded min-h-[520px] rounded-[32px] p-8 flex flex-col">
             <div className="mb-6 flex items-center gap-3.5">
               <div className="neu-inset-deep flex h-12 w-12 items-center justify-center rounded-2xl text-[#6C63FF]">
@@ -312,7 +346,7 @@ export default function MindmapPage() {
                   </h3>
                   <p className="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-[#6B7280]">
                     {hasSelectedFile
-                      ? "File selected. Click 'Generate Mind-Map' to start."
+                      ? `"${activeFileName}" selected. Click 'Generate Mind-Map' to build the concept graph.`
                       : "Select or upload a PDF on the left to begin."}
                   </p>
                 </div>
